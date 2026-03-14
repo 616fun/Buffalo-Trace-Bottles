@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buffalo Trace Daily | Availability Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --brown:   #3E1C00;
+      --brown2:  #5C2C0A;
+      --gold:    #C8952A;
+      --gold2:   #E8B84B;
+      --beige:   #F0EAE0;
+      --beige2:  #E8DDD0;
+      --cream:   #FDF8F2;
+      --green:   #2E7D32;
+      --green2:  #4CAF50;
+      --red:     #C62828;
+      --red2:    #EF5350;
+      --text:    #2C1A08;
+      --muted:   #7A5C3A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--beige);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%);
+      color: #fff;
+      padding: 0;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .header-left h1 {
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      color: var(--gold2);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+    .header-left p {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .header-meta {
+      text-align: right;
+    }
+    .last-update-pill {
+      display: inline-block;
+      background: rgba(200,149,42,0.25);
+      border: 1px solid var(--gold);
+      color: var(--gold2);
+      font-size: 0.78rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+    }
+    .days-tracked {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.8rem;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--brown);
+      border-bottom: 2px solid rgba(200,149,42,0.4);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 0;
+    }
+    nav a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 10px 16px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s, border-bottom 0.2s;
+      border-bottom: 3px solid transparent;
+    }
+    nav a:hover { color: var(--gold2); border-bottom-color: var(--gold); }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+    section { margin-bottom: 44px; }
+    .section-title {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brown);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* ── TODAY HERO ── */
+    .today-hero {
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 60%, #388E3C 100%);
+      border-radius: 12px;
+      padding: 28px 32px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      margin-bottom: 28px;
+    }
+    .today-hero.no-avail {
+      background: linear-gradient(135deg, #B71C1C 0%, #C62828 60%, #D32F2F 100%);
+    }
+    .today-hero-left h2 { font-size: 1.6rem; margin-bottom: 6px; }
+    .today-hero-left p { opacity: 0.85; font-size: 0.95rem; font-style: italic; }
+    .today-hero-right {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .hero-stat {
+      text-align: center;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 12px 20px;
+      min-width: 90px;
+    }
+    .hero-stat .num { font-size: 1.8rem; font-weight: bold; }
+    .hero-stat .lbl { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+    /* ── SPECIAL RELEASE BANNER ── */
+    .special-banner {
+      background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%);
+      border: 2px solid var(--gold);
+      border-radius: 10px;
+      padding: 16px 24px;
+      color: #fff;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .special-banner .star { font-size: 1.8rem; }
+    .special-banner .sr-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); }
+    .special-banner .sr-name { font-size: 1.15rem; color: var(--gold2); margin-top: 2px; }
+
+    /* ── BOTTLE CARDS GRID ── */
+    .bottle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+    }
+    .bottle-card {
+      background: var(--cream);
+      border-radius: 10px;
+      border: 2px solid var(--beige2);
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .bottle-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    .bottle-card.available { border-top: 4px solid var(--green2); }
+    .bottle-card.unavailable { border-top: 4px solid var(--red2); }
+    .bottle-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .bottle-name { font-size: 1rem; color: var(--brown); line-height: 1.3; }
+    .avail-badge {
+      font-size: 0.7rem;
+      font-weight: bold;
+      letter-spacing: 0.06em;
+      padding: 3px 9px;
+      border-radius: 12px;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+    .avail-badge.yes { background: #E8F5E9; color: var(--green); border: 1px solid var(--green2); }
+    .avail-badge.no  { background: #FFEBEE; color: var(--red);   border: 1px solid var(--red2); }
+
+    .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cs { }
+    .cs .cv {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--brown);
+    }
+    .cs .ck {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 1px;
+    }
+    .streak-pill {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 14px;
+      display: inline-block;
+    }
+    .streak-pill.up   { background: #E8F5E9; color: var(--green); }
+    .streak-pill.down { background: #FFEBEE; color: var(--red); }
+
+    .pred-bar-wrap {
+      margin-top: 14px;
+    }
+    .pred-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .pred-bar-bg {
+      background: var(--beige2);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .pred-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      transition: width 0.8s ease;
+    }
+    .conf-tag {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* ── PREDICTIONS TABLE ── */
+    .pred-table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th {
+      background: var(--brown);
+      color: var(--gold2);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--beige2); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--beige); }
+    .pct-cell { font-weight: bold; }
+    .pct-high { color: var(--green); }
+    .pct-mid  { color: var(--gold); }
+    .pct-low  { color: var(--red); }
+
+    /* ── PRICE CHART ── */
+    .chart-container {
+      background: var(--cream);
+      border-radius: 10px;
+      border: 1px solid var(--beige2);
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .chart-container canvas { max-height: 320px; }
+
+    /* ── CALENDAR HEATMAP ── */
+    .cal-outer { overflow-x: auto; }
+    .cal-grid {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+    .cal-day {
+      width: 36px;
+      border-radius: 6px;
+      background: var(--cream);
+      border: 1px solid var(--beige2);
+      padding: 5px 4px 4px;
+      text-align: center;
+      font-size: 0.65rem;
+    }
+    .cal-day .cd-date { color: var(--muted); font-size: 0.6rem; margin-bottom: 4px; }
+    .cal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin: 2px auto;
+    }
+    .dot-green { background: var(--green2); }
+    .dot-red   { background: var(--red2); }
+    .dot-gray  { background: #ccc; }
+    .dot-gold  { background: var(--gold); }
+    .cal-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .cal-legend-item { display: flex; align-items: center; gap: 6px; }
+    .cal-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* ── STATS SUMMARY ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .stat-card {
+      background: var(--cream);
+      border: 1px solid var(--beige2);
+      border-radius: 8px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .stat-card .sc-val { font-size: 1.6rem; font-weight: bold; color: var(--brown); }
+    .stat-card .sc-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-top: 4px; }
+
+    /* ── SPECIAL RELEASES LOG ── */
+    .sr-log { display: flex; flex-direction: column; gap: 10px; }
+    .sr-item {
+      background: var(--cream);
+      border-left: 4px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .sr-item-date { font-size: 0.75rem; color: var(--muted); min-width: 90px; }
+    .sr-item-name { font-size: 0.95rem; color: var(--brown); }
+    .sr-item-notes { font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brown);
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      padding: 20px 24px;
+      font-size: 0.78rem;
+      border-top: 3px solid var(--gold);
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+
+    /* ── LOADING / ERROR ── */
+    #loading-msg {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+    #content { display: none; }
+
+    @media (max-width: 600px) {
+      .header-left h1 { font-size: 1.4rem; }
+      .today-hero { padding: 20px; }
+      .today-hero-left h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <h1>🥃 Buffalo Trace Daily</h1>
+      <p>Gift Shop Availability Tracker — Frankfort, Kentucky</p>
+    </div>
+    <div class="header-meta">
+      <div class="last-update-pill" id="last-update-pill">Loading…</div>
+      <div class="days-tracked" id="days-tracked-hdr"></div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#today">Today</a>
+    <a href="#bottles">Bottles</a>
+    <a href="#predictions">Predictions</a>
+    <a href="#prices">Prices</a>
+    <a href="#calendar">Calendar</a>
+    <a href="#specials">Special Releases</a>
+  </div>
+</nav>
+
+<main>
+  <div id="loading-msg">Loading tracker data…</div>
+  <div id="content">
+
+    <!-- TODAY SECTION -->
+    <section id="today">
+      <div class="section-title">Today's Availability</div>
+      <div id="today-hero" class="today-hero">
+        <!-- Injected by JS -->
+      </div>
+      <div id="special-release-banner" style="display:none" class="special-banner">
+        <div class="star">⭐</div>
+        <div>
+          <div class="sr-label">Special Release Available Today</div>
+          <div class="sr-name" id="sr-name-today"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTLE CARDS -->
+    <section id="bottles">
+      <div class="section-title">Rotating Bottle Tracker</div>
+      <div class="bottle-grid" id="bottle-grid">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <!-- PREDICTIONS TABLE -->
+    <section id="predictions">
+      <div class="section-title">Tomorrow's Predictions</div>
+      <div class="pred-table-wrap">
+        <table id="pred-table">
+          <thead>
+            <tr>
+              <th>Bottle</th>
+              <th>Prediction</th>
+              <th>Confidence Level</th>
+              <th>Current Streak</th>
+              <th>10-Day Rate</th>
+              <th>30-Day Rate</th>
+            </tr>
+          </thead>
+          <tbody id="pred-tbody"></tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;font-style:italic;">
+        Predictions use a Bayesian Markov Chain model with Beta-Binomial priors seeded from historical Buffalo Trace availability data.
+        Confidence increases as more days are tracked (Low: 5–14 days, Medium: 15–29 days, High: 30+ days).
+      </p>
+    </section>
+
+    <!-- STATISTICS -->
+    <section id="stats">
+      <div class="section-title">Tracker Statistics</div>
+      <div class="stats-row" id="stats-row"></div>
+    </section>
+
+    <!-- PRICE CHART -->
+    <section id="prices">
+      <div class="section-title">Price History</div>
+      <div class="chart-container">
+        <canvas id="price-chart"></canvas>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;font-style:italic;">
+        Distillery gift shop prices. Updated when a price change is detected. "TBD" = price not yet recorded.
+      </p>
+    </section>
+
+    <!-- CALENDAR HEATMAP -->
+    <section id="calendar">
+      <div class="section-title">30-Day Availability Calendar</div>
+      <div class="cal-outer">
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot dot-green"></div> Available</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot dot-red"></div> Unavailable</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot dot-gold"></div> Special Release</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot dot-gray"></div> No Data</div>
+      </div>
+      <div style="margin-top:12px;font-size:0.72rem;color:var(--muted);">
+        Rows (top to bottom): Blanton's · Weller 107 · E.H. Taylor SB · Eagle Rare
+      </div>
+    </section>
+
+    <!-- SPECIAL RELEASES LOG -->
+    <section id="specials">
+      <div class="section-title">Special Releases Log</div>
+      <div class="sr-log" id="sr-log"></div>
+    </section>
+
+  </div><!-- #content -->
+</main>
+
+<footer>
+  <p>Buffalo Trace Daily Tracker &nbsp;·&nbsp; Data sourced from
+    <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a>
+  </p>
+  <p style="margin-top:6px;">Auto-updated daily each morning &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
+</footer>
+
+<script>
+// ── UTILITY ─────────────────────────────────────────────────────────────────
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function fmtPct(v, decimals = 1) {
+  if (v === null || v === undefined) return '—';
+  return v.toFixed(decimals) + '%';
+}
+function pctClass(v) {
+  if (v === null) return '';
+  if (v >= 70) return 'pct-high';
+  if (v >= 40) return 'pct-mid';
+  return 'pct-low';
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+function render(data) {
+  const { meta, today, bottles, price_history, calendar, special_releases_log } = data;
+
+  // Header
+  document.getElementById('last-update-pill').textContent = 'Updated ' + fmtDate(meta.last_updated);
+  document.getElementById('days-tracked-hdr').textContent = meta.days_tracked + ' day' + (meta.days_tracked !== 1 ? 's' : '') + ' tracked';
+
+  // Today hero
+  const availCount = bottles.filter(b => b.available_today === 1).length;
+  const hero = document.getElementById('today-hero');
+  hero.className = 'today-hero' + (availCount === 0 ? ' no-avail' : '');
+  hero.innerHTML = `
+    <div class="today-hero-left">
+      <h2>${availCount > 0 ? '✅ Bottles Available Today' : '❌ No Rotating Bottles Available'}</h2>
+      <p>${fmtDate(today.date)} &nbsp;·&nbsp; ${today.day_of_week}</p>
+    </div>
+    <div class="today-hero-right">
+      <div class="hero-stat"><div class="num">${availCount}</div><div class="lbl">Available</div></div>
+      <div class="hero-stat"><div class="num">${bottles.length - availCount}</div><div class="lbl">Unavailable</div></div>
+      <div class="hero-stat"><div class="num">${meta.days_tracked}</div><div class="lbl">Days Tracked</div></div>
+    </div>`;
+
+  // Special release
+  if (today.special_release) {
+    document.getElementById('special-release-banner').style.display = 'flex';
+    document.getElementById('sr-name-today').textContent = today.special_release;
+  }
+
+  // Bottle cards
+  const grid = document.getElementById('bottle-grid');
+  grid.innerHTML = bottles.map(b => {
+    const isAvail = b.available_today === 1;
+    const streakDir = b.streak_direction === 'available' ? 'up' : 'down';
+    const streakLabel = isAvail
+      ? `📈 Available ${b.streak} day${b.streak !== 1 ? 's' : ''} in a row`
+      : `📉 Unavailable ${b.streak} day${b.streak !== 1 ? 's' : ''} in a row`;
+    const pred = b.prediction_tomorrow_pct;
+    const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + 'd' : '—';
+    return `
+      <div class="bottle-card ${isAvail ? 'available' : 'unavailable'}">
+        <div class="bottle-card-header">
+          <div class="bottle-name">${b.name}</div>
+          <div class="avail-badge ${isAvail ? 'yes' : 'no'}">${isAvail ? 'IN STOCK' : 'OUT'}</div>
+        </div>
+        <div class="card-stats">
+          <div class="cs"><div class="cv">${fmtPct(b.overall_pct, 0)}</div><div class="ck">Overall Rate</div></div>
+          <div class="cs"><div class="cv">${fmtPct(b.rolling_10d_pct, 0)}</div><div class="ck">10-Day Rate</div></div>
+          <div class="cs"><div class="cv">${fmtPct(b.rolling_30d_pct, 0)}</div><div class="ck">30-Day Rate</div></div>
+          <div class="cs"><div class="cv">${avgBetween}</div><div class="ck">Avg Gap</div></div>
+        </div>
+        <div class="streak-pill ${streakDir}">${streakLabel}</div>
+        <div class="pred-bar-wrap">
+          <div class="pred-bar-label">
+            <span>Tomorrow's Prediction</span>
+            <span class="${pctClass(pred)}">${fmtPct(pred, 0)}</span>
+          </div>
+          <div class="pred-bar-bg"><div class="pred-bar-fill" style="width:${pred ?? 0}%"></div></div>
+          <div class="conf-tag">Confidence: ${b.confidence}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Predictions table
+  const tbody = document.getElementById('pred-tbody');
+  tbody.innerHTML = bottles.map(b => {
+    const pred = b.prediction_tomorrow_pct;
+    const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + ' days' : '—';
+    return `
+      <tr>
+        <td>${b.name}</td>
+        <td class="pct-cell ${pctClass(pred)}">${fmtPct(pred, 1)}</td>
+        <td>${b.confidence}</td>
+        <td>${b.streak} day${b.streak !== 1 ? 's' : ''} ${b.streak_direction}</td>
+        <td>${fmtPct(b.rolling_10d_pct, 1)}</td>
+        <td>${fmtPct(b.rolling_30d_pct, 1)}</td>
+      </tr>`;
+  }).join('');
+
+  // Stats summary
+  const statsRow = document.getElementById('stats-row');
+  const availPct = (bottles.filter(b => b.available_today).length / bottles.length * 100).toFixed(0);
+  const specialCount = special_releases_log.length;
+  statsRow.innerHTML = `
+    <div class="stat-card"><div class="sc-val">${meta.days_tracked}</div><div class="sc-lbl">Days Tracked</div></div>
+    <div class="stat-card"><div class="sc-val">${availPct}%</div><div class="sc-lbl">Bottles Available Today</div></div>
+    <div class="stat-card"><div class="sc-val">${specialCount}</div><div class="sc-lbl">Special Releases Logged</div></div>
+    <div class="stat-card"><div class="sc-val">${price_history.length}</div><div class="sc-lbl">Price Snapshots</div></div>`;
+
+  // Price chart
+  buildPriceChart(price_history);
+
+  // Calendar heatmap
+  buildCalendar(calendar);
+
+  // Special releases log
+  const srLog = document.getElementById('sr-log');
+  if (special_releases_log.length === 0) {
+    srLog.innerHTML = '<p style="color:var(--muted);font-style:italic;">No special releases logged yet.</p>';
+  } else {
+    srLog.innerHTML = [...special_releases_log].reverse().map(sr => `
+      <div class="sr-item">
+        <div class="sr-item-date">${fmtDate(sr.date)}</div>
+        <div>
+          <div class="sr-item-name">${sr.name}</div>
+          ${sr.notes ? `<div class="sr-item-notes">${sr.notes}</div>` : ''}
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ── PRICE CHART ─────────────────────────────────────────────────────────────
+function buildPriceChart(history) {
+  const labels = history.map(h => fmtDate(h.date));
+  const COLORS = ['#C8952A','#2E7D32','#1565C0','#C62828','#6A1B9A','#00695C','#EF6C00','#37474F'];
+  const BOTTLES = [
+    { key: 'blantons',     label: "Blanton's" },
+    { key: 'weller107',    label: 'Weller 107' },
+    { key: 'ehtaylor_sb',  label: 'E.H. Taylor SB' },
+    { key: 'eagle_rare',   label: 'Eagle Rare' },
+    { key: 'weller_sr',    label: 'Weller SR' },
+    { key: 'sazerac_rye',  label: 'Sazerac Rye' },
+    { key: 'bt_bourbon',   label: 'BT Bourbon' },
+    { key: 'ehtaylor_rye', label: 'E.H. Taylor Rye' },
+  ];
+
+  const datasets = BOTTLES.map((b, i) => ({
+    label: b.label,
+    data: history.map(h => h[b.key] ?? null),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: COLORS[i % COLORS.length] + '22',
+    tension: 0.3,
+    pointRadius: 5,
+    spanGaps: true,
+  })).filter(ds => ds.data.some(v => v !== null));
+
+  const ctx = document.getElementById('price-chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#5C2C0A', font: { family: 'Georgia', size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.parsed.y !== null ? `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}` : null
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#7A5C3A', font: { size: 10 } }, grid: { color: '#E8DDD0' } },
+        y: {
+          ticks: {
+            color: '#7A5C3A',
+            font: { size: 10 },
+            callback: v => '$' + v.toFixed(0)
+          },
+          grid: { color: '#E8DDD0' }
+        }
+      }
+    }
+  });
+}
+
+// ── CALENDAR HEATMAP ─────────────────────────────────────────────────────────
+function buildCalendar(calendar) {
+  const grid = document.getElementById('cal-grid');
+  const KEYS = ['blantons','weller107','ehtaylor_sb','eagle_rare'];
+
+  // Show last 30 (or all if fewer)
+  const recent = calendar.slice(-30);
+
+  grid.innerHTML = recent.map(day => {
+    const dateStr = day.date.slice(5); // MM-DD
+    const dots = KEYS.map(k => {
+      if (day[k] === null || day[k] === undefined) return `<div class="cal-dot dot-gray"></div>`;
+      return `<div class="cal-dot ${day[k] ? 'dot-green' : 'dot-red'}"></div>`;
+    });
+    const hasSR = !!day.special_release;
+    return `
+      <div class="cal-day" title="${fmtDate(day.date)}${hasSR ? ' · ' + day.special_release : ''}">
+        <div class="cd-date">${dateStr}</div>
+        ${dots.join('')}
+        ${hasSR ? '<div class="cal-dot dot-gold" title="Special Release"></div>' : ''}
+      </div>`;
+  }).join('');
+}
+
+// ── FETCH DATA & INIT ────────────────────────────────────────────────────────
+fetch('./data.json?_=' + Date.now())
+  .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(data => {
+    document.getElementById('loading-msg').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    render(data);
+  })
+  .catch(err => {
+    document.getElementById('loading-msg').innerHTML =
+      `<span style="color:#C62828">⚠️ Could not load tracker data.<br><small>${err.message}</small></span>`;
+  });
+</script>
+</body>
+</html>

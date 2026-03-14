@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "last_updated": "2026-03-14",
+    "days_tracked": 2,
+    "site_version": "1.0",
+    "data_source": "https://www.buffalotracedistillery.com/visit-us/product-availability/"
+  },
+  "today": {
+    "date": "2026-03-14",
+    "day_of_week": "Saturday",
+    "last_site_update": "3.14.2026",
+    "special_release": "E.H. Taylor Straight Rye",
+    "notes": ""
+  },
+  "bottles": [
+    {
+      "name": "Blanton's Single Barrel",
+      "key": "blantons",
+      "available_today": 1,
+      "streak": 2,
+      "streak_direction": "available",
+      "overall_pct": 100.0,
+      "rolling_10d_pct": 100.0,
+      "rolling_30d_pct": 100.0,
+      "avg_days_between_releases": null,
+      "prediction_tomorrow_pct": 63.0,
+      "confidence": "Prior only",
+      "last_seen": "2026-03-14",
+      "prior_frequency": 0.63
+    },
+    {
+      "name": "Weller Antique 107",
+      "key": "weller107",
+      "available_today": 1,
+      "streak": 2,
+      "streak_direction": "available",
+      "overall_pct": 100.0,
+      "rolling_10d_pct": 100.0,
+      "rolling_30d_pct": 100.0,
+      "avg_days_between_releases": null,
+      "prediction_tomorrow_pct": 75.0,
+      "confidence": "Prior only",
+      "last_seen": "2026-03-14",
+      "prior_frequency": 0.75
+    },
+    {
+      "name": "E.H. Taylor Small Batch",
+      "key": "ehtaylor_sb",
+      "available_today": 1,
+      "streak": 2,
+      "streak_direction": "available",
+      "overall_pct": 100.0,
+      "rolling_10d_pct": 100.0,
+      "rolling_30d_pct": 100.0,
+      "avg_days_between_releases": null,
+      "prediction_tomorrow_pct": 93.0,
+      "confidence": "Prior only",
+      "last_seen": "2026-03-14",
+      "prior_frequency": 0.93
+    },
+    {
+      "name": "Eagle Rare 10-Year",
+      "key": "eagle_rare",
+      "available_today": 0,
+      "streak": 1,
+      "streak_direction": "unavailable",
+      "overall_pct": 50.0,
+      "rolling_10d_pct": 50.0,
+      "rolling_30d_pct": 50.0,
+      "avg_days_between_releases": null,
+      "prediction_tomorrow_pct": 17.0,
+      "confidence": "Prior only",
+      "last_seen": "2026-03-13",
+      "prior_frequency": 0.17
+    }
+  ],
+  "price_history": [
+    {
+      "date": "2026-03-14",
+      "blantons": 74.99,
+      "weller107": null,
+      "ehtaylor_sb": 59.99,
+      "eagle_rare": 43.00,
+      "weller_sr": 30.00,
+      "ehtaylor_rye": null,
+      "sazerac_rye": 30.00,
+      "bt_bourbon": 27.00,
+      "wheatley_vodka": null,
+      "bt_cream": null
+    }
+  ],
+  "calendar": [
+    {"date": "2026-03-13", "blantons": 1, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null},
+    {"date": "2026-03-14", "blantons": 1, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": "E.H. Taylor Straight Rye"}
+  ],
+  "special_releases_log": [
+    {
+      "date": "2026-03-13",
+      "name": "E.H. Taylor Straight Rye",
+      "notes": "Opening day data"
+    }
+  ]
+}
