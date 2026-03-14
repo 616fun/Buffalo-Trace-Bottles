@@ -9,7 +9,7 @@
     "date": "2026-03-14",
     "day_of_week": "Saturday",
     "last_site_update": "3.14.2026",
-    "special_release": "E.H. Taylor Straight Rye",
+    "special_release": null,
     "notes": ""
   },
   "bottles": [
@@ -91,7 +91,7 @@
   ],
   "calendar": [
     {"date": "2026-03-13", "blantons": 1, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null},
-    {"date": "2026-03-14", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": "E.H. Taylor Straight Rye"}
+    {"date": "2026-03-14", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null}
   ],
   "special_releases_log": [
     {
