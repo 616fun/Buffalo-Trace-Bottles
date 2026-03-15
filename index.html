@@ -78,6 +78,38 @@
       font-style: italic;
     }
 
+    /* ── VENMO BANNER ── */
+    .venmo-bar {
+      background: #008CFF;
+      padding: 10px 24px;
+      text-align: center;
+    }
+    .venmo-bar a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-family: Georgia, serif;
+      font-size: 0.88rem;
+      letter-spacing: 0.02em;
+    }
+    .venmo-bar a:hover { opacity: 0.88; }
+    .venmo-logo {
+      background: #fff;
+      color: #008CFF;
+      font-weight: bold;
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      font-family: Arial, sans-serif;
+    }
+    .venmo-bar .venmo-cta {
+      font-style: italic;
+      opacity: 0.9;
+    }
+
     /* ── NAV ── */
     nav {
       background: var(--brown);
@@ -404,6 +436,13 @@
     </div>
   </div>
 </header>
+
+<div class="venmo-bar">
+  <a href="https://venmo.com/brianwulff" target="_blank" rel="noopener">
+    <span class="venmo-logo">venmo</span>
+    <span class="venmo-cta">Find this tracker useful? Buy me a bottle 🥃 &nbsp;@brianwulff</span>
+  </a>
+</div>
 
 <nav>
   <div class="nav-inner">
