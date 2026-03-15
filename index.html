@@ -459,10 +459,99 @@
     }
     #content { display: none; }
 
-    @media (max-width: 600px) {
-      .header-left h1 { font-size: 1.4rem; }
-      .today-hero { padding: 20px; }
+    /* ── MOBILE (iPhone) ── */
+    @media (max-width: 430px) {
+
+      /* Header — stack vertically, tighten padding */
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 16px 12px;
+        gap: 8px;
+      }
+      .header-left h1 { font-size: 1.3rem; }
+      .header-left p  { font-size: 0.78rem; }
+      .header-meta    { text-align: left; }
+      .last-update-pill { font-size: 0.72rem; }
+
+      /* Venmo bar — shrink text so it fits one line */
+      .venmo-bar { padding: 9px 12px; }
+      .venmo-bar a { font-size: 0.78rem; gap: 7px; }
+
+      /* Nav — horizontally scrollable, no line wrap */
+      .nav-inner {
+        padding: 0 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+      }
+      .nav-inner::-webkit-scrollbar { display: none; }
+      nav a { padding: 10px 12px; font-size: 0.72rem; white-space: nowrap; }
+
+      /* Main padding */
+      main { padding: 16px 12px 48px; }
+      section { margin-bottom: 32px; }
+      .section-title { font-size: 0.9rem; }
+
+      /* Special drop alert */
+      .special-drop-alert { padding: 14px 12px; }
+      .special-drop-name  { font-size: 1.1rem; }
+      .special-drop-icon  { font-size: 1.4rem; }
+
+      /* Today hero — stack vertically, full width stats row */
+      .today-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 16px;
+        gap: 14px;
+      }
       .today-hero-left h2 { font-size: 1.2rem; }
+      .today-hero-left p  { font-size: 0.82rem; }
+      .today-hero-right {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .hero-stat {
+        flex: 1;
+        min-width: 0;
+        padding: 10px 8px;
+      }
+      .hero-stat .num { font-size: 1.5rem; }
+      .hero-stat .lbl { font-size: 0.65rem; }
+
+      /* Bottle cards — single column */
+      .bottle-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .bottle-card { padding: 16px; }
+      .bottle-name { font-size: 0.95rem; }
+
+      /* Predictions table — hide less critical columns, allow scroll */
+      .pred-table-wrap { border-radius: 8px; overflow: hidden; }
+      table { font-size: 0.78rem; min-width: 480px; }
+      th, td { padding: 8px 10px; }
+
+      /* Price chart — reduce height */
+      .chart-container { padding: 14px; }
+      .chart-container canvas { max-height: 220px; }
+
+      /* Calendar — smaller day cells to fit more per row */
+      .cal-day { width: 30px; padding: 4px 2px 3px; }
+      .cal-day .cd-date { font-size: 0.52rem; }
+      .cal-dot { width: 8px; height: 8px; }
+
+      /* Stats — 2 columns on mobile */
+      .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-card { padding: 12px 14px; }
+      .stat-card .sc-val { font-size: 1.3rem; }
+      .stat-card .sc-lbl { font-size: 0.65rem; }
+
+      /* Special releases log */
+      .sr-item { padding: 10px 12px; gap: 10px; flex-wrap: wrap; }
+      .sr-item-date { min-width: unset; }
     }
   </style>
 </head>
