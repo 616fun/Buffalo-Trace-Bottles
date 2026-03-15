@@ -529,10 +529,12 @@
       .bottle-card { padding: 16px; }
       .bottle-name { font-size: 0.95rem; }
 
-      /* Predictions table — hide less critical columns, allow scroll */
+      /* Predictions table — hide rate columns on mobile (already on bottle cards) */
       .pred-table-wrap { border-radius: 8px; overflow: hidden; }
-      table { font-size: 0.78rem; min-width: 480px; }
+      table { font-size: 0.82rem; min-width: unset; width: 100%; }
       th, td { padding: 8px 10px; }
+      th:nth-child(5), td:nth-child(5),
+      th:nth-child(6), td:nth-child(6) { display: none; }
 
       /* Price chart — reduce height */
       .chart-container { padding: 14px; }
