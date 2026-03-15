@@ -405,6 +405,50 @@
     }
     footer a { color: var(--gold); text-decoration: none; }
 
+    /* ── SPECIAL DROP ALERT ── */
+    .special-drop-alert {
+      display: none;
+      background: linear-gradient(135deg, #7B4700 0%, var(--gold) 50%, #7B4700 100%);
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite;
+      border-bottom: 3px solid #fff;
+      padding: 18px 24px;
+      text-align: center;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    .special-drop-alert.active { display: block; }
+    .special-drop-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .special-drop-icon { font-size: 1.8rem; line-height: 1; }
+    .special-drop-text { color: var(--brown); }
+    .special-drop-label {
+      font-size: 0.7rem;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .special-drop-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+    }
+    .special-drop-sub {
+      font-size: 0.8rem;
+      opacity: 0.75;
+      font-style: italic;
+    }
+
     /* ── LOADING / ERROR ── */
     #loading-msg {
       text-align: center;
@@ -454,6 +498,19 @@
     <a href="#specials">Special Releases</a>
   </div>
 </nav>
+
+<!-- SPECIAL DROP FULL-WIDTH ALERT (shown only when there's a special release today) -->
+<div class="special-drop-alert" id="special-drop-alert">
+  <div class="special-drop-inner">
+    <div class="special-drop-icon">⭐</div>
+    <div class="special-drop-text">
+      <div class="special-drop-label">🔔 Special Release Available Today</div>
+      <div class="special-drop-name" id="special-drop-name"></div>
+      <div class="special-drop-sub">Head to the gift shop — these go fast!</div>
+    </div>
+    <div class="special-drop-icon">⭐</div>
+  </div>
+</div>
 
 <main>
   <div id="loading-msg">Loading tracker data…</div>
@@ -597,8 +654,12 @@ function render(data) {
       <div class="hero-stat"><div class="num">${meta.days_tracked}</div><div class="lbl">Days Tracked</div></div>
     </div>`;
 
-  // Special release
+  // Special release — activate top alert banner
   if (today.special_release) {
+    const alert = document.getElementById('special-drop-alert');
+    alert.classList.add('active');
+    document.getElementById('special-drop-name').textContent = today.special_release;
+    // Also show the smaller in-section banner
     document.getElementById('special-release-banner').style.display = 'flex';
     document.getElementById('sr-name-today').textContent = today.special_release;
   }
