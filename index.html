@@ -479,6 +479,15 @@
     footer a:hover { color: var(--gold); }
 
     /* ══════════════════════════════════════
+       TABLET  (@media max-width: 720px)
+    ══════════════════════════════════════ */
+    @media (max-width: 720px) {
+      /* Stack today card at tablet widths — side-by-side is cramped below ~720px */
+      .today-top { flex-direction: column; padding: 24px 28px; gap: 16px; }
+      .today-stats { width: 100%; justify-content: flex-start; }
+    }
+
+    /* ══════════════════════════════════════
        MOBILE  (@media max-width: 600px)
     ══════════════════════════════════════ */
     @media (max-width: 600px) {
@@ -487,6 +496,7 @@
       .header-bar { padding: 0 16px; }
       .brand-text h1 { font-size: 0.92rem; }
       .brand-text p  { display: none; }
+      #last-update-pill { display: none; }  /* prevents overflow — "Live" dot is enough */
       #days-tracked-hdr { display: none; }
 
       /* Nav */
