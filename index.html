@@ -4,778 +4,542 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Buffalo Trace Bottle Drops | Availability Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
+    /* ── DESIGN TOKENS ── */
     :root {
-      --brown:   #3E1C00;
-      --brown2:  #5C2C0A;
-      --gold:    #C8952A;
-      --gold2:   #E8B84B;
-      --beige:   #F0EAE0;
-      --beige2:  #E8DDD0;
-      --cream:   #FDF8F2;
-      --green:   #2E7D32;
-      --green2:  #4CAF50;
-      --red:     #C62828;
-      --red2:    #EF5350;
-      --text:    #2C1A08;
-      --muted:   #7A5C3A;
+      --bg:        #F7F3ED;
+      --surface:   #FFFFFF;
+      --surface2:  #F2EDE4;
+      --border:    rgba(0,0,0,0.08);
+      --border-s:  #E8DDD0;
+      --text:      #1A0F05;
+      --text2:     #5C4A32;
+      --muted:     #9C8B75;
+      --amber:     #C07328;
+      --amber2:    #E09040;
+      --gold:      #F0C060;
+      --green:     #166534;
+      --green2:    #4CAF50;
+      --green-bg:  #F0FDF4;
+      --green-bd:  #BBF7D0;
+      --red:       #991B1B;
+      --red2:      #EF5350;
+      --red-bg:    #FEF2F2;
+      --red-bd:    #FECACA;
+      /* Legacy alias so JS-injected HTML using old vars still works */
+      --brown:     #1A0F05;
+      --brown2:    #3A1806;
+      --beige:     #F7F3ED;
+      --beige2:    #E8DDD0;
+      --cream:     #FFFFFF;
+      --gold2:     #F0C060;
+      --ui:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --display:   'Playfair Display', Georgia, serif;
+      --radius:    12px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow:    0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.04);
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
     body {
-      font-family: Georgia, 'Times New Roman', serif;
-      background: var(--beige);
+      font-family: var(--ui);
+      background: var(--bg);
       color: var(--text);
+      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
     }
 
     /* ── HEADER ── */
     header {
-      background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%);
-      color: #fff;
-      padding: 0;
-      border-bottom: 4px solid var(--gold);
+      background: var(--text);
+      position: sticky; top: 0; z-index: 100;
     }
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 24px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+    .header-bar {
+      max-width: 1060px; margin: 0 auto;
+      padding: 0 28px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .header-left h1 {
-      font-size: 2rem;
-      letter-spacing: 0.04em;
-      color: var(--gold2);
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand-mark {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--amber) 0%, var(--gold) 100%);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
     }
-    .header-left p {
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.7);
-      margin-top: 4px;
-      font-style: italic;
+    .brand-text h1 {
+      font-family: var(--display);
+      font-size: 1.05rem; color: #fff; font-weight: 700; line-height: 1.1;
     }
-    .header-meta {
-      text-align: right;
-    }
-    .last-update-pill {
-      display: inline-block;
-      background: rgba(200,149,42,0.25);
-      border: 1px solid var(--gold);
-      color: var(--gold2);
-      font-size: 0.78rem;
-      padding: 4px 12px;
-      border-radius: 20px;
-      letter-spacing: 0.03em;
-    }
-    .days-tracked {
-      color: rgba(255,255,255,0.6);
-      font-size: 0.8rem;
-      margin-top: 6px;
-      font-style: italic;
-    }
-
-    /* ── VENMO BANNER ── */
-    .venmo-bar-wrap {
-      margin-bottom: 44px;
-    }
-    .venmo-bar {
-      background: linear-gradient(135deg, #7B4A00 0%, var(--gold) 55%, var(--gold2) 100%);
-      padding: 16px 24px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-    }
-    .venmo-bar::before {
-      content: '🥃';
-      position: absolute;
-      left: 28px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.8rem;
-      opacity: 0.35;
-      pointer-events: none;
-    }
-    .venmo-bar::after {
-      content: '🥃';
-      position: absolute;
-      right: 28px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.8rem;
-      opacity: 0.35;
-      pointer-events: none;
-    }
-    .venmo-bar-inner {
-      display: inline-flex;
-      align-items: center;
-      gap: 18px;
-      position: relative;
-      z-index: 1;
-    }
-    .venmo-bar-text {
-      text-align: left;
-    }
-    .venmo-bar-text strong {
-      display: block;
-      font-size: 0.95rem;
-      color: var(--brown);
-      letter-spacing: 0.01em;
-    }
-    .venmo-bar-text span {
-      display: block;
-      font-size: 0.78rem;
-      color: rgba(62,28,0,0.72);
-      font-style: italic;
-      margin-top: 2px;
-    }
-    .venmo-btn {
-      background: var(--brown);
-      color: var(--gold2);
-      font-size: 0.78rem;
-      font-weight: bold;
-      padding: 10px 22px;
-      border-radius: 24px;
-      text-decoration: none;
-      white-space: nowrap;
-      font-family: Arial, sans-serif;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      transition: opacity 0.2s;
-      flex-shrink: 0;
-    }
-    .venmo-btn:hover { opacity: 0.85; }
+    .brand-text h1 span { color: var(--gold); }
+    .brand-text p { font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-top: 1px; letter-spacing: 0.02em; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .status-live { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 500; color: rgba(255,255,255,0.5); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 2px rgba(74,222,128,0.2); flex-shrink: 0; }
+    #last-update-pill { font-size: 0.68rem; color: rgba(255,255,255,0.35); }
+    #days-tracked-hdr { font-size: 0.65rem; color: rgba(255,255,255,0.28); font-style: italic; }
 
     /* ── NAV ── */
     nav {
-      background: var(--brown);
-      border-bottom: 2px solid rgba(200,149,42,0.4);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      position: sticky; top: 56px; z-index: 99;
     }
     .nav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      gap: 0;
+      max-width: 1060px; margin: 0 auto;
+      padding: 0 28px; display: flex; gap: 0;
+      overflow-x: auto; scrollbar-width: none;
     }
+    .nav-inner::-webkit-scrollbar { display: none; }
     nav a {
-      color: rgba(255,255,255,0.65);
-      text-decoration: none;
-      font-size: 0.82rem;
-      padding: 10px 16px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      transition: color 0.2s, border-bottom 0.2s;
-      border-bottom: 3px solid transparent;
+      text-decoration: none; font-size: 0.78rem; font-weight: 500;
+      color: var(--muted); padding: 13px 16px; white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
     }
-    nav a:hover { color: var(--gold2); border-bottom-color: var(--gold); }
+    nav a:hover { color: var(--text2); }
+    nav a.active { color: var(--amber); border-bottom-color: var(--amber); }
 
-    /* ── MAIN LAYOUT ── */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 24px 60px;
-    }
-    section { margin-bottom: 44px; }
-    .section-title {
-      font-size: 1.1rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--brown);
-      border-bottom: 2px solid var(--gold);
-      padding-bottom: 8px;
-      margin-bottom: 20px;
-    }
-
-    /* ── TODAY HERO ── */
-    .today-hero {
-      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 60%, #388E3C 100%);
-      border-radius: 12px;
-      padding: 28px 32px;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      margin-bottom: 28px;
-    }
-    .today-hero.no-avail {
-      background: linear-gradient(135deg, #B71C1C 0%, #C62828 60%, #D32F2F 100%);
-    }
-    .today-hero-left h2 { font-size: 1.6rem; margin-bottom: 6px; }
-    .today-hero-left p { opacity: 0.85; font-size: 0.95rem; font-style: italic; }
-    .today-hero-right {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .hero-stat {
-      text-align: center;
-      background: rgba(255,255,255,0.15);
-      border-radius: 8px;
-      padding: 12px 20px;
-      min-width: 90px;
-    }
-    .hero-stat .num { font-size: 1.8rem; font-weight: bold; }
-    .hero-stat .lbl { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
-
-    /* ── SPECIAL RELEASE BANNER ── */
-    .special-banner {
-      background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%);
-      border: 2px solid var(--gold);
-      border-radius: 10px;
-      padding: 16px 24px;
-      color: #fff;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .special-banner .star { font-size: 1.8rem; }
-    .special-banner .sr-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); }
-    .special-banner .sr-name { font-size: 1.15rem; color: var(--gold2); margin-top: 2px; }
-
-    /* ── BOTTLE CARDS GRID ── */
-    .bottle-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 18px;
-    }
-    .bottle-card {
-      background: var(--cream);
-      border-radius: 10px;
-      border: 2px solid var(--beige2);
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .bottle-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
-    .bottle-card.available { border-top: 4px solid var(--green2); }
-    .bottle-card.unavailable { border-top: 4px solid var(--red2); }
-    .bottle-card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-    .bottle-name { font-size: 1rem; color: var(--brown); line-height: 1.3; }
-    .avail-badge {
-      font-size: 0.7rem;
-      font-weight: bold;
-      letter-spacing: 0.06em;
-      padding: 3px 9px;
-      border-radius: 12px;
-      white-space: nowrap;
-      margin-left: 8px;
-    }
-    .avail-badge.yes { background: #E8F5E9; color: var(--green); border: 1px solid var(--green2); }
-    .avail-badge.no  { background: #FFEBEE; color: var(--red);   border: 1px solid var(--red2); }
-
-    .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .cs { }
-    .cs .cv {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: var(--brown);
-    }
-    .cs .ck {
-      font-size: 0.68rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 1px;
-    }
-    .streak-pill {
-      margin-top: 12px;
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      border-radius: 14px;
-      display: inline-block;
-    }
-    .streak-pill.up   { background: #E8F5E9; color: var(--green); }
-    .streak-pill.down { background: #FFEBEE; color: var(--red); }
-
-    .pred-bar-wrap {
-      margin-top: 14px;
-    }
-    .pred-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .pred-bar-bg {
-      background: var(--beige2);
-      border-radius: 4px;
-      height: 6px;
-      overflow: hidden;
-    }
-    .pred-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--gold), var(--gold2));
-      transition: width 0.8s ease;
-    }
-    .conf-tag {
-      font-size: 0.65rem;
-      color: var(--muted);
-      margin-top: 4px;
-      font-style: italic;
-    }
-
-    /* ── BEST BETS (Tomorrow's Predictions) ── */
-    .best-bets-intro {
-      font-size: 0.85rem; color: var(--muted); margin-bottom: 18px;
-      border-left: 3px solid var(--gold); padding-left: 12px; line-height: 1.6;
-    }
-    .best-bet-row {
-      background: var(--cream); border-radius: 10px;
-      border: 1px solid var(--beige2);
-      padding: 16px 20px; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .best-bet-row:last-of-type { margin-bottom: 0; }
-    .bet-rank {
-      font-size: 1.3rem; font-weight: bold; color: var(--beige2);
-      width: 30px; flex-shrink: 0; text-align: center;
-      font-family: Arial, sans-serif;
-    }
-    .bet-rank.r1 { color: var(--gold2); }
-    .bet-rank.r2 { color: var(--muted); }
-    .bet-rank.r3 { color: var(--muted); }
-    .bet-rank.r4 { color: var(--beige2); }
-    .bet-name {
-      font-size: 0.92rem; color: var(--brown); font-weight: bold;
-      width: 170px; flex-shrink: 0; line-height: 1.35;
-    }
-    .bet-bar-wrap { flex: 1; }
-    .bet-bar-track {
-      background: var(--beige2); border-radius: 4px; height: 8px;
-      overflow: hidden; margin-bottom: 5px;
-    }
-    .bet-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .fill-strong { background: linear-gradient(90deg, var(--green), var(--green2)); }
-    .fill-good   { background: linear-gradient(90deg, #7CB342, #AED581); }
-    .fill-flip   { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
-    .fill-low    { background: linear-gradient(90deg, var(--red2), #EF9A9A); }
-    .bet-bar-meta { display: flex; justify-content: space-between; align-items: center; }
-    .bet-pct { font-size: 1.1rem; font-weight: bold; font-family: Arial, sans-serif; }
-    .pct-strong { color: var(--green); }
-    .pct-good   { color: #7CB342; }
-    .pct-flip   { color: var(--gold); }
-    .pct-low    { color: var(--red); }
-    .bet-verdict {
-      font-size: 0.72rem; font-weight: bold; padding: 3px 10px;
-      border-radius: 12px; text-transform: uppercase;
-      letter-spacing: 0.05em; font-family: Arial, sans-serif;
-    }
-    .verdict-strong { background: #E8F5E9; color: var(--green); border: 1px solid var(--green2); }
-    .verdict-good   { background: #F1F8E9; color: #558B2F; border: 1px solid #AED581; }
-    .verdict-flip   { background: #FFF8E1; color: #E65100; border: 1px solid var(--gold); }
-    .verdict-low    { background: #FFEBEE; color: var(--red); border: 1px solid var(--red2); }
-    .bet-confidence { font-size: 0.68rem; color: var(--muted); font-style: italic; margin-top: 3px; }
-    .bets-note {
-      font-size: 0.78rem; color: var(--muted); margin-top: 16px;
-      font-style: italic; line-height: 1.6;
-      border-left: 2px solid var(--beige2); padding-left: 10px;
-    }
-    .pct-high { color: var(--green); }
-    .pct-mid  { color: var(--gold); }
-    .pct-low  { color: var(--red); }
-
-    /* ── PRICE CHART ── */
-    .chart-container {
-      background: var(--cream);
-      border-radius: 10px;
-      border: 1px solid var(--beige2);
-      padding: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .chart-container canvas { max-height: 320px; }
-
-    /* ── PRICE CARDS ── */
-    .price-intro {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 18px;
-      line-height: 1.6;
-      border-left: 3px solid var(--gold);
-      padding-left: 12px;
-    }
-    .price-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 14px;
-      margin-bottom: 10px;
-    }
-    .price-card {
-      background: var(--cream);
-      border-radius: 10px;
-      border: 1px solid var(--beige2);
-      padding: 18px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .price-card-name {
-      font-size: 0.78rem;
-      color: var(--brown);
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--beige2);
-    }
-    .price-card-main { font-size: 1.8rem; font-weight: bold; color: var(--brown); margin-bottom: 2px; }
-    .price-card-main-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-    .price-card-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 5px; }
-    .price-card-row span:last-child { color: var(--text); font-weight: bold; }
-    .price-delta {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: bold;
-      padding: 3px 9px;
-      border-radius: 12px;
-      margin-top: 10px;
-      font-family: Arial, sans-serif;
-    }
-    .price-delta-none { background: var(--beige2); color: var(--muted); }
-    .price-delta-up   { background: #FFEBEE; color: var(--red); }
-    .price-delta-down { background: #E8F5E9; color: var(--green); }
-    .price-tbd-val { font-size: 1.4rem; font-weight: bold; color: var(--muted); margin-bottom: 2px; }
-    .price-tbd-note { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 8px; }
-    .chart-unlock-note {
-      font-size: 0.78rem;
-      color: var(--muted);
-      background: var(--cream);
-      border: 1px dashed var(--beige2);
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-top: 14px;
-      font-style: italic;
-    }
-
-    /* ── CALENDAR HEATMAP (transposed: rows = bottles, cols = dates) ── */
-    .cal-outer { overflow-x: auto; }
-    .cal-intro {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 16px;
-      line-height: 1.6;
-      border-left: 3px solid var(--gold);
-      padding-left: 12px;
-    }
-    .cal-matrix { display: inline-block; min-width: 100%; }
-    .cal-header-row, .cal-matrix-row {
-      display: flex;
-      align-items: center;
-    }
-    .cal-bottle-label {
-      width: 140px;
-      flex-shrink: 0;
-      font-size: 0.78rem;
-      font-weight: bold;
-      color: var(--brown);
-      padding-right: 12px;
-      text-align: right;
-      white-space: nowrap;
-    }
-    .cal-header-spacer { width: 140px; flex-shrink: 0; }
-    .cal-date-label {
-      width: 32px;
-      flex-shrink: 0;
-      text-align: center;
-      font-size: 0.56rem;
-      color: var(--muted);
-      font-family: Arial, sans-serif;
-      line-height: 1.2;
-      padding: 0 1px;
-    }
-    .cal-matrix-row { margin-bottom: 5px; }
-    .cal-cell {
-      width: 32px;
-      height: 24px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      margin: 0 1px;
-    }
-    .cal-cell-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .cal-cell-available   { background: rgba(76,175,80,0.15); }
-    .cal-cell-unavailable { background: rgba(239,83,80,0.08); }
-    .cal-cell-special     { background: rgba(200,149,42,0.2); }
-    .dot-avail   { background: var(--green2); }
-    .dot-unavail { background: var(--red2); }
-    .dot-special { background: var(--gold); }
-    .dot-nodata  { background: #ccc; }
-    .cal-legend {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-    .cal-legend-item { display: flex; align-items: center; gap: 6px; }
-    .cal-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-
-    /* ── SPECIAL RELEASES LOG ── */
-    .sr-log { display: block; }
-
-    /* ── RARE DROPS RECORD — Latest drop banner ── */
-    .last-drop-strip {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: linear-gradient(135deg, #7B4A00 0%, var(--gold) 55%, var(--gold2) 100%);
-      border-radius: 10px;
-      padding: 14px 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 10px rgba(200,149,42,0.25);
-    }
-    .lds-icon { font-size: 1.6rem; flex-shrink: 0; opacity: 0.85; }
-    .lds-body { flex: 1; }
-    .lds-headline {
-      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
-      color: rgba(255,255,255,0.7); margin-bottom: 2px;
-    }
-    .lds-name { font-size: 1.0rem; font-weight: bold; color: #fff; line-height: 1.3; }
-    .lds-meta { font-size: 0.68rem; color: rgba(255,255,255,0.8); margin-top: 3px; font-style: italic; }
-    .lds-count { flex-shrink: 0; text-align: right; }
-    .lds-count-num { font-size: 1.7rem; font-weight: bold; color: #fff; line-height: 1; }
-    .lds-count-lbl { font-size: 0.58rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
-
-    /* ── RARE DROPS RECORD — Premium release cards ── */
-    .sr-cards-list { display: flex; flex-direction: column; gap: 12px; }
-    .sr-card {
-      background: var(--cream);
-      border-radius: 12px;
-      border: 1px solid var(--beige2);
-      overflow: hidden;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-      transition: transform 0.15s, box-shadow 0.15s;
-      display: flex;
-    }
-    .sr-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-    .sr-card-accent {
-      width: 5px;
-      flex-shrink: 0;
-      background: linear-gradient(180deg, var(--gold) 0%, var(--gold2) 100%);
-    }
-    .sr-card-accent.series-ehtaylor { background: linear-gradient(180deg, #C8952A, #F0C060); }
-    .sr-card-accent.series-blantons  { background: linear-gradient(180deg, #1A237E, #3949AB); }
-    .sr-card-accent.series-weller    { background: linear-gradient(180deg, #2E7D32, #66BB6A); }
-    .sr-card-accent.series-vanwinkle { background: linear-gradient(180deg, #6A1B9A, #AB47BC); }
-    .sr-card-accent.series-stagg     { background: linear-gradient(180deg, #B71C1C, #E53935); }
-    .sr-card-accent.series-sazerac   { background: linear-gradient(180deg, #004D40, #26A69A); }
-    .sr-card-body { padding: 16px 20px; flex: 1; }
-    .sr-card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .sr-card-series-badge {
-      font-size: 0.61rem; font-weight: bold; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--gold); margin-bottom: 3px;
-    }
-    .sr-card-name { font-size: 1.08rem; font-weight: bold; color: var(--brown); line-height: 1.3; }
-    .sr-card-date-col { text-align: right; flex-shrink: 0; }
-    .sr-card-date { font-size: 0.75rem; color: var(--brown); font-weight: bold; white-space: nowrap; }
-    .sr-card-dago { font-size: 0.64rem; color: var(--muted); font-style: italic; margin-top: 3px; }
-    .sr-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .sr-tag {
-      font-size: 0.66rem; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.03em;
-    }
-    .sr-tag-price { background: #E8F5E9; color: var(--green); border: 1px solid var(--green2); }
-    .sr-tag-price.tbd { background: var(--beige2); color: var(--muted); border: 1px solid #bbb; }
-    .sr-tag-size  { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
-    .sr-card-notes {
-      font-size: 0.74rem; color: var(--muted); font-style: italic;
-      margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--beige2);
-    }
-    .sr-chronicle-note {
-      margin-top: 14px; font-size: 0.78rem; color: var(--muted);
-      text-align: center; font-style: italic;
-      border-top: 1px dashed var(--beige2); padding-top: 12px;
-    }
-    .sr-chronicle-note strong { color: var(--gold); }
-    .sr-empty {
-      color: var(--muted); font-style: italic; background: var(--cream);
-      border-radius: 8px; padding: 32px 24px; text-align: center;
-      border: 1px dashed var(--beige2);
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--brown);
-      color: rgba(255,255,255,0.55);
-      text-align: center;
-      padding: 20px 24px;
-      font-size: 0.78rem;
-      border-top: 3px solid var(--gold);
-    }
-    footer a { color: var(--gold); text-decoration: none; }
-
-    /* ── SPECIAL DROP ALERT ── */
+    /* ── SPECIAL DROP ALERT (full-width strip) ── */
     .special-drop-alert {
       display: none;
-      background: linear-gradient(135deg, #7B4700 0%, var(--gold) 50%, #7B4700 100%);
-      background-size: 200% auto;
-      animation: shimmer 3s linear infinite;
-      border-bottom: 3px solid #fff;
-      padding: 18px 24px;
-      text-align: center;
-    }
-    @keyframes shimmer {
-      0%   { background-position: 200% center; }
-      100% { background-position: -200% center; }
+      background: var(--amber);
+      padding: 12px 24px; text-align: center;
     }
     .special-drop-alert.active { display: block; }
     .special-drop-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
+      max-width: 1060px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
     }
-    .special-drop-icon { font-size: 1.8rem; line-height: 1; }
-    .special-drop-text { color: var(--brown); }
-    .special-drop-label {
-      font-size: 0.7rem;
-      font-weight: bold;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      opacity: 0.8;
-    }
-    .special-drop-name {
-      font-size: 1.3rem;
-      font-weight: bold;
-      letter-spacing: 0.03em;
-    }
-    .special-drop-sub {
-      font-size: 0.8rem;
-      opacity: 0.75;
-      font-style: italic;
-    }
+    .special-drop-icon { font-size: 1.1rem; }
+    .special-drop-text { color: #fff; }
+    .special-drop-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; }
+    .special-drop-name  { font-family: var(--display); font-size: 1.05rem; font-weight: 700; margin-top: 1px; }
+    .special-drop-sub   { font-size: 0.72rem; opacity: 0.8; font-style: italic; }
+
+    /* ── MAIN LAYOUT ── */
+    main { max-width: 1060px; margin: 0 auto; padding: 36px 28px 80px; }
+    section { margin-bottom: 52px; }
 
     /* ── LOADING / ERROR ── */
     #loading-msg {
-      text-align: center;
-      padding: 80px 24px;
-      color: var(--muted);
-      font-style: italic;
-      font-size: 1.1rem;
+      text-align: center; padding: 80px 24px;
+      color: var(--muted); font-style: italic; font-size: 1rem;
     }
     #content { display: none; }
 
-    /* ── MOBILE (iPhone) ── */
-    @media (max-width: 430px) {
+    /* ── SECTION HEADER ── */
+    .sec-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .sec-head::after { content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 16px; }
+    .sec-title {
+      font-family: var(--display); font-size: 1.25rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.01em; white-space: nowrap;
+    }
+    .sec-sub { font-size: 0.75rem; color: var(--muted); font-style: italic; margin-left: 10px; white-space: nowrap; }
 
-      /* Header — stack vertically, tighten padding */
-      .header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 16px 16px 12px;
-        gap: 8px;
-      }
-      .header-left h1 { font-size: 1.3rem; }
-      .header-left p  { font-size: 0.78rem; }
-      .header-meta    { text-align: left; }
-      .last-update-pill { font-size: 0.72rem; }
+    /* ── TODAY CARD ── */
+    .today-card {
+      background: var(--surface); border-radius: 18px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-md);
+      overflow: hidden; margin-bottom: 24px;
+    }
+    .today-top {
+      padding: 28px 32px 24px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .today-eyebrow {
+      font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px;
+    }
+    .today-headline {
+      font-family: var(--display); font-size: 2rem; font-weight: 700;
+      color: var(--text); line-height: 1.15; letter-spacing: -0.02em;
+    }
+    .today-headline .hl-green { color: var(--green); }
+    .today-headline .hl-red   { color: var(--red); }
+    .today-sub { font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+    .today-stats { display: flex; gap: 8px; flex-shrink: 0; align-items: flex-start; }
+    .today-stat {
+      text-align: center; padding: 14px 20px; border-radius: 12px; min-width: 70px;
+    }
+    .today-stat.avail   { background: var(--green-bg); border: 1px solid var(--green-bd); }
+    .today-stat.unavail { background: var(--red-bg);   border: 1px solid var(--red-bd); }
+    .today-stat.neutral { background: var(--surface2); border: 1px solid var(--border-s); }
+    .today-stat .big { font-size: 2.2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+    .today-stat.avail   .big { color: var(--green); }
+    .today-stat.unavail .big { color: var(--red); }
+    .today-stat.neutral .big { color: var(--text2); }
+    .today-stat .lbl { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-top: 4px; }
+    /* Special release strip inside today card */
+    .today-sr-strip {
+      display: none; align-items: center; gap: 10px;
+      padding: 13px 32px;
+      background: #FFFBEB; border-top: 1px solid #FDE68A;
+      font-size: 0.8rem; color: var(--text2);
+    }
+    .today-sr-strip.visible { display: flex; }
+    .today-sr-strip strong { font-weight: 600; color: var(--text); }
 
-      /* Venmo bar — stack on mobile */
-      .venmo-bar { padding: 14px 16px; border-radius: 10px; }
-      .venmo-bar::before, .venmo-bar::after { display: none; }
-      .venmo-bar-inner { flex-direction: column; gap: 12px; text-align: center; }
-      .venmo-bar-text { text-align: center; }
+    /* ── VENMO BANNER ── */
+    .venmo-banner {
+      background: var(--text); border-radius: 16px; padding: 22px 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      box-shadow: var(--shadow-md); margin-bottom: 52px;
+      position: relative; overflow: hidden;
+    }
+    .venmo-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(192,115,40,0.22) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .venmo-body { position: relative; z-index: 1; }
+    .venmo-body strong { display: block; font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 3px; }
+    .venmo-body p { font-size: 0.78rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
+    .venmo-btn {
+      flex-shrink: 0; position: relative; z-index: 1;
+      background: var(--amber); color: #fff;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      padding: 11px 24px; border-radius: 8px;
+      text-decoration: none; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(192,115,40,0.4);
+      transition: background 0.2s;
+    }
+    .venmo-btn:hover { background: var(--amber2); }
+
+    /* ── BOTTLE CARDS ── */
+    .bottle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .bottle-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 20px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s, transform 0.2s;
+      display: flex; flex-direction: column; gap: 12px;
+      position: relative;
+    }
+    .bottle-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .bottle-card.avail   { border-left: 3px solid var(--green);   padding-left: 17px; }
+    .bottle-card.unavail { border-left: 3px solid #E5E7EB; padding-left: 17px; }
+    /* Legacy support if JS still generates 'available'/'unavailable' */
+    .bottle-card.available  { border-left: 3px solid var(--green); padding-left: 17px; }
+    .bottle-card.unavailable{ border-left: 3px solid #E5E7EB; padding-left: 17px; }
+    .bottle-card-header, .bottle-card-top {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+    }
+    .bottle-name { font-size: 0.88rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .status-chip, .avail-badge {
+      font-size: 0.62rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+      white-space: nowrap; flex-shrink: 0; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .chip-avail, .avail-badge.yes { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+    .chip-unavail, .avail-badge.no { background: #F9FAFB; color: var(--muted); border: 1px solid #E5E7EB; }
+    .streak-text, .streak-pill { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+    .streak-pill.up   { color: var(--green); }
+    .streak-pill.down { color: var(--red); }
+    /* Card stats mini-grid */
+    .card-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .cs { text-align: center; background: var(--surface2); border-radius: 6px; padding: 6px 4px; }
+    .cv { font-size: 0.78rem; font-weight: 700; color: var(--text2); }
+    .ck { font-size: 0.56rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+    /* Prediction bar */
+    .pred-bar-wrap, .pred-wrap { }
+    .pred-bar-label, .pred-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.68rem; font-weight: 500; color: var(--muted); margin-bottom: 6px;
+    }
+    .pred-bar-bg, .pred-track {
+      background: var(--surface2); border-radius: 4px; height: 5px; overflow: hidden;
+    }
+    .pred-bar-fill, .pred-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--amber2));
+    }
+    .conf-tag { font-size: 0.62rem; color: var(--muted); font-style: italic; margin-top: 4px; }
+    .pct-high { color: var(--green); }
+    .pct-mid  { color: var(--amber); }
+    .pct-low  { color: var(--red); }
+
+    /* ── TOMORROW'S BEST BETS ── */
+    .best-bets-intro {
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6;
+      padding-left: 14px; border-left: 2px solid var(--border-s);
+    }
+    .best-bet-row {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 16px 20px; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 18px;
+      box-shadow: var(--shadow); transition: box-shadow 0.2s;
+    }
+    .best-bet-row:last-of-type { margin-bottom: 0; }
+    .best-bet-row:hover { box-shadow: var(--shadow-md); }
+    .bet-rank {
+      font-size: 0.78rem; font-weight: 700; color: var(--muted);
+      width: 22px; flex-shrink: 0; text-align: center;
+    }
+    .bet-rank.r1 { color: var(--amber); }
+    .bet-name  { font-size: 0.85rem; font-weight: 600; color: var(--text); width: 160px; flex-shrink: 0; line-height: 1.35; }
+    .bet-bar-wrap { flex: 1; }
+    .bet-bar-track { background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 8px; }
+    .bet-bar-fill { height: 100%; border-radius: 4px; }
+    .fill-strong { background: linear-gradient(90deg, #059669, #34D399); }
+    .fill-good   { background: linear-gradient(90deg, #16A34A, #4ADE80); }
+    .fill-flip   { background: linear-gradient(90deg, var(--amber), var(--amber2)); }
+    .fill-low    { background: linear-gradient(90deg, #DC2626, #FCA5A5); }
+    .bet-bar-meta { display: flex; justify-content: space-between; align-items: center; }
+    .bet-pct { font-size: 0.95rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+    .bet-verdict {
+      font-size: 0.62rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .verdict-strong { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+    .verdict-good   { background: #F0FDF4; color: #15803D; border: 1px solid #86EFAC; }
+    .verdict-flip   { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+    .verdict-low    { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd); }
+    .bet-confidence { font-size: 0.65rem; color: var(--muted); font-style: italic; margin-top: 3px; }
+    .bets-note {
+      font-size: 0.76rem; color: var(--muted); margin-top: 14px;
+      font-style: italic; line-height: 1.6;
+      padding-left: 12px; border-left: 2px solid var(--border-s);
+    }
+
+    /* ── PRICE CARDS ── */
+    .price-intro {
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 18px; line-height: 1.6;
+      padding-left: 12px; border-left: 2px solid var(--border-s);
+    }
+    .price-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 12px; margin-bottom: 10px;
+    }
+    .price-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .price-card-name {
+      font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--muted);
+      margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .price-card-main { font-size: 1.7rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+    .price-card-main-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; margin-top: 2px; }
+    .price-card-row { display: flex; justify-content: space-between; font-size: 0.73rem; color: var(--muted); margin-top: 4px; }
+    .price-card-row span:last-child { color: var(--text2); font-weight: 600; }
+    .price-tbd-val  { font-size: 1.4rem; font-weight: 700; color: var(--muted); }
+    .price-tbd-note { font-size: 0.7rem; color: var(--muted); font-style: italic; margin-top: 6px; }
+    .price-delta {
+      display: inline-block; font-size: 0.68rem; font-weight: 600;
+      padding: 3px 8px; border-radius: 6px; margin-top: 8px;
+    }
+    .price-delta-none { background: var(--surface2); color: var(--muted); }
+    .price-delta-up   { background: var(--red-bg);   color: var(--red);   }
+    .price-delta-down { background: var(--green-bg); color: var(--green); }
+    .chart-unlock-note {
+      font-size: 0.76rem; color: var(--muted); background: var(--surface);
+      border: 1px dashed var(--border-s); border-radius: 8px;
+      padding: 12px 16px; margin-top: 12px; font-style: italic;
+    }
+    .chart-container {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .chart-container canvas { max-height: 300px; }
+
+    /* ── CALENDAR ── */
+    .cal-intro {
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6;
+      padding-left: 12px; border-left: 2px solid var(--border-s);
+    }
+    .cal-outer {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 20px 24px;
+      box-shadow: var(--shadow); overflow-x: auto;
+    }
+    .cal-matrix { display: inline-block; min-width: 100%; }
+    .cal-header-row, .cal-matrix-row { display: flex; align-items: center; }
+    .cal-bottle-label {
+      width: 130px; flex-shrink: 0;
+      font-size: 0.72rem; font-weight: 600; color: var(--text2);
+      padding-right: 12px; text-align: right; white-space: nowrap;
+    }
+    .cal-header-spacer { width: 130px; flex-shrink: 0; }
+    .cal-date-label {
+      width: 28px; flex-shrink: 0; text-align: center;
+      font-size: 0.5rem; color: var(--muted); font-family: var(--ui);
+      line-height: 1.2; padding: 0 1px;
+    }
+    .cal-matrix-row { margin-bottom: 4px; }
+    .cal-cell {
+      width: 28px; height: 22px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px; margin: 0 1px;
+    }
+    .cal-cell-dot { width: 10px; height: 10px; border-radius: 3px; }
+    .cal-cell-available   { background: rgba(74,222,128,0.15); }
+    .cal-cell-unavailable { background: rgba(239,68,68,0.07); }
+    .cal-cell-special     { background: rgba(192,115,40,0.18); }
+    .dot-avail   { background: var(--green2); }
+    .dot-unavail { background: var(--red2); }
+    .dot-special { background: var(--amber); }
+    .dot-nodata  { background: #D1D5DB; }
+    .cal-legend {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      margin-top: 16px; font-size: 0.73rem; color: var(--muted);
+    }
+    .cal-legend-item { display: flex; align-items: center; gap: 6px; }
+    .cal-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* ── RARE DROPS RECORD ── */
+    .sr-log { display: block; }
+    .last-drop-strip {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--text); border-radius: var(--radius);
+      padding: 20px 24px; margin-bottom: 14px;
+      box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .last-drop-strip::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(192,115,40,0.25) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .lds-icon { font-size: 1.6rem; flex-shrink: 0; position: relative; z-index: 1; }
+    .lds-body { flex: 1; position: relative; z-index: 1; }
+    .lds-headline { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
+    .lds-name { font-family: var(--display); font-size: 1.05rem; font-weight: 700; color: #fff; }
+    .lds-meta { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 3px; }
+    .lds-count { flex-shrink: 0; text-align: right; position: relative; z-index: 1; }
+    .lds-count-num { font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; }
+    .lds-count-lbl { font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.4); margin-top: 2px; }
+    .sr-cards-list { display: flex; flex-direction: column; gap: 10px; }
+    .sr-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden; display: flex;
+      box-shadow: var(--shadow); transition: box-shadow 0.2s;
+    }
+    .sr-card:hover { box-shadow: var(--shadow-md); }
+    .sr-card-accent { width: 4px; flex-shrink: 0; background: linear-gradient(180deg, var(--amber), var(--amber2)); }
+    .sr-card-accent.series-ehtaylor { background: linear-gradient(180deg, #C07328, #F0C060); }
+    .sr-card-accent.series-blantons  { background: linear-gradient(180deg, #1E3A8A, #3B82F6); }
+    .sr-card-accent.series-weller    { background: linear-gradient(180deg, #166534, #4ADE80); }
+    .sr-card-accent.series-vanwinkle { background: linear-gradient(180deg, #6B21A8, #C084FC); }
+    .sr-card-accent.series-stagg     { background: linear-gradient(180deg, #991B1B, #F87171); }
+    .sr-card-accent.series-sazerac   { background: linear-gradient(180deg, #065F46, #34D399); }
+    .sr-card-body { padding: 16px 20px; flex: 1; }
+    .sr-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .sr-card-series-badge { font-size: 0.61rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); margin-bottom: 3px; }
+    .sr-card-name { font-family: var(--display); font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .sr-card-date-col { text-align: right; flex-shrink: 0; }
+    .sr-card-date { font-size: 0.73rem; font-weight: 600; color: var(--text2); white-space: nowrap; }
+    .sr-card-dago { font-size: 0.63rem; color: var(--muted); margin-top: 2px; }
+    .sr-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sr-tag { font-size: 0.64rem; font-weight: 500; padding: 3px 8px; border-radius: 6px; }
+    .sr-tag-price { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+    .sr-tag-price.tbd { background: var(--surface2); color: var(--muted); border: 1px solid var(--border-s); }
+    .sr-tag-size  { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .sr-card-notes { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .sr-chronicle-note {
+      margin-top: 12px; font-size: 0.76rem; color: var(--muted);
+      text-align: center; font-style: italic;
+      border-top: 1px dashed var(--border-s); padding-top: 12px;
+    }
+    .sr-chronicle-note strong { color: var(--amber); font-style: normal; }
+    .sr-empty {
+      color: var(--muted); font-style: italic; background: var(--surface);
+      border-radius: var(--radius); padding: 32px 24px; text-align: center;
+      border: 1px dashed var(--border-s); font-size: 0.88rem;
+    }
+    /* Special release in-section banner */
+    .special-banner {
+      display: none; align-items: center; gap: 12px;
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: var(--radius); padding: 14px 20px; margin-bottom: 20px;
+    }
+    .special-banner .star { font-size: 1.2rem; }
+    .special-banner .sr-label { font-size: 0.64rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); }
+    .special-banner .sr-name { font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--text); margin-top: 2px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text); color: rgba(255,255,255,0.4);
+      padding: 28px; text-align: center; font-size: 0.72rem; line-height: 1.8;
+    }
+    footer a { color: rgba(255,255,255,0.6); text-decoration: none; }
+    footer a:hover { color: var(--gold); }
+
+    /* ══════════════════════════════════════
+       MOBILE  (@media max-width: 600px)
+    ══════════════════════════════════════ */
+    @media (max-width: 600px) {
+
+      /* Header */
+      .header-bar { padding: 0 16px; }
+      .brand-text h1 { font-size: 0.92rem; }
+      .brand-text p  { display: none; }
+      #days-tracked-hdr { display: none; }
+
+      /* Nav */
+      .nav-inner { padding: 0 8px; }
+      nav a { padding: 12px 12px; font-size: 0.72rem; }
+
+      /* Main */
+      main { padding: 20px 16px 60px; }
+      section { margin-bottom: 36px; }
+      .sec-title { font-size: 1.05rem; }
+
+      /* Today card */
+      .today-top { flex-direction: column; padding: 20px; gap: 18px; }
+      .today-headline { font-size: 1.55rem; }
+      .today-stats { width: 100%; justify-content: flex-start; gap: 8px; }
+      .today-stat { flex: 1; padding: 12px 10px; min-width: 0; }
+      .today-stat .big { font-size: 1.8rem; }
+      .today-sr-strip { padding: 12px 20px; font-size: 0.75rem; }
+
+      /* Venmo */
+      .venmo-banner { flex-direction: column; padding: 18px 20px; gap: 14px; border-radius: 12px; }
       .venmo-btn { width: 100%; text-align: center; }
 
-      /* Nav — horizontally scrollable, no line wrap */
-      .nav-inner {
-        padding: 0 8px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        flex-wrap: nowrap;
-        scrollbar-width: none;
-      }
-      .nav-inner::-webkit-scrollbar { display: none; }
-      nav a { padding: 10px 12px; font-size: 0.72rem; white-space: nowrap; }
-
-      /* Main padding */
-      main { padding: 16px 12px 48px; }
-      section { margin-bottom: 32px; }
-      .section-title { font-size: 0.9rem; }
-
-      /* Special drop alert */
-      .special-drop-alert { padding: 14px 12px; }
-      .special-drop-name  { font-size: 1.1rem; }
-      .special-drop-icon  { font-size: 1.4rem; }
-
-      /* Today hero — stack vertically, full width stats row */
-      .today-hero {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 18px 16px;
-        gap: 14px;
-      }
-      .today-hero-left h2 { font-size: 1.2rem; }
-      .today-hero-left p  { font-size: 0.82rem; }
-      .today-hero-right {
-        width: 100%;
-        justify-content: space-between;
-        gap: 8px;
-      }
-      .hero-stat {
-        flex: 1;
-        min-width: 0;
-        padding: 10px 8px;
-      }
-      .hero-stat .num { font-size: 1.5rem; }
-      .hero-stat .lbl { font-size: 0.65rem; }
-
-      /* Bottle cards — single column */
-      .bottle-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
+      /* Bottle grid */
+      .bottle-grid { grid-template-columns: 1fr; gap: 10px; }
       .bottle-card { padding: 16px; }
-      .bottle-name { font-size: 0.95rem; }
+      .bottle-card.avail, .bottle-card.unavail,
+      .bottle-card.available, .bottle-card.unavailable { padding-left: 13px; }
+      .bottle-name { font-size: 0.85rem; }
+      .card-stats { display: none; } /* hide mini-stats on mobile for cleanliness */
 
-      /* Best Bets — compact on mobile */
-      .best-bet-row { padding: 12px 14px; gap: 10px; }
-      .bet-name { width: 130px; font-size: 0.84rem; }
-      .bet-pct  { font-size: 0.95rem; }
-      .bet-confidence { display: none; } /* verdict pill + % is enough at small widths */
+      /* Best bets */
+      .best-bet-row { padding: 14px 16px; gap: 12px; }
+      .bet-name { width: 120px; font-size: 0.8rem; }
+      .bet-pct  { font-size: 0.88rem; }
+      .bet-confidence { display: none; }
 
-      /* Price chart — reduce height */
-      .chart-container { padding: 14px; }
-      .chart-container canvas { max-height: 220px; }
+      /* Price grid */
+      .price-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .price-card { padding: 14px 16px; }
+      .price-card-main { font-size: 1.4rem; }
 
-      /* Calendar — tighten on mobile */
-      .cal-bottle-label { width: 100px; font-size: 0.68rem; }
-      .cal-header-spacer { width: 100px; }
-      .cal-cell { width: 26px; height: 22px; }
-      .cal-date-label { width: 26px; font-size: 0.5rem; }
-      .cal-cell-dot { width: 10px; height: 10px; }
+      /* Calendar */
+      .cal-outer { padding: 14px 16px; }
+      .cal-bottle-label { width: 90px; font-size: 0.64rem; }
+      .cal-header-spacer { width: 90px; }
+      .cal-cell { width: 22px; height: 18px; }
+      .cal-date-label { width: 22px; font-size: 0.44rem; }
+      .cal-cell-dot { width: 8px; height: 8px; }
 
-      /* Special releases log */
-      .last-drop-strip { padding: 12px 14px; gap: 10px; }
-      .lds-name { font-size: 0.9rem; }
+      /* SR log */
+      .last-drop-strip { padding: 14px 16px; gap: 12px; }
+      .lds-name { font-size: 0.92rem; }
       .sr-card-body { padding: 12px 14px; }
       .sr-card-name { font-size: 0.95rem; }
     }
@@ -783,36 +547,42 @@
 </head>
 <body>
 
+<!-- ═══════════════ HEADER ═══════════════ -->
 <header>
-  <div class="header-inner">
-    <div class="header-left">
-      <h1>🥃 Buffalo Trace Bottle Drops</h1>
-      <p>Gift Shop Availability Tracker — Frankfort, Kentucky</p>
-    </div>
-    <div class="header-meta">
-      <div class="last-update-pill" id="last-update-pill">Loading…</div>
-      <div class="days-tracked" id="days-tracked-hdr"></div>
+  <div class="header-bar">
+    <a href="#today" class="brand">
+      <div class="brand-mark">🥃</div>
+      <div class="brand-text">
+        <h1>Buffalo Trace <span>Bottle Drops</span></h1>
+        <p>Gift Shop Availability Tracker · Frankfort, KY</p>
+      </div>
+    </a>
+    <div class="header-right">
+      <div class="status-live"><span class="status-dot"></span> Live</div>
+      <span id="last-update-pill">Loading…</span>
+      <span id="days-tracked-hdr"></span>
     </div>
   </div>
 </header>
 
+<!-- ═══════════════ NAV ═══════════════ -->
 <nav>
   <div class="nav-inner">
-    <a href="#today">Today</a>
+    <a href="#today" class="active">Today</a>
     <a href="#bottles">Bottles</a>
-    <a href="#predictions">Predictions</a>
+    <a href="#predictions">Best Bets</a>
     <a href="#prices">Prices</a>
     <a href="#calendar">Calendar</a>
     <a href="#specials">Rare Drops</a>
   </div>
 </nav>
 
-<!-- SPECIAL DROP FULL-WIDTH ALERT (shown only when there's a special release today) -->
+<!-- ═══════════════ SPECIAL DROP ALERT ═══════════════ -->
 <div class="special-drop-alert" id="special-drop-alert">
   <div class="special-drop-inner">
     <div class="special-drop-icon">⭐</div>
     <div class="special-drop-text">
-      <div class="special-drop-label">🔔 Special Release Available Today</div>
+      <div class="special-drop-label">Special Release Available Today</div>
       <div class="special-drop-name" id="special-drop-name"></div>
       <div class="special-drop-sub">Head to the gift shop — these go fast!</div>
     </div>
@@ -820,17 +590,18 @@
   </div>
 </div>
 
+<!-- ═══════════════ MAIN ═══════════════ -->
 <main>
   <div id="loading-msg">Loading tracker data…</div>
   <div id="content">
 
-    <!-- TODAY SECTION -->
+    <!-- TODAY -->
     <section id="today">
-      <div class="section-title">Today's Availability</div>
-      <div id="today-hero" class="today-hero">
-        <!-- Injected by JS -->
+      <div class="sec-head">
+        <div class="sec-title">Today at the Distillery</div>
       </div>
-      <div id="special-release-banner" style="display:none" class="special-banner">
+      <div id="today-hero"><!-- Injected by JS --></div>
+      <div id="special-release-banner" class="special-banner" style="display:none">
         <div class="star">⭐</div>
         <div>
           <div class="sr-label">Special Release Available Today</div>
@@ -839,53 +610,56 @@
       </div>
     </section>
 
-    <!-- VENMO SUPPORT BANNER -->
-    <div class="venmo-bar-wrap">
-      <div class="venmo-bar">
-        <div class="venmo-bar-inner">
-          <div class="venmo-bar-text">
-            <strong>This tracker runs on bourbon and tips.</strong>
-            <span>Free to use — keep it alive if it helped you score a bottle.</span>
-          </div>
-          <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="venmo-btn">Tip on Venmo →</a>
-        </div>
+    <!-- VENMO -->
+    <div class="venmo-banner">
+      <div class="venmo-body">
+        <strong>This tracker runs on bourbon and tips.</strong>
+        <p>Free to use — keep it alive if it helped you score a bottle.</p>
       </div>
+      <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="venmo-btn">Tip on Venmo →</a>
     </div>
 
-    <!-- BOTTLE CARDS -->
+    <!-- BOTTLE TRACKER -->
     <section id="bottles">
-      <div class="section-title">Rotating Bottle Tracker</div>
-      <div class="bottle-grid" id="bottle-grid">
-        <!-- Injected by JS -->
+      <div class="sec-head">
+        <div class="sec-title">Rotating Bottles</div>
+        <span class="sec-sub">Available first</span>
       </div>
+      <div class="bottle-grid" id="bottle-grid"><!-- Injected by JS --></div>
     </section>
 
-    <!-- TOMORROW'S BEST BETS -->
+    <!-- BEST BETS -->
     <section id="predictions">
-      <div class="section-title">Tomorrow's Best Bets</div>
-      <p class="best-bets-intro">Bottles ranked by predicted availability tomorrow — highest chance at the top.</p>
+      <div class="sec-head">
+        <div class="sec-title">Tomorrow's Best Bets</div>
+      </div>
+      <p class="best-bets-intro">Ranked by predicted availability — highest chance at the top.</p>
       <div id="best-bets-list"></div>
       <p class="bets-note">
-        Predictions improve as more days are tracked. Right now we're in early-data territory —
-        the model is honest about that. Check back as the tracker matures for sharper forecasts.
+        Predictions improve as more days are tracked. Early-data territory right now —
+        the model is honest about that. Check back as the tracker matures.
       </p>
     </section>
 
-
-    <!-- PRICE SECTION -->
+    <!-- PRICES -->
     <section id="prices">
-      <div class="section-title">Gift Shop Price Tracker</div>
+      <div class="sec-head">
+        <div class="sec-title">Gift Shop Prices</div>
+      </div>
       <p class="price-intro">Current distillery gift shop prices — updated whenever a change is detected.</p>
       <div class="price-grid" id="price-grid"></div>
       <div class="chart-unlock-note" id="price-chart-note" style="display:none"></div>
-      <div class="chart-container" id="price-chart-container" style="display:none; margin-top:20px;">
+      <div class="chart-container" id="price-chart-container" style="display:none; margin-top:16px;">
         <canvas id="price-chart"></canvas>
       </div>
     </section>
 
-    <!-- CALENDAR HEATMAP -->
+    <!-- CALENDAR -->
     <section id="calendar">
-      <div class="section-title">Availability Patterns — Last 30 Days</div>
+      <div class="sec-head">
+        <div class="sec-title">Availability Patterns</div>
+        <span class="sec-sub">Last 30 days</span>
+      </div>
       <p class="cal-intro">Read left to right to see each bottle's availability run. Each row is one bottle.</p>
       <div class="cal-outer">
         <div class="cal-matrix" id="cal-grid"></div>
@@ -893,25 +667,28 @@
       <div class="cal-legend">
         <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green2)"></div> Available</div>
         <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red2)"></div> Unavailable</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--gold)"></div> Special Release</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ccc"></div> No Data</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--amber)"></div> Special Release</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#D1D5DB"></div> No Data</div>
       </div>
     </section>
 
-    <!-- RARE DROPS RECORD -->
+    <!-- RARE DROPS -->
     <section id="specials">
-      <div class="section-title">Rare Drops Record</div>
+      <div class="sec-head">
+        <div class="sec-title">Rare Drops Record</div>
+      </div>
       <div class="sr-log" id="sr-log"></div>
     </section>
 
   </div><!-- #content -->
 </main>
 
+<!-- ═══════════════ FOOTER ═══════════════ -->
 <footer>
   <p>Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from
     <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a>
   </p>
-  <p style="margin-top:6px;">Auto-updated daily each morning &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
+  <p>Auto-updated each morning &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
 </footer>
 
 <script>
@@ -936,100 +713,94 @@ function pctClass(v) {
 function render(data) {
   const { meta, today, bottles, price_history, calendar, special_releases_log } = data;
 
-  // Header
+  // Header meta
   document.getElementById('last-update-pill').textContent = 'Updated ' + fmtDate(meta.last_updated);
   document.getElementById('days-tracked-hdr').textContent = meta.days_tracked + ' day' + (meta.days_tracked !== 1 ? 's' : '') + ' tracked';
 
-  // Today hero
+  // Today hero card
   const availCount = bottles.filter(b => b.available_today === 1).length;
   const hero = document.getElementById('today-hero');
-  hero.className = 'today-hero' + (availCount === 0 ? ' no-avail' : '');
   hero.innerHTML = `
-    <div class="today-hero-left">
-      <h2>${availCount > 0 ? '✅ Bottles Available Today' : '❌ No Rotating Bottles Available'}</h2>
-      <p>${fmtDate(today.date)} &nbsp;·&nbsp; ${today.day_of_week}</p>
-    </div>
-    <div class="today-hero-right">
-      <div class="hero-stat"><div class="num">${availCount}</div><div class="lbl">Available</div></div>
-      <div class="hero-stat"><div class="num">${bottles.length - availCount}</div><div class="lbl">Unavailable</div></div>
-      <div class="hero-stat"><div class="num">${meta.days_tracked}</div><div class="lbl">Days Tracked</div></div>
+    <div class="today-card">
+      <div class="today-top">
+        <div>
+          <div class="today-eyebrow">${today.day_of_week}, ${fmtDate(today.date)}</div>
+          <div class="today-headline">
+            ${availCount > 0
+              ? `<span class="hl-green">Bottles</span> available now`
+              : `<span class="hl-red">No bottles</span> available today`}
+          </div>
+          <div class="today-sub">Gift shop · Frankfort, KY</div>
+        </div>
+        <div class="today-stats">
+          <div class="today-stat avail"><div class="big">${availCount}</div><div class="lbl">Available</div></div>
+          <div class="today-stat unavail"><div class="big">${bottles.length - availCount}</div><div class="lbl">Unavailable</div></div>
+          <div class="today-stat neutral"><div class="big">${meta.days_tracked}</div><div class="lbl">Days Tracked</div></div>
+        </div>
+      </div>
     </div>`;
 
-  // Special release — activate top alert banner
+  // Special release
   if (today.special_release) {
     const alert = document.getElementById('special-drop-alert');
     alert.classList.add('active');
     document.getElementById('special-drop-name').textContent = today.special_release;
-    // Also show the smaller in-section banner
     document.getElementById('special-release-banner').style.display = 'flex';
     document.getElementById('sr-name-today').textContent = today.special_release;
   }
 
-  // Bottle cards — available first, then unavailable (within each group, preserve original order)
+  // Bottle cards — available first
   const grid = document.getElementById('bottle-grid');
   const sortedBottles = [...bottles].sort((a, b) => (b.available_today ?? 0) - (a.available_today ?? 0));
   grid.innerHTML = sortedBottles.map(b => {
     const isAvail = b.available_today === 1;
-    const streakDir = b.streak_direction === 'available' ? 'up' : 'down';
     const streakLabel = isAvail
-      ? `📈 Available ${b.streak} day${b.streak !== 1 ? 's' : ''} in a row`
-      : `📉 Unavailable ${b.streak} day${b.streak !== 1 ? 's' : ''} in a row`;
+      ? `Available ${b.streak} day${b.streak !== 1 ? 's' : ''} running`
+      : `Unavailable ${b.streak} day${b.streak !== 1 ? 's' : ''} running`;
     const pred = b.prediction_tomorrow_pct;
     const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + 'd' : '—';
     return `
-      <div class="bottle-card ${isAvail ? 'available' : 'unavailable'}">
-        <div class="bottle-card-header">
+      <div class="bottle-card ${isAvail ? 'avail' : 'unavail'}">
+        <div class="bottle-card-top">
           <div class="bottle-name">${b.name}</div>
-          <div class="avail-badge ${isAvail ? 'yes' : 'no'}">${isAvail ? 'IN STOCK' : 'OUT'}</div>
+          <span class="status-chip ${isAvail ? 'chip-avail' : 'chip-unavail'}">${isAvail ? 'In Stock' : 'Out'}</span>
         </div>
         <div class="card-stats">
-          <div class="cs"><div class="cv">${fmtPct(b.overall_pct, 0)}</div><div class="ck">Overall Rate</div></div>
-          <div class="cs"><div class="cv">${fmtPct(b.rolling_10d_pct, 0)}</div><div class="ck">10-Day Rate</div></div>
-          <div class="cs"><div class="cv">${fmtPct(b.rolling_30d_pct, 0)}</div><div class="ck">30-Day Rate</div></div>
+          <div class="cs"><div class="cv">${fmtPct(b.overall_pct, 0)}</div><div class="ck">Overall</div></div>
+          <div class="cs"><div class="cv">${fmtPct(b.rolling_10d_pct, 0)}</div><div class="ck">10-Day</div></div>
+          <div class="cs"><div class="cv">${fmtPct(b.rolling_30d_pct, 0)}</div><div class="ck">30-Day</div></div>
           <div class="cs"><div class="cv">${avgBetween}</div><div class="ck">Avg Gap</div></div>
         </div>
-        <div class="streak-pill ${streakDir}">${streakLabel}</div>
-        <div class="pred-bar-wrap">
-          <div class="pred-bar-label">
-            <span>Tomorrow's Prediction</span>
-            <span class="${pctClass(pred)}">${fmtPct(pred, 0)}</span>
-          </div>
-          <div class="pred-bar-bg"><div class="pred-bar-fill" style="width:${pred ?? 0}%"></div></div>
-          <div class="conf-tag">Confidence: ${b.confidence}</div>
+        <div class="streak-text">${streakLabel}</div>
+        <div class="pred-wrap">
+          <div class="pred-label"><span>Tomorrow</span><span class="${pctClass(pred)}">${fmtPct(pred, 0)}</span></div>
+          <div class="pred-track"><div class="pred-fill" style="width:${pred ?? 0}%"></div></div>
         </div>
       </div>`;
   }).join('');
 
-  // Tomorrow's Best Bets — ranked list
+  // Tomorrow's Best Bets
   const betsList = document.getElementById('best-bets-list');
   const sortedBets = [...bottles].sort((a, b) => (b.prediction_tomorrow_pct ?? 0) - (a.prediction_tomorrow_pct ?? 0));
-
   function betVerdict(pct) {
-    if (pct >= 80) return { label: 'Strong Bet',    cls: 'strong' };
-    if (pct >= 65) return { label: 'Worth Checking', cls: 'good'  };
-    if (pct >= 40) return { label: 'Coin Flip',      cls: 'flip'  };
-    return            { label: 'Unlikely',           cls: 'low'   };
+    if (pct >= 80) return { label: 'Strong Bet',     cls: 'strong' };
+    if (pct >= 65) return { label: 'Worth Checking', cls: 'good'   };
+    if (pct >= 40) return { label: 'Coin Flip',      cls: 'flip'   };
+    return            { label: 'Unlikely',            cls: 'low'    };
   }
-
   betsList.innerHTML = sortedBets.map((b, i) => {
     const pred = b.prediction_tomorrow_pct ?? 0;
     const rank = i + 1;
-    const rankCls = rank <= 4 ? `r${rank}` : '';
     const v = betVerdict(pred);
-    // Split bottle name at first space-boundary near middle for two-line display
-    const nameParts = b.name.replace(/\s(\d)/, '\n$1').split('\n');
-    const nameHtml = nameParts.length > 1
-      ? `${nameParts[0]}<br>${nameParts[1]}`
-      : b.name;
     return `
       <div class="best-bet-row">
-        <div class="bet-rank ${rankCls}">#${rank}</div>
-        <div class="bet-name">${nameHtml}</div>
+        <div class="bet-rank ${rank === 1 ? 'r1' : ''}">#${rank}</div>
+        <div class="bet-name">${b.name}</div>
         <div class="bet-bar-wrap">
           <div class="bet-bar-track"><div class="bet-bar-fill fill-${v.cls}" style="width:${Math.round(pred)}%"></div></div>
           <div class="bet-bar-meta">
             <div>
-              <span class="bet-pct pct-${v.cls}">${Math.round(pred)}%</span>
+              <span class="bet-pct">${Math.round(pred)}%</span>
               <div class="bet-confidence">Early data — confidence grows with more tracking days</div>
             </div>
             <span class="bet-verdict verdict-${v.cls}">${v.label}</span>
@@ -1038,41 +809,35 @@ function render(data) {
       </div>`;
   }).join('');
 
-  // Price chart
+  // Price + calendar + SR log
   buildPriceChart(price_history);
-
-  // Calendar heatmap
   buildCalendar(calendar);
 
-  // Special releases log — enhanced card view
   const srLog = document.getElementById('sr-log');
   const srList = special_releases_log || [];
   const today_dt = new Date(today.date + 'T00:00:00');
 
-  // Auto-detect series from name if not provided
   function detectSeries(name) {
     if (!name) return 'Special Release';
-    if (/e\.?h\.?\s*taylor/i.test(name))           return 'E.H. Taylor';
-    if (/blanton/i.test(name))                      return "Blanton's";
-    if (/weller/i.test(name))                       return 'Weller';
-    if (/van winkle|pappy/i.test(name))             return 'Van Winkle';
-    if (/sazerac/i.test(name))                      return 'Sazerac';
-    if (/eagle rare/i.test(name))                   return 'Eagle Rare';
+    if (/e\.?h\.?\s*taylor/i.test(name))            return 'E.H. Taylor';
+    if (/blanton/i.test(name))                       return "Blanton's";
+    if (/weller/i.test(name))                        return 'Weller';
+    if (/van winkle|pappy/i.test(name))              return 'Van Winkle';
+    if (/sazerac/i.test(name))                       return 'Sazerac';
+    if (/eagle rare/i.test(name))                    return 'Eagle Rare';
     if (/george t\.?\s*stagg|stagg jr/i.test(name)) return 'Stagg';
-    if (/buffalo trace/i.test(name))                return 'Buffalo Trace';
+    if (/buffalo trace/i.test(name))                 return 'Buffalo Trace';
     return 'Special Release';
   }
-
   function seriesAccentClass(series) {
-    if (/e\.?h\.?\s*taylor/i.test(series))  return 'series-ehtaylor';
-    if (/blanton/i.test(series))             return 'series-blantons';
-    if (/weller/i.test(series))              return 'series-weller';
-    if (/van winkle|pappy/i.test(series))    return 'series-vanwinkle';
-    if (/stagg/i.test(series))               return 'series-stagg';
-    if (/sazerac/i.test(series))             return 'series-sazerac';
+    if (/e\.?h\.?\s*taylor/i.test(series)) return 'series-ehtaylor';
+    if (/blanton/i.test(series))            return 'series-blantons';
+    if (/weller/i.test(series))             return 'series-weller';
+    if (/van winkle|pappy/i.test(series))   return 'series-vanwinkle';
+    if (/stagg/i.test(series))              return 'series-stagg';
+    if (/sazerac/i.test(series))            return 'series-sazerac';
     return '';
   }
-
   function daysAgoLabel(dateStr) {
     const dt = new Date(dateStr + 'T00:00:00');
     const diff = Math.round((today_dt - dt) / 86400000);
@@ -1081,7 +846,6 @@ function render(data) {
     return diff + ' days ago';
   }
 
-  // Build latest-drop banner
   const sortedSR = [...srList].sort((a, b) => new Date(b.date) - new Date(a.date));
   let bannerHTML = '';
   if (sortedSR.length > 0) {
@@ -1102,7 +866,6 @@ function render(data) {
       </div>`;
   }
 
-  // Build premium release cards
   let cardsHTML = '';
   if (srList.length === 0) {
     cardsHTML = `<div class="sr-empty">🥃 No rare drops logged yet — check back after your next visit to the distillery.</div>`;
@@ -1110,9 +873,7 @@ function render(data) {
     const cardItems = sortedSR.map(sr => {
       const series = sr.series || detectSeries(sr.name);
       const accentCls = seriesAccentClass(series);
-      // Split "Series Name + Release Name" if name contains series keyword
       const seriesLabel = series !== 'Special Release' ? series + ' Series' : 'Special Release';
-      // Try to shorten the display name by removing the series prefix
       const shortName = sr.name.replace(new RegExp(series.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '').trim() || sr.name;
       const priceTag = sr.price != null
         ? `<span class="sr-tag sr-tag-price">$${Number(sr.price).toFixed(2)}</span>`
@@ -1140,13 +901,12 @@ function render(data) {
     const chronicleNote = `<div class="sr-chronicle-note">Entry <strong>#${srList.length}</strong> — the chronicle grows with every rare drop.</div>`;
     cardsHTML = `<div class="sr-cards-list">${cardItems}</div>${chronicleNote}`;
   }
-
   srLog.innerHTML = bannerHTML + cardsHTML;
 }
 
-// ── PRICE SECTION (cards + conditional chart) ────────────────────────────────
+// ── PRICE SECTION ────────────────────────────────────────────────────────────
 function buildPriceChart(history) {
-  const CHART_THRESHOLD = 5; // show chart once we have this many snapshots
+  const CHART_THRESHOLD = 5;
   const BOTTLES = [
     { key: 'blantons',     label: "Blanton's Single Barrel" },
     { key: 'weller107',    label: 'Weller Antique 107' },
@@ -1156,36 +916,26 @@ function buildPriceChart(history) {
     { key: 'sazerac_rye',  label: 'Sazerac Rye' },
     { key: 'bt_bourbon',   label: 'Buffalo Trace Bourbon' },
   ];
-
-  // Filter to rows that are actual price snapshots (have a numeric date)
   const snapshots = history.filter(h => h.date && /^\d{4}/.test(h.date));
-
-  // Build price cards
   const grid = document.getElementById('price-grid');
   grid.innerHTML = BOTTLES.map(b => {
-    // Find all numeric values for this bottle across snapshots
-    const prices = snapshots.map(h => h[b.key]).filter(v => typeof v === 'number' && !isNaN(v));
+    const prices   = snapshots.map(h => h[b.key]).filter(v => typeof v === 'number' && !isNaN(v));
     const current  = prices.length ? prices[prices.length - 1] : null;
     const first    = prices.length ? prices[0] : null;
     const lastSnap = snapshots.length ? fmtDate(snapshots[snapshots.length - 1].date) : '—';
-    const hasTBD   = snapshots.some(h => h[b.key] === 'TBD' || h[b.key] === null);
-
     if (current === null) {
-      // No price recorded yet
       return `<div class="price-card">
         <div class="price-card-name">${b.label}</div>
         <div class="price-tbd-val">TBD</div>
         <div class="price-card-main-label">Current Price</div>
-        <div class="price-tbd-note">Price not yet recorded at the gift shop.</div>
+        <div class="price-tbd-note">Not yet recorded at the gift shop.</div>
       </div>`;
     }
-
     const delta = (first !== null && first !== current) ? current - first : 0;
     let deltaHTML;
     if (delta > 0)      deltaHTML = `<span class="price-delta price-delta-up">▲ +$${delta.toFixed(2)}</span>`;
     else if (delta < 0) deltaHTML = `<span class="price-delta price-delta-down">▼ -$${Math.abs(delta).toFixed(2)}</span>`;
-    else                deltaHTML = `<span class="price-delta price-delta-none">— No change</span>`;
-
+    else                deltaHTML = `<span class="price-delta price-delta-none">No change</span>`;
     return `<div class="price-card">
       <div class="price-card-name">${b.label}</div>
       <div class="price-card-main">$${current.toFixed(2)}</div>
@@ -1196,23 +946,20 @@ function buildPriceChart(history) {
     </div>`;
   }).filter(Boolean).join('');
 
-  // Conditional chart note or chart
-  const noteEl = document.getElementById('price-chart-note');
+  const noteEl        = document.getElementById('price-chart-note');
   const chartContainer = document.getElementById('price-chart-container');
-  const remaining = CHART_THRESHOLD - snapshots.length;
-
+  const remaining     = CHART_THRESHOLD - snapshots.length;
   if (snapshots.length >= CHART_THRESHOLD) {
-    // Enough data — show the chart
     chartContainer.style.display = 'block';
     noteEl.style.display = 'none';
-    const COLORS = ['#C8952A','#2E7D32','#1565C0','#C62828','#6A1B9A','#00695C','#EF6C00','#37474F'];
-    const labels = snapshots.map(h => fmtDate(h.date));
+    const COLORS = ['#C07328','#166534','#1D4ED8','#991B1B','#6B21A8','#065F46','#EA580C'];
+    const labels   = snapshots.map(h => fmtDate(h.date));
     const datasets = BOTTLES.map((b, i) => ({
       label: b.label,
-      data: snapshots.map(h => typeof h[b.key] === 'number' ? h[b.key] : null),
+      data:  snapshots.map(h => typeof h[b.key] === 'number' ? h[b.key] : null),
       borderColor: COLORS[i % COLORS.length],
-      backgroundColor: COLORS[i % COLORS.length] + '22',
-      tension: 0.3, pointRadius: 5, spanGaps: true,
+      backgroundColor: COLORS[i % COLORS.length] + '18',
+      tension: 0.3, pointRadius: 4, spanGaps: true,
     })).filter(ds => ds.data.some(v => v !== null));
     const ctx = document.getElementById('price-chart').getContext('2d');
     new Chart(ctx, {
@@ -1222,83 +969,66 @@ function buildPriceChart(history) {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: { labels: { color: '#5C2C0A', font: { family: 'Georgia', size: 11 } } },
+          legend: { labels: { color: '#5C4A32', font: { family: 'Inter, sans-serif', size: 11 } } },
           tooltip: { callbacks: { label: c => c.parsed.y !== null ? `${c.dataset.label}: $${c.parsed.y.toFixed(2)}` : null } }
         },
         scales: {
-          x: { ticks: { color: '#7A5C3A', font: { size: 10 } }, grid: { color: '#E8DDD0' } },
-          y: { ticks: { color: '#7A5C3A', font: { size: 10 }, callback: v => '$' + v.toFixed(0) }, grid: { color: '#E8DDD0' } }
+          x: { ticks: { color: '#9C8B75', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+          y: { ticks: { color: '#9C8B75', font: { size: 10 }, callback: v => '$' + v.toFixed(0) }, grid: { color: 'rgba(0,0,0,0.05)' } }
         }
       }
     });
   } else {
-    // Not enough data yet — show the unlock note
     noteEl.style.display = 'block';
-    noteEl.innerHTML = `📈 Price trend chart unlocks after ${CHART_THRESHOLD} snapshots — ${remaining} more to go. Check back as prices are recorded over time.`;
+    noteEl.innerHTML = `📈 Price trend chart unlocks after ${CHART_THRESHOLD} snapshots — ${remaining} more to go.`;
   }
 }
 
-// ── CALENDAR HEATMAP (transposed: rows = bottles, columns = dates) ───────────
+// ── CALENDAR ────────────────────────────────────────────────────────────────
 function buildCalendar(calendar) {
   const grid = document.getElementById('cal-grid');
   const KEYS = ['blantons','weller107','ehtaylor_sb','eagle_rare'];
-  const LABELS = {
-    blantons:    "Blanton's",
-    weller107:   'Weller 107',
-    ehtaylor_sb: 'E.H. Taylor SB',
-    eagle_rare:  'Eagle Rare'
-  };
-
+  const LABELS = { blantons: "Blanton's", weller107: 'Weller 107', ehtaylor_sb: 'E.H. Taylor SB', eagle_rare: 'Eagle Rare' };
   const recent = calendar.slice(-30);
 
-  // Header row — dates
   const headerRow = `<div class="cal-header-row">
     <div class="cal-header-spacer"></div>
     ${recent.map(d => `<div class="cal-date-label">${d.date.slice(5)}</div>`).join('')}
   </div>`;
 
-  // Rotating bottle rows — no special release logic here, just available/unavailable
   const bottleRows = KEYS.map(key => {
     const cells = recent.map(day => {
       const val = day[key];
-      if (val === null || val === undefined) {
+      if (val === null || val === undefined)
         return `<div class="cal-cell cal-cell-unavailable" title="${fmtDate(day.date)}"><div class="cal-cell-dot dot-nodata"></div></div>`;
-      }
       const cellClass = val ? 'cal-cell-available' : 'cal-cell-unavailable';
       const dotClass  = val ? 'dot-avail'          : 'dot-unavail';
       return `<div class="cal-cell ${cellClass}" title="${fmtDate(day.date)}"><div class="cal-cell-dot ${dotClass}"></div></div>`;
     }).join('');
     return `<div class="cal-matrix-row">
-      <div class="cal-bottle-label">${LABELS[key]}</div>
-      ${cells}
+      <div class="cal-bottle-label">${LABELS[key]}</div>${cells}
     </div>`;
   }).join('');
 
-  // Divider row between rotating bottles and special releases
-  const dividerRow = `<div class="cal-matrix-row" style="margin: 8px 0 6px;">
-    <div class="cal-bottle-label" style="color:var(--muted);font-size:0.62rem;font-weight:normal;letter-spacing:0.06em;text-transform:uppercase;">Special</div>
-    <div style="flex:1; height:1px; background:var(--beige2); margin: 0 2px;"></div>
+  const dividerRow = `<div class="cal-matrix-row" style="margin:8px 0 6px;">
+    <div class="cal-bottle-label" style="color:var(--muted);font-size:0.58rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;">Special</div>
+    <div style="flex:1;height:1px;background:var(--border-s);margin:0 2px;"></div>
   </div>`;
 
-  // Special releases row — one gold dot on days with a special release, empty otherwise
   const srCells = recent.map(day => {
-    if (day.special_release) {
+    if (day.special_release)
       return `<div class="cal-cell cal-cell-special" title="${fmtDate(day.date)} · ${day.special_release}"><div class="cal-cell-dot dot-special"></div></div>`;
-    }
     return `<div class="cal-cell" title="${fmtDate(day.date)}"><div class="cal-cell-dot" style="background:transparent"></div></div>`;
   }).join('');
 
   const srRow = `<div class="cal-matrix-row">
-    <div class="cal-bottle-label">Special Releases</div>
-    ${srCells}
+    <div class="cal-bottle-label">Special Releases</div>${srCells}
   </div>`;
 
   grid.innerHTML = headerRow + bottleRows + dividerRow + srRow;
 }
 
-// ── FETCH DATA & INIT ────────────────────────────────────────────────────────
-// Inline data ensures the page renders when opened locally (file:// protocol
-// blocks fetch). On a live server, fetch will load the latest data.json instead.
+// ── FETCH + INIT ─────────────────────────────────────────────────────────────
 const INLINE_DATA = {"meta":{"last_updated":"2026-03-16","days_tracked":4,"site_version":"1.0","data_source":"https://www.buffalotracedistillery.com/visit-us/product-availability/"},"today":{"date":"2026-03-16","day_of_week":"Monday","last_site_update":"3.16.2026 at 7:20am EST","special_release":null,"notes":""},"bottles":[{"name":"Blanton's Single Barrel","key":"blantons","available_today":0,"streak":1,"streak_direction":"unavailable","overall_pct":50.0,"rolling_10d_pct":50.0,"rolling_30d_pct":50.0,"avg_days_between_releases":2.0,"prediction_tomorrow_pct":53.1,"confidence":"Prior only","last_seen":"2026-03-15","prior_frequency":0.63},{"name":"Weller Antique 107","key":"weller107","available_today":0,"streak":2,"streak_direction":"unavailable","overall_pct":25.0,"rolling_10d_pct":25.0,"rolling_30d_pct":25.0,"avg_days_between_releases":null,"prediction_tomorrow_pct":54.4,"confidence":"Prior only","last_seen":"2026-03-14","prior_frequency":0.75},{"name":"E.H. Taylor Small Batch","key":"ehtaylor_sb","available_today":1,"streak":3,"streak_direction":"available","overall_pct":75.0,"rolling_10d_pct":75.0,"rolling_30d_pct":75.0,"avg_days_between_releases":1.0,"prediction_tomorrow_pct":95.6,"confidence":"Prior only","last_seen":"2026-03-16","prior_frequency":0.93},{"name":"Eagle Rare 10-Year","key":"eagle_rare","available_today":1,"streak":1,"streak_direction":"available","overall_pct":50.0,"rolling_10d_pct":50.0,"rolling_30d_pct":50.0,"avg_days_between_releases":3.0,"prediction_tomorrow_pct":28.1,"confidence":"Prior only","last_seen":"2026-03-16","prior_frequency":0.17}],"calendar":[{"date":"2026-03-13","blantons":1,"weller107":0,"ehtaylor_sb":0,"eagle_rare":1,"special_release":"E.H. Taylor Straight Rye"},{"date":"2026-03-14","blantons":0,"weller107":1,"ehtaylor_sb":1,"eagle_rare":0,"special_release":null},{"date":"2026-03-15","blantons":1,"weller107":0,"ehtaylor_sb":1,"eagle_rare":0,"special_release":null},{"date":"2026-03-16","blantons":0,"weller107":0,"ehtaylor_sb":1,"eagle_rare":1,"special_release":null}],"price_history":[{"date":"2026-03-14 00:00:00","blantons":74.99,"weller107":"TBD","ehtaylor_sb":59.99,"eagle_rare":43,"weller_sr":30,"ehtaylor_rye":"TBD","sazerac_rye":30,"bt_bourbon":27,"wheatley_vodka":"TBD","bt_cream":"TBD"}],"special_releases_log":[{"date":"2026-03-13","name":"E.H. Taylor Straight Rye"}]};
 
 function initWithData(data) {
