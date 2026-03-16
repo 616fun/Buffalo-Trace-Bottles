@@ -79,36 +79,77 @@
     }
 
     /* ── VENMO BANNER ── */
-    .venmo-bar {
-      background: #008CFF;
-      padding: 10px 24px;
-      text-align: center;
+    .venmo-bar-wrap {
+      margin-bottom: 44px;
     }
-    .venmo-bar a {
+    .venmo-bar {
+      background: linear-gradient(135deg, #7B4A00 0%, var(--gold) 55%, var(--gold2) 100%);
+      padding: 16px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    .venmo-bar::before {
+      content: '🥃';
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.8rem;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .venmo-bar::after {
+      content: '🥃';
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.8rem;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .venmo-bar-inner {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      color: #fff;
-      text-decoration: none;
-      font-family: Georgia, serif;
-      font-size: 0.88rem;
-      letter-spacing: 0.02em;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
     }
-    .venmo-bar a:hover { opacity: 0.88; }
-    .venmo-logo {
-      background: #fff;
-      color: #008CFF;
-      font-weight: bold;
-      font-size: 0.75rem;
-      padding: 2px 7px;
-      border-radius: 4px;
-      letter-spacing: 0.05em;
-      font-family: Arial, sans-serif;
+    .venmo-bar-text {
+      text-align: left;
     }
-    .venmo-bar .venmo-cta {
+    .venmo-bar-text strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--brown);
+      letter-spacing: 0.01em;
+    }
+    .venmo-bar-text span {
+      display: block;
+      font-size: 0.78rem;
+      color: rgba(62,28,0,0.72);
       font-style: italic;
-      opacity: 0.9;
+      margin-top: 2px;
     }
+    .venmo-btn {
+      background: var(--brown);
+      color: var(--gold2);
+      font-size: 0.78rem;
+      font-weight: bold;
+      padding: 10px 22px;
+      border-radius: 24px;
+      text-decoration: none;
+      white-space: nowrap;
+      font-family: Arial, sans-serif;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+    .venmo-btn:hover { opacity: 0.85; }
 
     /* ── NAV ── */
     nav {
@@ -290,26 +331,63 @@
       font-style: italic;
     }
 
-    /* ── PREDICTIONS TABLE ── */
-    .pred-table-wrap { overflow-x: auto; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
+    /* ── BEST BETS (Tomorrow's Predictions) ── */
+    .best-bets-intro {
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 18px;
+      border-left: 3px solid var(--gold); padding-left: 12px; line-height: 1.6;
     }
-    th {
-      background: var(--brown);
-      color: var(--gold2);
-      padding: 10px 14px;
-      text-align: left;
-      font-size: 0.75rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+    .best-bet-row {
+      background: var(--cream); border-radius: 10px;
+      border: 1px solid var(--beige2);
+      padding: 16px 20px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    td { padding: 10px 14px; border-bottom: 1px solid var(--beige2); }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--beige); }
-    .pct-cell { font-weight: bold; }
+    .best-bet-row:last-of-type { margin-bottom: 0; }
+    .bet-rank {
+      font-size: 1.3rem; font-weight: bold; color: var(--beige2);
+      width: 30px; flex-shrink: 0; text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    .bet-rank.r1 { color: var(--gold2); }
+    .bet-rank.r2 { color: var(--muted); }
+    .bet-rank.r3 { color: var(--muted); }
+    .bet-rank.r4 { color: var(--beige2); }
+    .bet-name {
+      font-size: 0.92rem; color: var(--brown); font-weight: bold;
+      width: 170px; flex-shrink: 0; line-height: 1.35;
+    }
+    .bet-bar-wrap { flex: 1; }
+    .bet-bar-track {
+      background: var(--beige2); border-radius: 4px; height: 8px;
+      overflow: hidden; margin-bottom: 5px;
+    }
+    .bet-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .fill-strong { background: linear-gradient(90deg, var(--green), var(--green2)); }
+    .fill-good   { background: linear-gradient(90deg, #7CB342, #AED581); }
+    .fill-flip   { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+    .fill-low    { background: linear-gradient(90deg, var(--red2), #EF9A9A); }
+    .bet-bar-meta { display: flex; justify-content: space-between; align-items: center; }
+    .bet-pct { font-size: 1.1rem; font-weight: bold; font-family: Arial, sans-serif; }
+    .pct-strong { color: var(--green); }
+    .pct-good   { color: #7CB342; }
+    .pct-flip   { color: var(--gold); }
+    .pct-low    { color: var(--red); }
+    .bet-verdict {
+      font-size: 0.72rem; font-weight: bold; padding: 3px 10px;
+      border-radius: 12px; text-transform: uppercase;
+      letter-spacing: 0.05em; font-family: Arial, sans-serif;
+    }
+    .verdict-strong { background: #E8F5E9; color: var(--green); border: 1px solid var(--green2); }
+    .verdict-good   { background: #F1F8E9; color: #558B2F; border: 1px solid #AED581; }
+    .verdict-flip   { background: #FFF8E1; color: #E65100; border: 1px solid var(--gold); }
+    .verdict-low    { background: #FFEBEE; color: var(--red); border: 1px solid var(--red2); }
+    .bet-confidence { font-size: 0.68rem; color: var(--muted); font-style: italic; margin-top: 3px; }
+    .bets-note {
+      font-size: 0.78rem; color: var(--muted); margin-top: 16px;
+      font-style: italic; line-height: 1.6;
+      border-left: 2px solid var(--beige2); padding-left: 10px;
+    }
     .pct-high { color: var(--green); }
     .pct-mid  { color: var(--gold); }
     .pct-low  { color: var(--red); }
@@ -324,34 +402,122 @@
     }
     .chart-container canvas { max-height: 320px; }
 
-    /* ── CALENDAR HEATMAP ── */
-    .cal-outer { overflow-x: auto; }
-    .cal-grid {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      max-width: 100%;
+    /* ── PRICE CARDS ── */
+    .price-intro {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.6;
+      border-left: 3px solid var(--gold);
+      padding-left: 12px;
     }
-    .cal-day {
-      width: 36px;
-      border-radius: 6px;
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+    .price-card {
       background: var(--cream);
+      border-radius: 10px;
       border: 1px solid var(--beige2);
-      padding: 5px 4px 4px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .price-card-name {
+      font-size: 0.78rem;
+      color: var(--brown);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--beige2);
+    }
+    .price-card-main { font-size: 1.8rem; font-weight: bold; color: var(--brown); margin-bottom: 2px; }
+    .price-card-main-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+    .price-card-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 5px; }
+    .price-card-row span:last-child { color: var(--text); font-weight: bold; }
+    .price-delta {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 3px 9px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .price-delta-none { background: var(--beige2); color: var(--muted); }
+    .price-delta-up   { background: #FFEBEE; color: var(--red); }
+    .price-delta-down { background: #E8F5E9; color: var(--green); }
+    .price-tbd-val { font-size: 1.4rem; font-weight: bold; color: var(--muted); margin-bottom: 2px; }
+    .price-tbd-note { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 8px; }
+    .chart-unlock-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: var(--cream);
+      border: 1px dashed var(--beige2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-style: italic;
+    }
+
+    /* ── CALENDAR HEATMAP (transposed: rows = bottles, cols = dates) ── */
+    .cal-outer { overflow-x: auto; }
+    .cal-intro {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+      border-left: 3px solid var(--gold);
+      padding-left: 12px;
+    }
+    .cal-matrix { display: inline-block; min-width: 100%; }
+    .cal-header-row, .cal-matrix-row {
+      display: flex;
+      align-items: center;
+    }
+    .cal-bottle-label {
+      width: 140px;
+      flex-shrink: 0;
+      font-size: 0.78rem;
+      font-weight: bold;
+      color: var(--brown);
+      padding-right: 12px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .cal-header-spacer { width: 140px; flex-shrink: 0; }
+    .cal-date-label {
+      width: 32px;
+      flex-shrink: 0;
       text-align: center;
-      font-size: 0.65rem;
+      font-size: 0.56rem;
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      line-height: 1.2;
+      padding: 0 1px;
     }
-    .cal-day .cd-date { color: var(--muted); font-size: 0.6rem; margin-bottom: 4px; }
-    .cal-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin: 2px auto;
+    .cal-matrix-row { margin-bottom: 5px; }
+    .cal-cell {
+      width: 32px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      margin: 0 1px;
     }
-    .dot-green { background: var(--green2); }
-    .dot-red   { background: var(--red2); }
-    .dot-gray  { background: #ccc; }
-    .dot-gold  { background: var(--gold); }
+    .cal-cell-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .cal-cell-available   { background: rgba(76,175,80,0.15); }
+    .cal-cell-unavailable { background: rgba(239,83,80,0.08); }
+    .cal-cell-special     { background: rgba(200,149,42,0.2); }
+    .dot-avail   { background: var(--green2); }
+    .dot-unavail { background: var(--red2); }
+    .dot-special { background: var(--gold); }
+    .dot-nodata  { background: #ccc; }
     .cal-legend {
       display: flex;
       gap: 16px;
@@ -363,130 +529,92 @@
     .cal-legend-item { display: flex; align-items: center; gap: 6px; }
     .cal-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-    /* ── STATS SUMMARY ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 14px;
-    }
-    .stat-card {
-      background: var(--cream);
-      border: 1px solid var(--beige2);
-      border-radius: 8px;
-      padding: 16px 18px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    }
-    .stat-card .sc-val { font-size: 1.6rem; font-weight: bold; color: var(--brown); }
-    .stat-card .sc-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-top: 4px; }
 
     /* ── SPECIAL RELEASES LOG ── */
     .sr-log { display: block; }
 
-    .sr-insights-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .sr-insight-card {
-      background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%);
-      border: 1px solid var(--gold);
+    /* ── RARE DROPS RECORD — Latest drop banner ── */
+    .last-drop-strip {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #7B4A00 0%, var(--gold) 55%, var(--gold2) 100%);
       border-radius: 10px;
-      padding: 14px 18px;
-      color: #fff;
+      padding: 14px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px rgba(200,149,42,0.25);
     }
-    .sr-insight-card .sic-val {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--gold2);
-      line-height: 1.2;
+    .lds-icon { font-size: 1.6rem; flex-shrink: 0; opacity: 0.85; }
+    .lds-body { flex: 1; }
+    .lds-headline {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.7); margin-bottom: 2px;
     }
-    .sr-insight-card .sic-lbl {
-      font-size: 0.67rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.6);
-      margin-top: 4px;
-    }
+    .lds-name { font-size: 1.0rem; font-weight: bold; color: #fff; line-height: 1.3; }
+    .lds-meta { font-size: 0.68rem; color: rgba(255,255,255,0.8); margin-top: 3px; font-style: italic; }
+    .lds-count { flex-shrink: 0; text-align: right; }
+    .lds-count-num { font-size: 1.7rem; font-weight: bold; color: #fff; line-height: 1; }
+    .lds-count-lbl { font-size: 0.58rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
-    .sr-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
+    /* ── RARE DROPS RECORD — Premium release cards ── */
+    .sr-cards-list { display: flex; flex-direction: column; gap: 12px; }
     .sr-card {
       background: var(--cream);
-      border-radius: 10px;
-      border: 2px solid var(--beige2);
-      border-top: 4px solid var(--gold);
-      padding: 18px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-radius: 12px;
+      border: 1px solid var(--beige2);
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
       transition: transform 0.15s, box-shadow 0.15s;
+      display: flex;
     }
-    .sr-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
-    .sr-card-top {
+    .sr-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .sr-card-accent {
+      width: 5px;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, var(--gold) 0%, var(--gold2) 100%);
+    }
+    .sr-card-accent.series-ehtaylor { background: linear-gradient(180deg, #C8952A, #F0C060); }
+    .sr-card-accent.series-blantons  { background: linear-gradient(180deg, #1A237E, #3949AB); }
+    .sr-card-accent.series-weller    { background: linear-gradient(180deg, #2E7D32, #66BB6A); }
+    .sr-card-accent.series-vanwinkle { background: linear-gradient(180deg, #6A1B9A, #AB47BC); }
+    .sr-card-accent.series-stagg     { background: linear-gradient(180deg, #B71C1C, #E53935); }
+    .sr-card-accent.series-sazerac   { background: linear-gradient(180deg, #004D40, #26A69A); }
+    .sr-card-body { padding: 16px 20px; flex: 1; }
+    .sr-card-header {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 12px;
     }
-    .sr-card-icon { font-size: 1.3rem; line-height: 1; flex-shrink: 0; }
-    .sr-card-name {
-      font-size: 1.05rem;
-      color: var(--brown);
-      line-height: 1.3;
-      flex: 1;
+    .sr-card-series-badge {
+      font-size: 0.61rem; font-weight: bold; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--gold); margin-bottom: 3px;
     }
-    .sr-card-date-block { text-align: right; flex-shrink: 0; }
-    .sr-card-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
-    .sr-card-days-ago { font-size: 0.64rem; color: var(--gold); font-style: italic; margin-top: 2px; }
-    .sr-card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .sr-card-name { font-size: 1.08rem; font-weight: bold; color: var(--brown); line-height: 1.3; }
+    .sr-card-date-col { text-align: right; flex-shrink: 0; }
+    .sr-card-date { font-size: 0.75rem; color: var(--brown); font-weight: bold; white-space: nowrap; }
+    .sr-card-dago { font-size: 0.64rem; color: var(--muted); font-style: italic; margin-top: 3px; }
+    .sr-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .sr-tag {
-      font-size: 0.67rem;
-      padding: 3px 9px;
-      border-radius: 12px;
-      letter-spacing: 0.03em;
+      font-size: 0.66rem; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.03em;
     }
-    .sr-tag-series {
-      background: rgba(200,149,42,0.15);
-      color: var(--brown);
-      border: 1px solid rgba(200,149,42,0.45);
-    }
-    .sr-tag-price {
-      background: #E8F5E9;
-      color: var(--green);
-      border: 1px solid var(--green2);
-    }
-    .sr-tag-price.tbd {
-      background: var(--beige2);
-      color: var(--muted);
-      border: 1px solid #bbb;
-    }
-    .sr-tag-size {
-      background: #E3F2FD;
-      color: #1565C0;
-      border: 1px solid #90CAF9;
-    }
+    .sr-tag-price { background: #E8F5E9; color: var(--green); border: 1px solid var(--green2); }
+    .sr-tag-price.tbd { background: var(--beige2); color: var(--muted); border: 1px solid #bbb; }
+    .sr-tag-size  { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
     .sr-card-notes {
-      font-size: 0.75rem;
-      color: var(--muted);
-      font-style: italic;
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid var(--beige2);
+      font-size: 0.74rem; color: var(--muted); font-style: italic;
+      margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--beige2);
     }
+    .sr-chronicle-note {
+      margin-top: 14px; font-size: 0.78rem; color: var(--muted);
+      text-align: center; font-style: italic;
+      border-top: 1px dashed var(--beige2); padding-top: 12px;
+    }
+    .sr-chronicle-note strong { color: var(--gold); }
     .sr-empty {
-      color: var(--muted);
-      font-style: italic;
-      background: var(--cream);
-      border-radius: 8px;
-      padding: 24px;
-      text-align: center;
+      color: var(--muted); font-style: italic; background: var(--cream);
+      border-radius: 8px; padding: 32px 24px; text-align: center;
       border: 1px dashed var(--beige2);
     }
 
@@ -570,9 +698,12 @@
       .header-meta    { text-align: left; }
       .last-update-pill { font-size: 0.72rem; }
 
-      /* Venmo bar — shrink text so it fits one line */
-      .venmo-bar { padding: 9px 12px; }
-      .venmo-bar a { font-size: 0.78rem; gap: 7px; }
+      /* Venmo bar — stack on mobile */
+      .venmo-bar { padding: 14px 16px; border-radius: 10px; }
+      .venmo-bar::before, .venmo-bar::after { display: none; }
+      .venmo-bar-inner { flex-direction: column; gap: 12px; text-align: center; }
+      .venmo-bar-text { text-align: center; }
+      .venmo-btn { width: 100%; text-align: center; }
 
       /* Nav — horizontally scrollable, no line wrap */
       .nav-inner {
@@ -625,35 +756,27 @@
       .bottle-card { padding: 16px; }
       .bottle-name { font-size: 0.95rem; }
 
-      /* Predictions table — hide rate columns, tighten padding */
-      .pred-table-wrap { border-radius: 8px; overflow: hidden; }
-      table { font-size: 0.72rem; min-width: unset; width: 100%; }
-      th { padding: 7px 6px; letter-spacing: 0.02em; }
-      td { padding: 7px 6px; }
-      th:nth-child(5), td:nth-child(5),
-      th:nth-child(6), td:nth-child(6) { display: none; }
+      /* Best Bets — compact on mobile */
+      .best-bet-row { padding: 12px 14px; gap: 10px; }
+      .bet-name { width: 130px; font-size: 0.84rem; }
+      .bet-pct  { font-size: 0.95rem; }
+      .bet-confidence { display: none; } /* verdict pill + % is enough at small widths */
 
       /* Price chart — reduce height */
       .chart-container { padding: 14px; }
       .chart-container canvas { max-height: 220px; }
 
-      /* Calendar — smaller day cells to fit more per row */
-      .cal-day { width: 30px; padding: 4px 2px 3px; }
-      .cal-day .cd-date { font-size: 0.52rem; }
-      .cal-dot { width: 8px; height: 8px; }
-
-      /* Stats — 2 columns on mobile */
-      .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .stat-card { padding: 12px 14px; }
-      .stat-card .sc-val { font-size: 1.3rem; }
-      .stat-card .sc-lbl { font-size: 0.65rem; }
+      /* Calendar — tighten on mobile */
+      .cal-bottle-label { width: 100px; font-size: 0.68rem; }
+      .cal-header-spacer { width: 100px; }
+      .cal-cell { width: 26px; height: 22px; }
+      .cal-date-label { width: 26px; font-size: 0.5rem; }
+      .cal-cell-dot { width: 10px; height: 10px; }
 
       /* Special releases log */
-      .sr-insights-row { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .sr-insight-card { padding: 10px 12px; }
-      .sr-insight-card .sic-val { font-size: 1.2rem; }
-      .sr-cards-grid { grid-template-columns: 1fr; }
-      .sr-card { padding: 14px 14px; }
+      .last-drop-strip { padding: 12px 14px; gap: 10px; }
+      .lds-name { font-size: 0.9rem; }
+      .sr-card-body { padding: 12px 14px; }
       .sr-card-name { font-size: 0.95rem; }
     }
   </style>
@@ -673,13 +796,6 @@
   </div>
 </header>
 
-<div class="venmo-bar">
-  <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener">
-    <span class="venmo-logo">venmo</span>
-    <span class="venmo-cta">Find this page useful? Share a drink with me! 🥃🥃</span>
-  </a>
-</div>
-
 <nav>
   <div class="nav-inner">
     <a href="#today">Today</a>
@@ -687,7 +803,7 @@
     <a href="#predictions">Predictions</a>
     <a href="#prices">Prices</a>
     <a href="#calendar">Calendar</a>
-    <a href="#specials">Special Releases</a>
+    <a href="#specials">Rare Drops</a>
   </div>
 </nav>
 
@@ -723,6 +839,19 @@
       </div>
     </section>
 
+    <!-- VENMO SUPPORT BANNER -->
+    <div class="venmo-bar-wrap">
+      <div class="venmo-bar">
+        <div class="venmo-bar-inner">
+          <div class="venmo-bar-text">
+            <strong>This tracker runs on bourbon and tips.</strong>
+            <span>Free to use — keep it alive if it helped you score a bottle.</span>
+          </div>
+          <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="venmo-btn">Tip on Venmo →</a>
+        </div>
+      </div>
+    </div>
+
     <!-- BOTTLE CARDS -->
     <section id="bottles">
       <div class="section-title">Rotating Bottle Tracker</div>
@@ -731,67 +860,47 @@
       </div>
     </section>
 
-    <!-- PREDICTIONS TABLE -->
+    <!-- TOMORROW'S BEST BETS -->
     <section id="predictions">
-      <div class="section-title">Tomorrow's Predictions</div>
-      <div class="pred-table-wrap">
-        <table id="pred-table">
-          <thead>
-            <tr>
-              <th>Bottle</th>
-              <th>Prediction</th>
-              <th>Confidence Level</th>
-              <th>Current Streak</th>
-              <th>10-Day Rate</th>
-              <th>30-Day Rate</th>
-            </tr>
-          </thead>
-          <tbody id="pred-tbody"></tbody>
-        </table>
-      </div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;font-style:italic;">
-        Predictions use a Bayesian Markov Chain model with Beta-Binomial priors seeded from historical Buffalo Trace availability data.
-        Confidence increases as more days are tracked (Low: 5–14 days, Medium: 15–29 days, High: 30+ days).
+      <div class="section-title">Tomorrow's Best Bets</div>
+      <p class="best-bets-intro">Bottles ranked by predicted availability tomorrow — highest chance at the top.</p>
+      <div id="best-bets-list"></div>
+      <p class="bets-note">
+        Predictions improve as more days are tracked. Right now we're in early-data territory —
+        the model is honest about that. Check back as the tracker matures for sharper forecasts.
       </p>
     </section>
 
-    <!-- STATISTICS -->
-    <section id="stats">
-      <div class="section-title">Tracker Statistics</div>
-      <div class="stats-row" id="stats-row"></div>
-    </section>
 
-    <!-- PRICE CHART -->
+    <!-- PRICE SECTION -->
     <section id="prices">
-      <div class="section-title">Price History</div>
-      <div class="chart-container">
+      <div class="section-title">Gift Shop Price Tracker</div>
+      <p class="price-intro">Current distillery gift shop prices — updated whenever a change is detected.</p>
+      <div class="price-grid" id="price-grid"></div>
+      <div class="chart-unlock-note" id="price-chart-note" style="display:none"></div>
+      <div class="chart-container" id="price-chart-container" style="display:none; margin-top:20px;">
         <canvas id="price-chart"></canvas>
       </div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;font-style:italic;">
-        Distillery gift shop prices. Updated when a price change is detected. "TBD" = price not yet recorded.
-      </p>
     </section>
 
     <!-- CALENDAR HEATMAP -->
     <section id="calendar">
-      <div class="section-title">30-Day Availability Calendar</div>
+      <div class="section-title">Availability Patterns — Last 30 Days</div>
+      <p class="cal-intro">Read left to right to see each bottle's availability run. Each row is one bottle.</p>
       <div class="cal-outer">
-        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-matrix" id="cal-grid"></div>
       </div>
       <div class="cal-legend">
-        <div class="cal-legend-item"><div class="cal-legend-dot dot-green"></div> Available</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot dot-red"></div> Unavailable</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot dot-gold"></div> Special Release</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot dot-gray"></div> No Data</div>
-      </div>
-      <div style="margin-top:12px;font-size:0.72rem;color:var(--muted);">
-        Rows (top to bottom): Blanton's · Weller 107 · E.H. Taylor SB · Eagle Rare
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green2)"></div> Available</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red2)"></div> Unavailable</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--gold)"></div> Special Release</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ccc"></div> No Data</div>
       </div>
     </section>
 
-    <!-- SPECIAL RELEASES LOG -->
+    <!-- RARE DROPS RECORD -->
     <section id="specials">
-      <div class="section-title">Special Releases Log</div>
+      <div class="section-title">Rare Drops Record</div>
       <div class="sr-log" id="sr-log"></div>
     </section>
 
@@ -856,9 +965,10 @@ function render(data) {
     document.getElementById('sr-name-today').textContent = today.special_release;
   }
 
-  // Bottle cards
+  // Bottle cards — available first, then unavailable (within each group, preserve original order)
   const grid = document.getElementById('bottle-grid');
-  grid.innerHTML = bottles.map(b => {
+  const sortedBottles = [...bottles].sort((a, b) => (b.available_today ?? 0) - (a.available_today ?? 0));
+  grid.innerHTML = sortedBottles.map(b => {
     const isAvail = b.available_today === 1;
     const streakDir = b.streak_direction === 'available' ? 'up' : 'down';
     const streakLabel = isAvail
@@ -890,31 +1000,43 @@ function render(data) {
       </div>`;
   }).join('');
 
-  // Predictions table
-  const tbody = document.getElementById('pred-tbody');
-  tbody.innerHTML = bottles.map(b => {
-    const pred = b.prediction_tomorrow_pct;
-    const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + ' days' : '—';
-    return `
-      <tr>
-        <td>${b.name}</td>
-        <td class="pct-cell ${pctClass(pred)}">${fmtPct(pred, 1)}</td>
-        <td>${b.confidence}</td>
-        <td>${b.streak} day${b.streak !== 1 ? 's' : ''} ${b.streak_direction}</td>
-        <td>${fmtPct(b.rolling_10d_pct, 1)}</td>
-        <td>${fmtPct(b.rolling_30d_pct, 1)}</td>
-      </tr>`;
-  }).join('');
+  // Tomorrow's Best Bets — ranked list
+  const betsList = document.getElementById('best-bets-list');
+  const sortedBets = [...bottles].sort((a, b) => (b.prediction_tomorrow_pct ?? 0) - (a.prediction_tomorrow_pct ?? 0));
 
-  // Stats summary
-  const statsRow = document.getElementById('stats-row');
-  const availPct = (bottles.filter(b => b.available_today).length / bottles.length * 100).toFixed(0);
-  const specialCount = special_releases_log.length;
-  statsRow.innerHTML = `
-    <div class="stat-card"><div class="sc-val">${meta.days_tracked}</div><div class="sc-lbl">Days Tracked</div></div>
-    <div class="stat-card"><div class="sc-val">${availPct}%</div><div class="sc-lbl">Bottles Available Today</div></div>
-    <div class="stat-card"><div class="sc-val">${specialCount}</div><div class="sc-lbl">Special Releases Logged</div></div>
-    <div class="stat-card"><div class="sc-val">${price_history.length}</div><div class="sc-lbl">Price Snapshots</div></div>`;
+  function betVerdict(pct) {
+    if (pct >= 80) return { label: 'Strong Bet',    cls: 'strong' };
+    if (pct >= 65) return { label: 'Worth Checking', cls: 'good'  };
+    if (pct >= 40) return { label: 'Coin Flip',      cls: 'flip'  };
+    return            { label: 'Unlikely',           cls: 'low'   };
+  }
+
+  betsList.innerHTML = sortedBets.map((b, i) => {
+    const pred = b.prediction_tomorrow_pct ?? 0;
+    const rank = i + 1;
+    const rankCls = rank <= 4 ? `r${rank}` : '';
+    const v = betVerdict(pred);
+    // Split bottle name at first space-boundary near middle for two-line display
+    const nameParts = b.name.replace(/\s(\d)/, '\n$1').split('\n');
+    const nameHtml = nameParts.length > 1
+      ? `${nameParts[0]}<br>${nameParts[1]}`
+      : b.name;
+    return `
+      <div class="best-bet-row">
+        <div class="bet-rank ${rankCls}">#${rank}</div>
+        <div class="bet-name">${nameHtml}</div>
+        <div class="bet-bar-wrap">
+          <div class="bet-bar-track"><div class="bet-bar-fill fill-${v.cls}" style="width:${Math.round(pred)}%"></div></div>
+          <div class="bet-bar-meta">
+            <div>
+              <span class="bet-pct pct-${v.cls}">${Math.round(pred)}%</span>
+              <div class="bet-confidence">Early data — confidence grows with more tracking days</div>
+            </div>
+            <span class="bet-verdict verdict-${v.cls}">${v.label}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 
   // Price chart
   buildPriceChart(price_history);
@@ -927,29 +1049,28 @@ function render(data) {
   const srList = special_releases_log || [];
   const today_dt = new Date(today.date + 'T00:00:00');
 
-  // Compute insight stats
-  let daysSinceLast = '—';
-  let lastReleaseName = '—';
-  if (srList.length > 0) {
-    const sorted = [...srList].sort((a, b) => new Date(b.date) - new Date(a.date));
-    const lastDt = new Date(sorted[0].date + 'T00:00:00');
-    const diff = Math.round((today_dt - lastDt) / 86400000);
-    daysSinceLast = diff === 0 ? 'Today' : diff + 'd ago';
-    lastReleaseName = sorted[0].name;
-  }
-
   // Auto-detect series from name if not provided
   function detectSeries(name) {
     if (!name) return 'Special Release';
-    if (/e\.?h\.?\s*taylor/i.test(name))      return 'E.H. Taylor';
-    if (/blanton/i.test(name))                 return "Blanton's";
-    if (/weller/i.test(name))                  return 'Weller';
-    if (/van winkle|pappy/i.test(name))        return 'Van Winkle';
-    if (/sazerac/i.test(name))                 return 'Sazerac';
-    if (/eagle rare/i.test(name))              return 'Eagle Rare';
+    if (/e\.?h\.?\s*taylor/i.test(name))           return 'E.H. Taylor';
+    if (/blanton/i.test(name))                      return "Blanton's";
+    if (/weller/i.test(name))                       return 'Weller';
+    if (/van winkle|pappy/i.test(name))             return 'Van Winkle';
+    if (/sazerac/i.test(name))                      return 'Sazerac';
+    if (/eagle rare/i.test(name))                   return 'Eagle Rare';
     if (/george t\.?\s*stagg|stagg jr/i.test(name)) return 'Stagg';
-    if (/buffalo trace/i.test(name))           return 'Buffalo Trace';
+    if (/buffalo trace/i.test(name))                return 'Buffalo Trace';
     return 'Special Release';
+  }
+
+  function seriesAccentClass(series) {
+    if (/e\.?h\.?\s*taylor/i.test(series))  return 'series-ehtaylor';
+    if (/blanton/i.test(series))             return 'series-blantons';
+    if (/weller/i.test(series))              return 'series-weller';
+    if (/van winkle|pappy/i.test(series))    return 'series-vanwinkle';
+    if (/stagg/i.test(series))               return 'series-stagg';
+    if (/sazerac/i.test(series))             return 'series-sazerac';
+    return '';
   }
 
   function daysAgoLabel(dateStr) {
@@ -960,151 +1081,236 @@ function render(data) {
     return diff + ' days ago';
   }
 
-  const insightsHTML = `
-    <div class="sr-insights-row">
-      <div class="sr-insight-card">
-        <div class="sic-val">${srList.length}</div>
-        <div class="sic-lbl">Total Releases Logged</div>
-      </div>
-      <div class="sr-insight-card">
-        <div class="sic-val">${daysSinceLast}</div>
-        <div class="sic-lbl">Since Last Drop</div>
-      </div>
-      <div class="sr-insight-card">
-        <div class="sic-val" style="font-size:0.9rem;margin-top:2px;">${lastReleaseName}</div>
-        <div class="sic-lbl">Most Recent Release</div>
-      </div>
-    </div>`;
+  // Build latest-drop banner
+  const sortedSR = [...srList].sort((a, b) => new Date(b.date) - new Date(a.date));
+  let bannerHTML = '';
+  if (sortedSR.length > 0) {
+    const latest = sortedSR[0];
+    const dropWord = srList.length === 1 ? 'Drop' : 'Drops';
+    bannerHTML = `
+      <div class="last-drop-strip">
+        <div class="lds-icon">🥃</div>
+        <div class="lds-body">
+          <div class="lds-headline">Most Recent Drop</div>
+          <div class="lds-name">${latest.name}</div>
+          <div class="lds-meta">${fmtDate(latest.date)} · ${daysAgoLabel(latest.date)}</div>
+        </div>
+        <div class="lds-count">
+          <div class="lds-count-num">${srList.length}</div>
+          <div class="lds-count-lbl">${dropWord}<br>Logged</div>
+        </div>
+      </div>`;
+  }
 
-  const cardsHTML = srList.length === 0
-    ? `<div class="sr-empty">No special releases logged yet. Check back soon!</div>`
-    : `<div class="sr-cards-grid">` +
-        [...srList].sort((a, b) => new Date(b.date) - new Date(a.date)).map(sr => {
-          const series = sr.series || detectSeries(sr.name);
-          const priceTag = sr.price != null
-            ? `<span class="sr-tag sr-tag-price">$${Number(sr.price).toFixed(2)}</span>`
-            : `<span class="sr-tag sr-tag-price tbd">Price TBD</span>`;
-          const sizeTag = sr.bottle_size
-            ? `<span class="sr-tag sr-tag-size">${sr.bottle_size}</span>`
-            : '';
-          return `
-            <div class="sr-card">
-              <div class="sr-card-top">
-                <div style="display:flex;align-items:flex-start;gap:8px;flex:1">
-                  <div class="sr-card-icon">⭐</div>
-                  <div class="sr-card-name">${sr.name}</div>
-                </div>
-                <div class="sr-card-date-block">
-                  <div class="sr-card-date">${fmtDate(sr.date)}</div>
-                  <div class="sr-card-days-ago">${daysAgoLabel(sr.date)}</div>
-                </div>
+  // Build premium release cards
+  let cardsHTML = '';
+  if (srList.length === 0) {
+    cardsHTML = `<div class="sr-empty">🥃 No rare drops logged yet — check back after your next visit to the distillery.</div>`;
+  } else {
+    const cardItems = sortedSR.map(sr => {
+      const series = sr.series || detectSeries(sr.name);
+      const accentCls = seriesAccentClass(series);
+      // Split "Series Name + Release Name" if name contains series keyword
+      const seriesLabel = series !== 'Special Release' ? series + ' Series' : 'Special Release';
+      // Try to shorten the display name by removing the series prefix
+      const shortName = sr.name.replace(new RegExp(series.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '').trim() || sr.name;
+      const priceTag = sr.price != null
+        ? `<span class="sr-tag sr-tag-price">$${Number(sr.price).toFixed(2)}</span>`
+        : `<span class="sr-tag sr-tag-price tbd">Price TBD</span>`;
+      const sizeTag = sr.bottle_size ? `<span class="sr-tag sr-tag-size">${sr.bottle_size}</span>` : '';
+      return `
+        <div class="sr-card">
+          <div class="sr-card-accent ${accentCls}"></div>
+          <div class="sr-card-body">
+            <div class="sr-card-header">
+              <div>
+                <div class="sr-card-series-badge">${seriesLabel}</div>
+                <div class="sr-card-name">${shortName}</div>
               </div>
-              <div class="sr-card-tags">
-                <span class="sr-tag sr-tag-series">${series}</span>
-                ${priceTag}
-                ${sizeTag}
+              <div class="sr-card-date-col">
+                <div class="sr-card-date">${fmtDate(sr.date)}</div>
+                <div class="sr-card-dago">${daysAgoLabel(sr.date)}</div>
               </div>
-              ${sr.notes ? `<div class="sr-card-notes">${sr.notes}</div>` : ''}
-            </div>`;
-        }).join('') + `</div>`;
+            </div>
+            <div class="sr-card-tags">${priceTag}${sizeTag}</div>
+            ${sr.notes ? `<div class="sr-card-notes">${sr.notes}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+    const chronicleNote = `<div class="sr-chronicle-note">Entry <strong>#${srList.length}</strong> — the chronicle grows with every rare drop.</div>`;
+    cardsHTML = `<div class="sr-cards-list">${cardItems}</div>${chronicleNote}`;
+  }
 
-  srLog.innerHTML = insightsHTML + cardsHTML;
+  srLog.innerHTML = bannerHTML + cardsHTML;
 }
 
-// ── PRICE CHART ─────────────────────────────────────────────────────────────
+// ── PRICE SECTION (cards + conditional chart) ────────────────────────────────
 function buildPriceChart(history) {
-  const labels = history.map(h => fmtDate(h.date));
-  const COLORS = ['#C8952A','#2E7D32','#1565C0','#C62828','#6A1B9A','#00695C','#EF6C00','#37474F'];
+  const CHART_THRESHOLD = 5; // show chart once we have this many snapshots
   const BOTTLES = [
-    { key: 'blantons',     label: "Blanton's" },
-    { key: 'weller107',    label: 'Weller 107' },
-    { key: 'ehtaylor_sb',  label: 'E.H. Taylor SB' },
-    { key: 'eagle_rare',   label: 'Eagle Rare' },
-    { key: 'weller_sr',    label: 'Weller SR' },
+    { key: 'blantons',     label: "Blanton's Single Barrel" },
+    { key: 'weller107',    label: 'Weller Antique 107' },
+    { key: 'ehtaylor_sb',  label: 'E.H. Taylor Small Batch' },
+    { key: 'eagle_rare',   label: 'Eagle Rare 10-Year' },
+    { key: 'weller_sr',    label: 'Weller Special Reserve' },
     { key: 'sazerac_rye',  label: 'Sazerac Rye' },
-    { key: 'bt_bourbon',   label: 'BT Bourbon' },
-    { key: 'ehtaylor_rye', label: 'E.H. Taylor Rye' },
+    { key: 'bt_bourbon',   label: 'Buffalo Trace Bourbon' },
   ];
 
-  const datasets = BOTTLES.map((b, i) => ({
-    label: b.label,
-    data: history.map(h => h[b.key] ?? null),
-    borderColor: COLORS[i % COLORS.length],
-    backgroundColor: COLORS[i % COLORS.length] + '22',
-    tension: 0.3,
-    pointRadius: 5,
-    spanGaps: true,
-  })).filter(ds => ds.data.some(v => v !== null));
+  // Filter to rows that are actual price snapshots (have a numeric date)
+  const snapshots = history.filter(h => h.date && /^\d{4}/.test(h.date));
 
-  const ctx = document.getElementById('price-chart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { labels: { color: '#5C2C0A', font: { family: 'Georgia', size: 11 } } },
-        tooltip: {
-          callbacks: {
-            label: ctx => ctx.parsed.y !== null ? `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}` : null
-          }
-        }
-      },
-      scales: {
-        x: { ticks: { color: '#7A5C3A', font: { size: 10 } }, grid: { color: '#E8DDD0' } },
-        y: {
-          ticks: {
-            color: '#7A5C3A',
-            font: { size: 10 },
-            callback: v => '$' + v.toFixed(0)
-          },
-          grid: { color: '#E8DDD0' }
+  // Build price cards
+  const grid = document.getElementById('price-grid');
+  grid.innerHTML = BOTTLES.map(b => {
+    // Find all numeric values for this bottle across snapshots
+    const prices = snapshots.map(h => h[b.key]).filter(v => typeof v === 'number' && !isNaN(v));
+    const current  = prices.length ? prices[prices.length - 1] : null;
+    const first    = prices.length ? prices[0] : null;
+    const lastSnap = snapshots.length ? fmtDate(snapshots[snapshots.length - 1].date) : '—';
+    const hasTBD   = snapshots.some(h => h[b.key] === 'TBD' || h[b.key] === null);
+
+    if (current === null) {
+      // No price recorded yet
+      return `<div class="price-card">
+        <div class="price-card-name">${b.label}</div>
+        <div class="price-tbd-val">TBD</div>
+        <div class="price-card-main-label">Current Price</div>
+        <div class="price-tbd-note">Price not yet recorded at the gift shop.</div>
+      </div>`;
+    }
+
+    const delta = (first !== null && first !== current) ? current - first : 0;
+    let deltaHTML;
+    if (delta > 0)      deltaHTML = `<span class="price-delta price-delta-up">▲ +$${delta.toFixed(2)}</span>`;
+    else if (delta < 0) deltaHTML = `<span class="price-delta price-delta-down">▼ -$${Math.abs(delta).toFixed(2)}</span>`;
+    else                deltaHTML = `<span class="price-delta price-delta-none">— No change</span>`;
+
+    return `<div class="price-card">
+      <div class="price-card-name">${b.label}</div>
+      <div class="price-card-main">$${current.toFixed(2)}</div>
+      <div class="price-card-main-label">Current Price</div>
+      <div class="price-card-row"><span>First recorded</span><span>$${first.toFixed(2)}</span></div>
+      <div class="price-card-row"><span>Last checked</span><span>${lastSnap}</span></div>
+      ${deltaHTML}
+    </div>`;
+  }).filter(Boolean).join('');
+
+  // Conditional chart note or chart
+  const noteEl = document.getElementById('price-chart-note');
+  const chartContainer = document.getElementById('price-chart-container');
+  const remaining = CHART_THRESHOLD - snapshots.length;
+
+  if (snapshots.length >= CHART_THRESHOLD) {
+    // Enough data — show the chart
+    chartContainer.style.display = 'block';
+    noteEl.style.display = 'none';
+    const COLORS = ['#C8952A','#2E7D32','#1565C0','#C62828','#6A1B9A','#00695C','#EF6C00','#37474F'];
+    const labels = snapshots.map(h => fmtDate(h.date));
+    const datasets = BOTTLES.map((b, i) => ({
+      label: b.label,
+      data: snapshots.map(h => typeof h[b.key] === 'number' ? h[b.key] : null),
+      borderColor: COLORS[i % COLORS.length],
+      backgroundColor: COLORS[i % COLORS.length] + '22',
+      tension: 0.3, pointRadius: 5, spanGaps: true,
+    })).filter(ds => ds.data.some(v => v !== null));
+    const ctx = document.getElementById('price-chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#5C2C0A', font: { family: 'Georgia', size: 11 } } },
+          tooltip: { callbacks: { label: c => c.parsed.y !== null ? `${c.dataset.label}: $${c.parsed.y.toFixed(2)}` : null } }
+        },
+        scales: {
+          x: { ticks: { color: '#7A5C3A', font: { size: 10 } }, grid: { color: '#E8DDD0' } },
+          y: { ticks: { color: '#7A5C3A', font: { size: 10 }, callback: v => '$' + v.toFixed(0) }, grid: { color: '#E8DDD0' } }
         }
       }
-    }
-  });
+    });
+  } else {
+    // Not enough data yet — show the unlock note
+    noteEl.style.display = 'block';
+    noteEl.innerHTML = `📈 Price trend chart unlocks after ${CHART_THRESHOLD} snapshots — ${remaining} more to go. Check back as prices are recorded over time.`;
+  }
 }
 
-// ── CALENDAR HEATMAP ─────────────────────────────────────────────────────────
+// ── CALENDAR HEATMAP (transposed: rows = bottles, columns = dates) ───────────
 function buildCalendar(calendar) {
   const grid = document.getElementById('cal-grid');
   const KEYS = ['blantons','weller107','ehtaylor_sb','eagle_rare'];
+  const LABELS = {
+    blantons:    "Blanton's",
+    weller107:   'Weller 107',
+    ehtaylor_sb: 'E.H. Taylor SB',
+    eagle_rare:  'Eagle Rare'
+  };
 
-  // Show last 30 (or all if fewer)
   const recent = calendar.slice(-30);
 
-  grid.innerHTML = recent.map(day => {
-    const dateStr = day.date.slice(5); // MM-DD
-    const dots = KEYS.map(k => {
-      if (day[k] === null || day[k] === undefined) return `<div class="cal-dot dot-gray"></div>`;
-      return `<div class="cal-dot ${day[k] ? 'dot-green' : 'dot-red'}"></div>`;
-    });
-    const hasSR = !!day.special_release;
-    return `
-      <div class="cal-day" title="${fmtDate(day.date)}${hasSR ? ' · ' + day.special_release : ''}">
-        <div class="cd-date">${dateStr}</div>
-        ${dots.join('')}
-        ${hasSR ? '<div class="cal-dot dot-gold" title="Special Release"></div>' : ''}
-      </div>`;
+  // Header row — dates
+  const headerRow = `<div class="cal-header-row">
+    <div class="cal-header-spacer"></div>
+    ${recent.map(d => `<div class="cal-date-label">${d.date.slice(5)}</div>`).join('')}
+  </div>`;
+
+  // Rotating bottle rows — no special release logic here, just available/unavailable
+  const bottleRows = KEYS.map(key => {
+    const cells = recent.map(day => {
+      const val = day[key];
+      if (val === null || val === undefined) {
+        return `<div class="cal-cell cal-cell-unavailable" title="${fmtDate(day.date)}"><div class="cal-cell-dot dot-nodata"></div></div>`;
+      }
+      const cellClass = val ? 'cal-cell-available' : 'cal-cell-unavailable';
+      const dotClass  = val ? 'dot-avail'          : 'dot-unavail';
+      return `<div class="cal-cell ${cellClass}" title="${fmtDate(day.date)}"><div class="cal-cell-dot ${dotClass}"></div></div>`;
+    }).join('');
+    return `<div class="cal-matrix-row">
+      <div class="cal-bottle-label">${LABELS[key]}</div>
+      ${cells}
+    </div>`;
   }).join('');
+
+  // Divider row between rotating bottles and special releases
+  const dividerRow = `<div class="cal-matrix-row" style="margin: 8px 0 6px;">
+    <div class="cal-bottle-label" style="color:var(--muted);font-size:0.62rem;font-weight:normal;letter-spacing:0.06em;text-transform:uppercase;">Special</div>
+    <div style="flex:1; height:1px; background:var(--beige2); margin: 0 2px;"></div>
+  </div>`;
+
+  // Special releases row — one gold dot on days with a special release, empty otherwise
+  const srCells = recent.map(day => {
+    if (day.special_release) {
+      return `<div class="cal-cell cal-cell-special" title="${fmtDate(day.date)} · ${day.special_release}"><div class="cal-cell-dot dot-special"></div></div>`;
+    }
+    return `<div class="cal-cell" title="${fmtDate(day.date)}"><div class="cal-cell-dot" style="background:transparent"></div></div>`;
+  }).join('');
+
+  const srRow = `<div class="cal-matrix-row">
+    <div class="cal-bottle-label">Special Releases</div>
+    ${srCells}
+  </div>`;
+
+  grid.innerHTML = headerRow + bottleRows + dividerRow + srRow;
 }
 
 // ── FETCH DATA & INIT ────────────────────────────────────────────────────────
+// Inline data ensures the page renders when opened locally (file:// protocol
+// blocks fetch). On a live server, fetch will load the latest data.json instead.
+const INLINE_DATA = {"meta":{"last_updated":"2026-03-16","days_tracked":4,"site_version":"1.0","data_source":"https://www.buffalotracedistillery.com/visit-us/product-availability/"},"today":{"date":"2026-03-16","day_of_week":"Monday","last_site_update":"3.16.2026 at 7:20am EST","special_release":null,"notes":""},"bottles":[{"name":"Blanton's Single Barrel","key":"blantons","available_today":0,"streak":1,"streak_direction":"unavailable","overall_pct":50.0,"rolling_10d_pct":50.0,"rolling_30d_pct":50.0,"avg_days_between_releases":2.0,"prediction_tomorrow_pct":53.1,"confidence":"Prior only","last_seen":"2026-03-15","prior_frequency":0.63},{"name":"Weller Antique 107","key":"weller107","available_today":0,"streak":2,"streak_direction":"unavailable","overall_pct":25.0,"rolling_10d_pct":25.0,"rolling_30d_pct":25.0,"avg_days_between_releases":null,"prediction_tomorrow_pct":54.4,"confidence":"Prior only","last_seen":"2026-03-14","prior_frequency":0.75},{"name":"E.H. Taylor Small Batch","key":"ehtaylor_sb","available_today":1,"streak":3,"streak_direction":"available","overall_pct":75.0,"rolling_10d_pct":75.0,"rolling_30d_pct":75.0,"avg_days_between_releases":1.0,"prediction_tomorrow_pct":95.6,"confidence":"Prior only","last_seen":"2026-03-16","prior_frequency":0.93},{"name":"Eagle Rare 10-Year","key":"eagle_rare","available_today":1,"streak":1,"streak_direction":"available","overall_pct":50.0,"rolling_10d_pct":50.0,"rolling_30d_pct":50.0,"avg_days_between_releases":3.0,"prediction_tomorrow_pct":28.1,"confidence":"Prior only","last_seen":"2026-03-16","prior_frequency":0.17}],"calendar":[{"date":"2026-03-13","blantons":1,"weller107":0,"ehtaylor_sb":0,"eagle_rare":1,"special_release":"E.H. Taylor Straight Rye"},{"date":"2026-03-14","blantons":0,"weller107":1,"ehtaylor_sb":1,"eagle_rare":0,"special_release":null},{"date":"2026-03-15","blantons":1,"weller107":0,"ehtaylor_sb":1,"eagle_rare":0,"special_release":null},{"date":"2026-03-16","blantons":0,"weller107":0,"ehtaylor_sb":1,"eagle_rare":1,"special_release":null}],"price_history":[{"date":"2026-03-14 00:00:00","blantons":74.99,"weller107":"TBD","ehtaylor_sb":59.99,"eagle_rare":43,"weller_sr":30,"ehtaylor_rye":"TBD","sazerac_rye":30,"bt_bourbon":27,"wheatley_vodka":"TBD","bt_cream":"TBD"}],"special_releases_log":[{"date":"2026-03-13","name":"E.H. Taylor Straight Rye"}]};
+
+function initWithData(data) {
+  document.getElementById('loading-msg').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+  render(data);
+}
+
 fetch('./data.json?_=' + Date.now())
-  .then(r => {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  })
-  .then(data => {
-    document.getElementById('loading-msg').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-    render(data);
-  })
-  .catch(err => {
-    document.getElementById('loading-msg').innerHTML =
-      `<span style="color:#C62828">⚠️ Could not load tracker data.<br><small>${err.message}</small></span>`;
-  });
+  .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+  .then(data => initWithData(data))
+  .catch(() => initWithData(INLINE_DATA));
 </script>
 </body>
 </html>
