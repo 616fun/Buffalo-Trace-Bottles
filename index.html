@@ -380,19 +380,115 @@
     .stat-card .sc-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-top: 4px; }
 
     /* ── SPECIAL RELEASES LOG ── */
-    .sr-log { display: flex; flex-direction: column; gap: 10px; }
-    .sr-item {
-      background: var(--cream);
-      border-left: 4px solid var(--gold);
-      border-radius: 0 8px 8px 0;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .sr-log { display: block; }
+
+    .sr-insights-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
-    .sr-item-date { font-size: 0.75rem; color: var(--muted); min-width: 90px; }
-    .sr-item-name { font-size: 0.95rem; color: var(--brown); }
-    .sr-item-notes { font-size: 0.78rem; color: var(--muted); font-style: italic; }
+    .sr-insight-card {
+      background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: #fff;
+    }
+    .sr-insight-card .sic-val {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--gold2);
+      line-height: 1.2;
+    }
+    .sr-insight-card .sic-lbl {
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+    }
+
+    .sr-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .sr-card {
+      background: var(--cream);
+      border-radius: 10px;
+      border: 2px solid var(--beige2);
+      border-top: 4px solid var(--gold);
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .sr-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    .sr-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .sr-card-icon { font-size: 1.3rem; line-height: 1; flex-shrink: 0; }
+    .sr-card-name {
+      font-size: 1.05rem;
+      color: var(--brown);
+      line-height: 1.3;
+      flex: 1;
+    }
+    .sr-card-date-block { text-align: right; flex-shrink: 0; }
+    .sr-card-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+    .sr-card-days-ago { font-size: 0.64rem; color: var(--gold); font-style: italic; margin-top: 2px; }
+    .sr-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .sr-tag {
+      font-size: 0.67rem;
+      padding: 3px 9px;
+      border-radius: 12px;
+      letter-spacing: 0.03em;
+    }
+    .sr-tag-series {
+      background: rgba(200,149,42,0.15);
+      color: var(--brown);
+      border: 1px solid rgba(200,149,42,0.45);
+    }
+    .sr-tag-price {
+      background: #E8F5E9;
+      color: var(--green);
+      border: 1px solid var(--green2);
+    }
+    .sr-tag-price.tbd {
+      background: var(--beige2);
+      color: var(--muted);
+      border: 1px solid #bbb;
+    }
+    .sr-tag-size {
+      background: #E3F2FD;
+      color: #1565C0;
+      border: 1px solid #90CAF9;
+    }
+    .sr-card-notes {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--beige2);
+    }
+    .sr-empty {
+      color: var(--muted);
+      font-style: italic;
+      background: var(--cream);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      border: 1px dashed var(--beige2);
+    }
 
     /* ── FOOTER ── */
     footer {
@@ -553,8 +649,12 @@
       .stat-card .sc-lbl { font-size: 0.65rem; }
 
       /* Special releases log */
-      .sr-item { padding: 10px 12px; gap: 10px; flex-wrap: wrap; }
-      .sr-item-date { min-width: unset; }
+      .sr-insights-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .sr-insight-card { padding: 10px 12px; }
+      .sr-insight-card .sic-val { font-size: 1.2rem; }
+      .sr-cards-grid { grid-template-columns: 1fr; }
+      .sr-card { padding: 14px 14px; }
+      .sr-card-name { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -822,20 +922,93 @@ function render(data) {
   // Calendar heatmap
   buildCalendar(calendar);
 
-  // Special releases log
+  // Special releases log — enhanced card view
   const srLog = document.getElementById('sr-log');
-  if (special_releases_log.length === 0) {
-    srLog.innerHTML = '<p style="color:var(--muted);font-style:italic;">No special releases logged yet.</p>';
-  } else {
-    srLog.innerHTML = [...special_releases_log].reverse().map(sr => `
-      <div class="sr-item">
-        <div class="sr-item-date">${fmtDate(sr.date)}</div>
-        <div>
-          <div class="sr-item-name">${sr.name}</div>
-          ${sr.notes ? `<div class="sr-item-notes">${sr.notes}</div>` : ''}
-        </div>
-      </div>`).join('');
+  const srList = special_releases_log || [];
+  const today_dt = new Date(today.date + 'T00:00:00');
+
+  // Compute insight stats
+  let daysSinceLast = '—';
+  let lastReleaseName = '—';
+  if (srList.length > 0) {
+    const sorted = [...srList].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const lastDt = new Date(sorted[0].date + 'T00:00:00');
+    const diff = Math.round((today_dt - lastDt) / 86400000);
+    daysSinceLast = diff === 0 ? 'Today' : diff + 'd ago';
+    lastReleaseName = sorted[0].name;
   }
+
+  // Auto-detect series from name if not provided
+  function detectSeries(name) {
+    if (!name) return 'Special Release';
+    if (/e\.?h\.?\s*taylor/i.test(name))      return 'E.H. Taylor';
+    if (/blanton/i.test(name))                 return "Blanton's";
+    if (/weller/i.test(name))                  return 'Weller';
+    if (/van winkle|pappy/i.test(name))        return 'Van Winkle';
+    if (/sazerac/i.test(name))                 return 'Sazerac';
+    if (/eagle rare/i.test(name))              return 'Eagle Rare';
+    if (/george t\.?\s*stagg|stagg jr/i.test(name)) return 'Stagg';
+    if (/buffalo trace/i.test(name))           return 'Buffalo Trace';
+    return 'Special Release';
+  }
+
+  function daysAgoLabel(dateStr) {
+    const dt = new Date(dateStr + 'T00:00:00');
+    const diff = Math.round((today_dt - dt) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Yesterday';
+    return diff + ' days ago';
+  }
+
+  const insightsHTML = `
+    <div class="sr-insights-row">
+      <div class="sr-insight-card">
+        <div class="sic-val">${srList.length}</div>
+        <div class="sic-lbl">Total Releases Logged</div>
+      </div>
+      <div class="sr-insight-card">
+        <div class="sic-val">${daysSinceLast}</div>
+        <div class="sic-lbl">Since Last Drop</div>
+      </div>
+      <div class="sr-insight-card">
+        <div class="sic-val" style="font-size:0.9rem;margin-top:2px;">${lastReleaseName}</div>
+        <div class="sic-lbl">Most Recent Release</div>
+      </div>
+    </div>`;
+
+  const cardsHTML = srList.length === 0
+    ? `<div class="sr-empty">No special releases logged yet. Check back soon!</div>`
+    : `<div class="sr-cards-grid">` +
+        [...srList].sort((a, b) => new Date(b.date) - new Date(a.date)).map(sr => {
+          const series = sr.series || detectSeries(sr.name);
+          const priceTag = sr.price != null
+            ? `<span class="sr-tag sr-tag-price">$${Number(sr.price).toFixed(2)}</span>`
+            : `<span class="sr-tag sr-tag-price tbd">Price TBD</span>`;
+          const sizeTag = sr.bottle_size
+            ? `<span class="sr-tag sr-tag-size">${sr.bottle_size}</span>`
+            : '';
+          return `
+            <div class="sr-card">
+              <div class="sr-card-top">
+                <div style="display:flex;align-items:flex-start;gap:8px;flex:1">
+                  <div class="sr-card-icon">⭐</div>
+                  <div class="sr-card-name">${sr.name}</div>
+                </div>
+                <div class="sr-card-date-block">
+                  <div class="sr-card-date">${fmtDate(sr.date)}</div>
+                  <div class="sr-card-days-ago">${daysAgoLabel(sr.date)}</div>
+                </div>
+              </div>
+              <div class="sr-card-tags">
+                <span class="sr-tag sr-tag-series">${series}</span>
+                ${priceTag}
+                ${sizeTag}
+              </div>
+              ${sr.notes ? `<div class="sr-card-notes">${sr.notes}</div>` : ''}
+            </div>`;
+        }).join('') + `</div>`;
+
+  srLog.innerHTML = insightsHTML + cardsHTML;
 }
 
 // ── PRICE CHART ─────────────────────────────────────────────────────────────
