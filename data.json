@@ -110,19 +110,6 @@
   ],
   "price_history": [
     {
-      "date": "Date",
-      "blantons": "Blanton's Single Barrel",
-      "weller107": "Weller Antique 107",
-      "ehtaylor_sb": "E.H. Taylor Small Batch",
-      "eagle_rare": "Eagle Rare 10-Year",
-      "weller_sr": "Weller Special Reserve",
-      "ehtaylor_rye": "E.H. Taylor Straight Rye",
-      "sazerac_rye": "Sazerac Rye",
-      "bt_bourbon": "Buffalo Trace Bourbon",
-      "wheatley_vodka": "Wheatley Vodka",
-      "bt_cream": "Buffalo Trace Bourbon Cream"
-    },
-    {
       "date": "2026-03-14 00:00:00",
       "blantons": 74.99,
       "weller107": "TBD",
@@ -134,71 +121,6 @@
       "bt_bourbon": 27,
       "wheatley_vodka": "TBD",
       "bt_cream": "TBD"
-    },
-    {
-      "date": "PRICE CHANGE SUMMARY  \u2014  vs. First Tracked Price",
-      "blantons": null,
-      "weller107": null,
-      "ehtaylor_sb": null,
-      "eagle_rare": null,
-      "weller_sr": null,
-      "ehtaylor_rye": null,
-      "sazerac_rye": null,
-      "bt_bourbon": null,
-      "wheatley_vodka": null,
-      "bt_cream": null
-    },
-    {
-      "date": "First Price",
-      "blantons": "=B6",
-      "weller107": "=C6",
-      "ehtaylor_sb": "=D6",
-      "eagle_rare": "=E6",
-      "weller_sr": "=F6",
-      "ehtaylor_rye": "=G6",
-      "sazerac_rye": "=H6",
-      "bt_bourbon": "=I6",
-      "wheatley_vodka": "=J6",
-      "bt_cream": "=K6"
-    },
-    {
-      "date": "Latest Price",
-      "blantons": "=IFERROR(LOOKUP(2,1/(B7:B107<>\"\"),B7:B107),B6)",
-      "weller107": "=IFERROR(LOOKUP(2,1/(C7:C107<>\"\"),C7:C107),C6)",
-      "ehtaylor_sb": "=IFERROR(LOOKUP(2,1/(D7:D107<>\"\"),D7:D107),D6)",
-      "eagle_rare": "=IFERROR(LOOKUP(2,1/(E7:E107<>\"\"),E7:E107),E6)",
-      "weller_sr": "=IFERROR(LOOKUP(2,1/(F7:F107<>\"\"),F7:F107),F6)",
-      "ehtaylor_rye": "=IFERROR(LOOKUP(2,1/(G7:G107<>\"\"),G7:G107),G6)",
-      "sazerac_rye": "=IFERROR(LOOKUP(2,1/(H7:H107<>\"\"),H7:H107),H6)",
-      "bt_bourbon": "=IFERROR(LOOKUP(2,1/(I7:I107<>\"\"),I7:I107),I6)",
-      "wheatley_vodka": "=IFERROR(LOOKUP(2,1/(J7:J107<>\"\"),J7:J107),J6)",
-      "bt_cream": "=IFERROR(LOOKUP(2,1/(K7:K107<>\"\"),K7:K107),K6)"
-    },
-    {
-      "date": "$ Change",
-      "blantons": "=IFERROR(IF(ISNUMBER(B109)*ISNUMBER(B110), B110-B109, \"\u2014\"), \"\u2014\")",
-      "weller107": "=IFERROR(IF(ISNUMBER(C109)*ISNUMBER(C110), C110-C109, \"\u2014\"), \"\u2014\")",
-      "ehtaylor_sb": "=IFERROR(IF(ISNUMBER(D109)*ISNUMBER(D110), D110-D109, \"\u2014\"), \"\u2014\")",
-      "eagle_rare": "=IFERROR(IF(ISNUMBER(E109)*ISNUMBER(E110), E110-E109, \"\u2014\"), \"\u2014\")",
-      "weller_sr": "=IFERROR(IF(ISNUMBER(F109)*ISNUMBER(F110), F110-F109, \"\u2014\"), \"\u2014\")",
-      "ehtaylor_rye": "=IFERROR(IF(ISNUMBER(G109)*ISNUMBER(G110), G110-G109, \"\u2014\"), \"\u2014\")",
-      "sazerac_rye": "=IFERROR(IF(ISNUMBER(H109)*ISNUMBER(H110), H110-H109, \"\u2014\"), \"\u2014\")",
-      "bt_bourbon": "=IFERROR(IF(ISNUMBER(I109)*ISNUMBER(I110), I110-I109, \"\u2014\"), \"\u2014\")",
-      "wheatley_vodka": "=IFERROR(IF(ISNUMBER(J109)*ISNUMBER(J110), J110-J109, \"\u2014\"), \"\u2014\")",
-      "bt_cream": "=IFERROR(IF(ISNUMBER(K109)*ISNUMBER(K110), K110-K109, \"\u2014\"), \"\u2014\")"
-    },
-    {
-      "date": "% Change",
-      "blantons": "=IFERROR(IF(ISNUMBER(B109)*ISNUMBER(B110)*(B109<>0), (B110-B109)/B109, \"\u2014\"), \"\u2014\")",
-      "weller107": "=IFERROR(IF(ISNUMBER(C109)*ISNUMBER(C110)*(C109<>0), (C110-C109)/C109, \"\u2014\"), \"\u2014\")",
-      "ehtaylor_sb": "=IFERROR(IF(ISNUMBER(D109)*ISNUMBER(D110)*(D109<>0), (D110-D109)/D109, \"\u2014\"), \"\u2014\")",
-      "eagle_rare": "=IFERROR(IF(ISNUMBER(E109)*ISNUMBER(E110)*(E109<>0), (E110-E109)/E109, \"\u2014\"), \"\u2014\")",
-      "weller_sr": "=IFERROR(IF(ISNUMBER(F109)*ISNUMBER(F110)*(F109<>0), (F110-F109)/F109, \"\u2014\"), \"\u2014\")",
-      "ehtaylor_rye": "=IFERROR(IF(ISNUMBER(G109)*ISNUMBER(G110)*(G109<>0), (G110-G109)/G109, \"\u2014\"), \"\u2014\")",
-      "sazerac_rye": "=IFERROR(IF(ISNUMBER(H109)*ISNUMBER(H110)*(H109<>0), (H110-H109)/H109, \"\u2014\"), \"\u2014\")",
-      "bt_bourbon": "=IFERROR(IF(ISNUMBER(I109)*ISNUMBER(I110)*(I109<>0), (I110-I109)/I109, \"\u2014\"), \"\u2014\")",
-      "wheatley_vodka": "=IFERROR(IF(ISNUMBER(J109)*ISNUMBER(J110)*(J109<>0), (J110-J109)/J109, \"\u2014\"), \"\u2014\")",
-      "bt_cream": "=IFERROR(IF(ISNUMBER(K109)*ISNUMBER(K110)*(K109<>0), (K110-K109)/K109, \"\u2014\"), \"\u2014\")"
     }
   ],
   "special_releases_log": [
