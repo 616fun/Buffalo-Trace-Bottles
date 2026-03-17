@@ -782,10 +782,6 @@ function render(data) {
           <div class="cs"><div class="cv">${avgBetween}</div><div class="ck">Avg Gap</div></div>
         </div>
         <div class="streak-text">${streakLabel}</div>
-        <div class="pred-wrap">
-          <div class="pred-label"><span>Tomorrow</span><span class="${pctClass(pred)}">${fmtPct(pred, 0)}</span></div>
-          <div class="pred-track"><div class="pred-fill" style="width:${pred ?? 0}%"></div></div>
-        </div>
       </div>`;
   }).join('');
 
