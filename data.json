@@ -9,7 +9,7 @@
     "date": "2026-03-17",
     "day_of_week": "Tuesday",
     "last_site_update": "3.17.2026 at 7:10am EST",
-    "special_release": "Bettinardi Golf x W.L. Weller Collection",
+    "special_release": null,
     "notes": ""
   },
   "bottles": [
@@ -135,10 +135,6 @@
     {
       "date": "2026-03-13",
       "name": "E.H. Taylor Straight Rye"
-    },
-    {
-      "date": "2026-03-17",
-      "name": "Bettinardi Golf x W.L. Weller Collection"
     }
   ]
 }
