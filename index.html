@@ -178,6 +178,33 @@
     .today-stat.unavail .big { color: var(--red); }
     .today-stat.neutral .big { color: var(--text2); }
     .today-stat .lbl { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-top: 4px; }
+    /* ── AVAILABLE TODAY PANEL (inside today-card) ── */
+    .today-avail-panel {
+      background: #1C3829; border-top: 1px solid #2D6A4F;
+      padding: 20px 32px; text-align: center;
+    }
+    .tap-eyebrow {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.4);
+      margin-bottom: 14px;
+    }
+    .tap-bottles {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px;
+    }
+    .tap-bottle-avail {
+      font-size: 1rem; font-weight: 600; color: #4ADE80; display: flex; align-items: center; gap: 6px;
+    }
+    .tap-bottle-avail::before { content: '✓'; font-size: 0.85rem; opacity: 0.8; }
+    .tap-bottle-unavail {
+      font-size: 0.88rem; font-weight: 500; color: rgba(255,255,255,0.22);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tap-bottle-unavail::before { content: '✗'; font-size: 0.8rem; }
+    @media (max-width: 600px) {
+      .today-avail-panel { padding: 16px 20px; }
+      .tap-bottle-avail { font-size: 0.9rem; }
+    }
+
     /* Special release strip inside today card */
     .today-sr-strip {
       display: none; align-items: center; gap: 10px;
@@ -731,6 +758,15 @@ function pctClass(v) {
   if (v >= 40) return 'pct-mid';
   return 'pct-low';
 }
+function fmtLastSeen(dateStr, todayStr) {
+  if (!dateStr) return '—';
+  if (dateStr === todayStr) return 'Today';
+  const d = new Date(dateStr + 'T00:00:00');
+  const t = new Date(todayStr + 'T00:00:00');
+  const diffDays = Math.round((t - d) / 86400000);
+  if (diffDays === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
 // ── RENDER ──────────────────────────────────────────────────────────────────
 function render(data) {
@@ -743,6 +779,14 @@ function render(data) {
   // Today hero card
   const availCount = bottles.filter(b => b.available_today === 1).length;
   const hero = document.getElementById('today-hero');
+  // Build available-today panel rows (available first, then unavailable muted)
+  const availBottles   = bottles.filter(b => b.available_today === 1);
+  const unavailBottles = bottles.filter(b => b.available_today !== 1);
+  const tapRows = [
+    ...availBottles.map(b   => `<div class="tap-bottle-avail">${b.name}</div>`),
+    ...unavailBottles.map(b => `<div class="tap-bottle-unavail">${b.name}</div>`)
+  ].join('');
+
   hero.innerHTML = `
     <div class="today-card">
       <div class="today-top">
@@ -760,6 +804,10 @@ function render(data) {
           <div class="today-stat unavail"><div class="big">${bottles.length - availCount}</div><div class="lbl">Unavailable</div></div>
           <div class="today-stat neutral"><div class="big">${meta.days_tracked}</div><div class="lbl">Days Tracked</div></div>
         </div>
+      </div>
+      <div class="today-avail-panel">
+        <div class="tap-eyebrow">🥃 &nbsp;Available Today</div>
+        <div class="tap-bottles">${tapRows}</div>
       </div>
     </div>`;
 
@@ -816,7 +864,7 @@ function render(data) {
           </div>
           <div>
             <div class="cdg-label">Last Seen</div>
-            <div class="cdg-val">${b.last_seen ?? '—'}</div>
+            <div class="cdg-val">${fmtLastSeen(b.last_seen, today.date)}</div>
           </div>
           <div>
             <div class="cdg-label">Avg Gap</div>
