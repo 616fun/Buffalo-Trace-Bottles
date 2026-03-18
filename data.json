@@ -128,7 +128,7 @@
     {
       "date": "2026-03-14 00:00:00",
       "blantons": 74.99,
-      "weller107": "TBD",
+      "weller107": 59.99,
       "ehtaylor_sb": 59.99,
       "eagle_rare": 43,
       "weller_sr": 30,
@@ -137,6 +137,19 @@
       "bt_bourbon": 27,
       "wheatley_vodka": "TBD",
       "bt_cream": "TBD"
+    },
+    {
+      "date": "2026-03-18 00:00:00",
+      "blantons": 74.99,
+      "weller107": 59.99,
+      "ehtaylor_sb": 59.99,
+      "eagle_rare": 43,
+      "weller_sr": 30,
+      "ehtaylor_rye": "TBD",
+      "sazerac_rye": 29.99,
+      "bt_bourbon": 27,
+      "wheatley_vodka": 16.99,
+      "bt_cream": 21.99
     }
   ],
   "special_releases_log": [
