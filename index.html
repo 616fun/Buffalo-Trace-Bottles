@@ -425,20 +425,20 @@
       display: flex; align-items: center; justify-content: center;
       border-radius: 4px; margin: 0 1px;
     }
-    .cal-cell-dot { width: 10px; height: 10px; border-radius: 3px; }
-    .cal-cell-available   { background: rgba(74,222,128,0.15); }
+    .cal-cell-available   { background: rgba(74,222,128,0.12); }
     .cal-cell-unavailable { background: rgba(239,68,68,0.07); }
     .cal-cell-special     { background: rgba(192,115,40,0.18); }
-    .dot-avail   { background: var(--green2); }
-    .dot-unavail { background: var(--red2); }
-    .dot-special { background: var(--amber); }
-    .dot-nodata  { background: #D1D5DB; }
+    .cal-sym { font-size: 11px; font-weight: 800; line-height: 1; user-select: none; }
+    .sym-avail   { color: #22C55E; }
+    .sym-unavail { color: #EF4444; opacity: 0.75; }
+    .sym-special { color: var(--amber); }
+    .sym-nodata  { color: #D1D5DB; font-weight: 400; font-size: 10px; }
     .cal-legend {
       display: flex; gap: 16px; flex-wrap: wrap;
       margin-top: 16px; font-size: 0.73rem; color: var(--muted);
     }
     .cal-legend-item { display: flex; align-items: center; gap: 6px; }
-    .cal-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+    .cal-legend-sym { font-size: 13px; font-weight: 800; line-height: 1; }
 
     /* ── RARE DROPS RECORD ── */
     .sr-log { display: block; }
@@ -585,7 +585,7 @@
       .cal-header-spacer { width: 90px; }
       .cal-cell { width: 22px; height: 18px; }
       .cal-date-label { width: 22px; font-size: 0.44rem; }
-      .cal-cell-dot { width: 8px; height: 8px; }
+      .cal-sym { font-size: 9px; }
 
       /* SR log */
       .last-drop-strip { padding: 14px 16px; gap: 12px; }
@@ -715,10 +715,10 @@
         <div class="cal-matrix" id="cal-grid"></div>
       </div>
       <div class="cal-legend">
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green2)"></div> Available</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red2)"></div> Unavailable</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--amber)"></div> Special Release</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#D1D5DB"></div> No Data</div>
+        <div class="cal-legend-item"><span class="cal-legend-sym sym-avail">✓</span> Available</div>
+        <div class="cal-legend-item"><span class="cal-legend-sym sym-unavail">✗</span> Unavailable</div>
+        <div class="cal-legend-item"><span class="cal-legend-sym sym-special">✓</span> Special Release</div>
+        <div class="cal-legend-item"><span class="cal-legend-sym sym-nodata">–</span> No Data</div>
       </div>
     </section>
 
@@ -1099,10 +1099,11 @@ function buildCalendar(calendar) {
     const cells = recent.map(day => {
       const val = day[key];
       if (val === null || val === undefined)
-        return `<div class="cal-cell cal-cell-unavailable" title="${fmtDate(day.date)}"><div class="cal-cell-dot dot-nodata"></div></div>`;
-      const cellClass = val ? 'cal-cell-available' : 'cal-cell-unavailable';
-      const dotClass  = val ? 'dot-avail'          : 'dot-unavail';
-      return `<div class="cal-cell ${cellClass}" title="${fmtDate(day.date)}"><div class="cal-cell-dot ${dotClass}"></div></div>`;
+        return `<div class="cal-cell" title="${fmtDate(day.date)}"><span class="cal-sym sym-nodata">–</span></div>`;
+      const cellClass = val ? 'cal-cell-available'  : 'cal-cell-unavailable';
+      const symClass  = val ? 'sym-avail'            : 'sym-unavail';
+      const symChar   = val ? '✓'                    : '✗';
+      return `<div class="cal-cell ${cellClass}" title="${fmtDate(day.date)}"><span class="cal-sym ${symClass}">${symChar}</span></div>`;
     }).join('');
     return `<div class="cal-matrix-row">
       <div class="cal-bottle-label">${LABELS[key]}</div>${cells}
@@ -1116,8 +1117,8 @@ function buildCalendar(calendar) {
 
   const srCells = recent.map(day => {
     if (day.special_release)
-      return `<div class="cal-cell cal-cell-special" title="${fmtDate(day.date)} · ${day.special_release}"><div class="cal-cell-dot dot-special"></div></div>`;
-    return `<div class="cal-cell" title="${fmtDate(day.date)}"><div class="cal-cell-dot" style="background:transparent"></div></div>`;
+      return `<div class="cal-cell cal-cell-special" title="${fmtDate(day.date)} · ${day.special_release}"><span class="cal-sym sym-special">✓</span></div>`;
+    return `<div class="cal-cell cal-cell-unavailable" title="${fmtDate(day.date)}"><span class="cal-sym sym-unavail">✗</span></div>`;
   }).join('');
 
   const srRow = `<div class="cal-matrix-row">
