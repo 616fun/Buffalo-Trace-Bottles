@@ -77,9 +77,11 @@
     .brand-text h1 span { color: var(--gold); }
     .brand-text p { font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-top: 1px; letter-spacing: 0.02em; }
     .header-right { display: flex; align-items: center; gap: 14px; }
-    .status-live { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 500; color: rgba(255,255,255,0.5); }
+    .status-live { display: flex; align-items: center; gap: 6px; }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 2px rgba(74,222,128,0.2); flex-shrink: 0; }
-    #last-update-pill { font-size: 0.68rem; color: rgba(255,255,255,0.35); }
+    .status-info { display: flex; flex-direction: column; gap: 1px; }
+    .status-live-label { font-size: 0.7rem; font-weight: 500; color: rgba(255,255,255,0.5); line-height: 1.2; }
+    #last-update-pill { font-size: 0.6rem; color: rgba(255,255,255,0.32); line-height: 1.2; white-space: nowrap; }
     #days-tracked-hdr { font-size: 0.65rem; color: rgba(255,255,255,0.28); font-style: italic; }
 
     /* ── NAV ── */
@@ -533,9 +535,8 @@
 
       /* Header */
       .header-bar { padding: 0 16px; }
-      .brand-text h1 { font-size: 0.92rem; }
+      .brand-text h1 { font-size: 0.85rem; }
       .brand-text p  { display: none; }
-      #last-update-pill { display: none; }  /* prevents overflow — "Live" dot is enough */
       #days-tracked-hdr { display: none; }
 
       /* Nav */
@@ -608,8 +609,13 @@
       </div>
     </a>
     <div class="header-right">
-      <div class="status-live"><span class="status-dot"></span> Live</div>
-      <span id="last-update-pill">Loading…</span>
+      <div class="status-live">
+        <span class="status-dot"></span>
+        <div class="status-info">
+          <span class="status-live-label">Live</span>
+          <span id="last-update-pill">Loading…</span>
+        </div>
+      </div>
       <span id="days-tracked-hdr"></span>
     </div>
   </div>
@@ -773,7 +779,9 @@ function render(data) {
   const { meta, today, bottles, price_history, calendar, special_releases_log } = data;
 
   // Header meta
-  document.getElementById('last-update-pill').textContent = 'Updated ' + fmtDate(meta.last_updated);
+  const shortDate = new Date(meta.last_updated + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const refreshTime = today.last_site_update ? ' · ' + today.last_site_update : '';
+  document.getElementById('last-update-pill').textContent = shortDate + refreshTime;
   document.getElementById('days-tracked-hdr').textContent = meta.days_tracked + ' day' + (meta.days_tracked !== 1 ? 's' : '') + ' tracked';
 
   // Today hero card
