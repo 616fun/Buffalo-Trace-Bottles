@@ -783,6 +783,11 @@ function render(data) {
     const pred = b.prediction_tomorrow_pct;
     const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + ' days' : '—';
     const daysTracked = Math.round((b.overall_pct / 100) * meta.days_tracked);
+    // Label the rolling window honestly — "10-Day" only once we have 10+ days of data
+    const win10 = Math.min(10, meta.days_tracked);
+    const rate10Label = meta.days_tracked >= 10 ? '10-Day Rate' : `Rate (${win10}d)`;
+    const win30 = Math.min(30, meta.days_tracked);
+    const rate30Label = meta.days_tracked >= 30 ? '30-Day Rate' : `Rate (${win30}d)`;
     return `
       <div class="bottle-card ${isAvail ? 'avail' : 'unavail'}">
         <div class="bottle-card-top">
@@ -795,7 +800,7 @@ function render(data) {
             <div class="cdg-val">${streakLabel}</div>
           </div>
           <div>
-            <div class="cdg-label">10-Day Rate</div>
+            <div class="cdg-label">${rate10Label}</div>
             <div class="cdg-val">${fmtPct(b.rolling_10d_pct, 1)}</div>
             <div class="cdg-bar"><div class="cdg-fill" style="width:${b.rolling_10d_pct ?? 0}%"></div></div>
           </div>
