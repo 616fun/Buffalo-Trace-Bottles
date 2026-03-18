@@ -247,25 +247,37 @@
     .streak-text, .streak-pill { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
     .streak-pill.up   { color: var(--green); }
     .streak-pill.down { color: var(--red); }
-    /* Card stats mini-grid */
-    .card-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .cs { text-align: center; background: var(--surface2); border-radius: 6px; padding: 6px 4px; }
-    .cv { font-size: 0.78rem; font-weight: 700; color: var(--text2); }
-    .ck { font-size: 0.56rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
-    /* Prediction bar */
-    .pred-bar-wrap, .pred-wrap { }
-    .pred-bar-label, .pred-label {
-      display: flex; justify-content: space-between;
-      font-size: 0.68rem; font-weight: 500; color: var(--muted); margin-bottom: 6px;
+    /* ── CARD DETAIL GRID (3-col, matches email layout) ── */
+    .card-detail-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px;
     }
-    .pred-bar-bg, .pred-track {
-      background: var(--surface2); border-radius: 4px; height: 5px; overflow: hidden;
+    .cdg-label {
+      font-size: 0.6rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 3px;
     }
-    .pred-bar-fill, .pred-fill {
-      height: 100%; border-radius: 4px;
+    .cdg-val {
+      font-size: 0.8rem; font-weight: 700; color: var(--text2); line-height: 1.35;
+    }
+    .cdg-bar {
+      background: var(--surface2); border-radius: 3px; height: 5px;
+      margin-top: 5px; overflow: hidden;
+    }
+    .cdg-fill {
+      height: 100%; border-radius: 3px;
       background: linear-gradient(90deg, var(--amber), var(--amber2));
     }
-    .conf-tag { font-size: 0.62rem; color: var(--muted); font-style: italic; margin-top: 4px; }
+    .cdg-fill-pred { background: linear-gradient(90deg, var(--green), var(--green2)); }
+    /* Confidence strip at bottom of card */
+    .card-confidence-strip {
+      display: flex; align-items: center; gap: 8px;
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .conf-badge {
+      font-size: 0.62rem; font-weight: 600; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border-s);
+      padding: 2px 7px; border-radius: 6px;
+    }
+    .conf-days-label { font-size: 0.65rem; color: var(--muted); }
     .pct-high { color: var(--green); }
     .pct-mid  { color: var(--amber); }
     .pct-low  { color: var(--red); }
@@ -526,7 +538,8 @@
       .bottle-card.avail, .bottle-card.unavail,
       .bottle-card.available, .bottle-card.unavailable { padding-left: 13px; }
       .bottle-name { font-size: 0.85rem; }
-      .card-stats { display: none; } /* hide mini-stats on mobile for cleanliness */
+      .card-detail-grid { gap: 8px 10px; }
+      .cdg-val { font-size: 0.75rem; }
 
       /* Best bets */
       .best-bet-row { padding: 14px 16px; gap: 12px; }
@@ -768,20 +781,47 @@ function render(data) {
       ? `Available ${b.streak} day${b.streak !== 1 ? 's' : ''} running`
       : `Unavailable ${b.streak} day${b.streak !== 1 ? 's' : ''} running`;
     const pred = b.prediction_tomorrow_pct;
-    const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + 'd' : '—';
+    const avgBetween = b.avg_days_between_releases !== null ? b.avg_days_between_releases.toFixed(1) + ' days' : '—';
+    const daysTracked = Math.round((b.overall_pct / 100) * meta.days_tracked);
     return `
       <div class="bottle-card ${isAvail ? 'avail' : 'unavail'}">
         <div class="bottle-card-top">
           <div class="bottle-name">${b.name}</div>
           <span class="status-chip ${isAvail ? 'chip-avail' : 'chip-unavail'}">${isAvail ? 'In Stock' : 'Out'}</span>
         </div>
-        <div class="card-stats">
-          <div class="cs"><div class="cv">${fmtPct(b.overall_pct, 0)}</div><div class="ck">Overall</div></div>
-          <div class="cs"><div class="cv">${fmtPct(b.rolling_10d_pct, 0)}</div><div class="ck">10-Day</div></div>
-          <div class="cs"><div class="cv">${fmtPct(b.rolling_30d_pct, 0)}</div><div class="ck">30-Day</div></div>
-          <div class="cs"><div class="cv">${avgBetween}</div><div class="ck">Avg Gap</div></div>
+        <div class="card-detail-grid">
+          <div>
+            <div class="cdg-label">Streak</div>
+            <div class="cdg-val">${streakLabel}</div>
+          </div>
+          <div>
+            <div class="cdg-label">10-Day Rate</div>
+            <div class="cdg-val">${fmtPct(b.rolling_10d_pct, 1)}</div>
+            <div class="cdg-bar"><div class="cdg-fill" style="width:${b.rolling_10d_pct ?? 0}%"></div></div>
+          </div>
+          <div>
+            <div class="cdg-label">Overall Rate</div>
+            <div class="cdg-val">${fmtPct(b.overall_pct, 1)}</div>
+            <div class="cdg-bar"><div class="cdg-fill" style="width:${b.overall_pct ?? 0}%"></div></div>
+          </div>
+          <div>
+            <div class="cdg-label">Tomorrow</div>
+            <div class="cdg-val ${pctClass(pred)}">${fmtPct(pred, 1)}</div>
+            <div class="cdg-bar"><div class="cdg-fill cdg-fill-pred" style="width:${pred ?? 0}%"></div></div>
+          </div>
+          <div>
+            <div class="cdg-label">Last Seen</div>
+            <div class="cdg-val">${b.last_seen ?? '—'}</div>
+          </div>
+          <div>
+            <div class="cdg-label">Avg Gap</div>
+            <div class="cdg-val">${avgBetween}</div>
+          </div>
         </div>
-        <div class="streak-text">${streakLabel}</div>
+        <div class="card-confidence-strip">
+          <span class="conf-badge">${b.confidence ?? 'Early data'}</span>
+          <span class="conf-days-label">${daysTracked}/${meta.days_tracked} days tracked</span>
+        </div>
       </div>`;
   }).join('');
 
