@@ -485,8 +485,6 @@
     .sr-card-dago { font-size: 0.63rem; color: var(--muted); margin-top: 2px; }
     .sr-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .sr-tag { font-size: 0.64rem; font-weight: 500; padding: 3px 8px; border-radius: 6px; }
-    .sr-tag-price { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
-    .sr-tag-price.tbd { background: var(--surface2); color: var(--muted); border: 1px solid var(--border-s); }
     .sr-tag-size  { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
     .sr-card-notes { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
     .sr-chronicle-note {
@@ -980,9 +978,6 @@ function render(data) {
       const accentCls = seriesAccentClass(series);
       const seriesLabel = series !== 'Special Release' ? series + ' Series' : 'Special Release';
       const shortName = sr.name.replace(new RegExp(series.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '').trim() || sr.name;
-      const priceTag = sr.price != null
-        ? `<span class="sr-tag sr-tag-price">$${Number(sr.price).toFixed(2)}</span>`
-        : `<span class="sr-tag sr-tag-price tbd">Price TBD</span>`;
       const sizeTag = sr.bottle_size ? `<span class="sr-tag sr-tag-size">${sr.bottle_size}</span>` : '';
       return `
         <div class="sr-card">
@@ -998,7 +993,7 @@ function render(data) {
                 <div class="sr-card-dago">${daysAgoLabel(sr.date)}</div>
               </div>
             </div>
-            <div class="sr-card-tags">${priceTag}${sizeTag}</div>
+            ${sizeTag ? `<div class="sr-card-tags">${sizeTag}</div>` : ''}
             ${sr.notes ? `<div class="sr-card-notes">${sr.notes}</div>` : ''}
           </div>
         </div>`;
