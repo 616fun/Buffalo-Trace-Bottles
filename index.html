@@ -353,50 +353,6 @@
       padding-left: 12px; border-left: 2px solid var(--border-s);
     }
 
-    /* ── PRICE CARDS ── */
-    .price-intro {
-      font-size: 0.82rem; color: var(--muted); margin-bottom: 18px; line-height: 1.6;
-      padding-left: 12px; border-left: 2px solid var(--border-s);
-    }
-    .price-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 12px; margin-bottom: 10px;
-    }
-    .price-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 18px 20px;
-      box-shadow: var(--shadow);
-    }
-    .price-card-name {
-      font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--muted);
-      margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
-    }
-    .price-card-main { font-size: 1.7rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
-    .price-card-main-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; margin-top: 2px; }
-    .price-card-row { display: flex; justify-content: space-between; font-size: 0.73rem; color: var(--muted); margin-top: 4px; }
-    .price-card-row span:last-child { color: var(--text2); font-weight: 600; }
-    .price-tbd-val  { font-size: 1.4rem; font-weight: 700; color: var(--muted); }
-    .price-tbd-note { font-size: 0.7rem; color: var(--muted); font-style: italic; margin-top: 6px; }
-    .price-delta {
-      display: inline-block; font-size: 0.68rem; font-weight: 600;
-      padding: 3px 8px; border-radius: 6px; margin-top: 8px;
-    }
-    .price-delta-none { background: var(--surface2); color: var(--muted); }
-    .price-delta-up   { background: var(--red-bg);   color: var(--red);   }
-    .price-delta-down { background: var(--green-bg); color: var(--green); }
-    .chart-unlock-note {
-      font-size: 0.76rem; color: var(--muted); background: var(--surface);
-      border: 1px dashed var(--border-s); border-radius: 8px;
-      padding: 12px 16px; margin-top: 12px; font-style: italic;
-    }
-    .chart-container {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 24px;
-      box-shadow: var(--shadow);
-    }
-    .chart-container canvas { max-height: 300px; }
-
     /* ── CALENDAR ── */
     .cal-intro {
       font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6;
@@ -573,9 +529,6 @@
       .bet-confidence { display: none; }
 
       /* Price grid */
-      .price-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .price-card { padding: 14px 16px; }
-      .price-card-main { font-size: 1.4rem; }
 
       /* Calendar */
       .cal-outer { padding: 14px 16px; }
@@ -623,7 +576,7 @@
     <a href="#today" class="active">Today</a>
     <a href="#bottles">Bottles</a>
     <a href="#predictions">Best Bets</a>
-    <a href="#prices">Prices</a>
+    
     <a href="#calendar">Calendar</a>
     <a href="#specials">Rare Drops</a>
   </div>
@@ -694,17 +647,6 @@
     </section>
 
     <!-- PRICES -->
-    <section id="prices">
-      <div class="sec-head">
-        <div class="sec-title">Gift Shop Prices</div>
-      </div>
-      <p class="price-intro">Current distillery gift shop prices — updated whenever a change is detected.</p>
-      <div class="price-grid" id="price-grid"></div>
-      <div class="chart-unlock-note" id="price-chart-note" style="display:none"></div>
-      <div class="chart-container" id="price-chart-container" style="display:none; margin-top:16px;">
-        <canvas id="price-chart"></canvas>
-      </div>
-    </section>
 
     <!-- CALENDAR -->
     <section id="calendar">
@@ -772,7 +714,7 @@ function fmtLastSeen(dateStr, todayStr) {
 
 // ── RENDER ──────────────────────────────────────────────────────────────────
 function render(data) {
-  const { meta, today, bottles, price_history, calendar, special_releases_log } = data;
+  const { meta, today, bottles, calendar, special_releases_log } = data;
 
   // Header meta
   const shortDate = new Date(meta.last_updated + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -913,7 +855,6 @@ function render(data) {
   }).join('');
 
   // Price + calendar + SR log
-  buildPriceChart(price_history);
   buildCalendar(calendar);
 
   const srLog = document.getElementById('sr-log');
@@ -1004,87 +945,7 @@ function render(data) {
   srLog.innerHTML = bannerHTML + cardsHTML;
 }
 
-// ── PRICE SECTION ────────────────────────────────────────────────────────────
-function buildPriceChart(history) {
-  const CHART_THRESHOLD = 5;
-  const BOTTLES = [
-    { key: 'blantons',     label: "Blanton's Single Barrel" },
-    { key: 'weller107',    label: 'Weller Antique 107' },
-    { key: 'ehtaylor_sb',  label: 'E.H. Taylor Small Batch' },
-    { key: 'eagle_rare',   label: 'Eagle Rare 10-Year' },
-    { key: 'weller_sr',    label: 'Weller Special Reserve' },
-    { key: 'sazerac_rye',  label: 'Sazerac Rye' },
-    { key: 'bt_bourbon',   label: 'Buffalo Trace Bourbon' },
-  ];
-  const snapshots = history.filter(h => h.date && /^\d{4}/.test(h.date));
-  const grid = document.getElementById('price-grid');
-  grid.innerHTML = BOTTLES.map(b => {
-    const prices   = snapshots.map(h => h[b.key]).filter(v => typeof v === 'number' && !isNaN(v));
-    const current  = prices.length ? prices[prices.length - 1] : null;
-    const first    = prices.length ? prices[0] : null;
-    const lastSnap = snapshots.length ? fmtDate(snapshots[snapshots.length - 1].date) : '—';
-    if (current === null) {
-      return `<div class="price-card">
-        <div class="price-card-name">${b.label}</div>
-        <div class="price-tbd-val">TBD</div>
-        <div class="price-card-main-label">Current Price</div>
-        <div class="price-tbd-note">Not yet recorded at the gift shop.</div>
-      </div>`;
-    }
-    const delta = (first !== null && first !== current) ? current - first : 0;
-    let deltaHTML;
-    if (delta > 0)      deltaHTML = `<span class="price-delta price-delta-up">▲ +$${delta.toFixed(2)}</span>`;
-    else if (delta < 0) deltaHTML = `<span class="price-delta price-delta-down">▼ -$${Math.abs(delta).toFixed(2)}</span>`;
-    else                deltaHTML = `<span class="price-delta price-delta-none">No change</span>`;
-    return `<div class="price-card">
-      <div class="price-card-name">${b.label}</div>
-      <div class="price-card-main">$${current.toFixed(2)}</div>
-      <div class="price-card-main-label">Current Price</div>
-      <div class="price-card-row"><span>First recorded</span><span>$${first.toFixed(2)}</span></div>
-      <div class="price-card-row"><span>Last checked</span><span>${lastSnap}</span></div>
-      ${deltaHTML}
-    </div>`;
-  }).filter(Boolean).join('');
 
-  const noteEl        = document.getElementById('price-chart-note');
-  const chartContainer = document.getElementById('price-chart-container');
-  const remaining     = CHART_THRESHOLD - snapshots.length;
-  if (snapshots.length >= CHART_THRESHOLD) {
-    chartContainer.style.display = 'block';
-    noteEl.style.display = 'none';
-    const COLORS = ['#C07328','#166534','#1D4ED8','#991B1B','#6B21A8','#065F46','#EA580C'];
-    const labels   = snapshots.map(h => fmtDate(h.date));
-    const datasets = BOTTLES.map((b, i) => ({
-      label: b.label,
-      data:  snapshots.map(h => typeof h[b.key] === 'number' ? h[b.key] : null),
-      borderColor: COLORS[i % COLORS.length],
-      backgroundColor: COLORS[i % COLORS.length] + '18',
-      tension: 0.3, pointRadius: 4, spanGaps: true,
-    })).filter(ds => ds.data.some(v => v !== null));
-    const ctx = document.getElementById('price-chart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: { labels, datasets },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { labels: { color: '#5C4A32', font: { family: 'Inter, sans-serif', size: 11 } } },
-          tooltip: { callbacks: { label: c => c.parsed.y !== null ? `${c.dataset.label}: $${c.parsed.y.toFixed(2)}` : null } }
-        },
-        scales: {
-          x: { ticks: { color: '#9C8B75', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-          y: { ticks: { color: '#9C8B75', font: { size: 10 }, callback: v => '$' + v.toFixed(0) }, grid: { color: 'rgba(0,0,0,0.05)' } }
-        }
-      }
-    });
-  } else {
-    noteEl.style.display = 'block';
-    noteEl.innerHTML = `📈 Price trend chart unlocks after ${CHART_THRESHOLD} snapshots — ${remaining} more to go.`;
-  }
-}
-
-// ── CALENDAR ────────────────────────────────────────────────────────────────
 function buildCalendar(calendar) {
   const grid = document.getElementById('cal-grid');
   const KEYS = ['blantons','weller107','ehtaylor_sb','eagle_rare'];
