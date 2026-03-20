@@ -1,13 +1,13 @@
 {
   "meta": {
-    "last_updated": "2026-03-19",
-    "days_tracked": 7,
+    "last_updated": "2026-03-20",
+    "days_tracked": 8,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracedistillery.com/visit-us/product-availability/"
   },
   "today": {
-    "date": "2026-03-19",
-    "day_of_week": "Thursday",
+    "date": "2026-03-20",
+    "day_of_week": "Friday",
     "last_site_update": "7:00am EST",
     "special_release": null,
     "notes": ""
@@ -17,28 +17,28 @@
       "name": "Blanton's Single Barrel",
       "key": "blantons",
       "available_today": 1,
-      "streak": 1,
+      "streak": 2,
       "streak_direction": "available",
-      "overall_pct": 57.1,
-      "rolling_10d_pct": 57.1,
-      "rolling_30d_pct": 57.1,
-      "avg_days_between_releases": 2.0,
-      "prediction_tomorrow_pct": 58.3,
+      "overall_pct": 62.5,
+      "rolling_10d_pct": 62.5,
+      "rolling_30d_pct": 62.5,
+      "avg_days_between_releases": 1.8,
+      "prediction_tomorrow_pct": 60.5,
       "confidence": "Prior only",
-      "last_seen": "2026-03-19",
+      "last_seen": "2026-03-20",
       "prior_frequency": 0.63
     },
     {
       "name": "Weller Antique 107",
       "key": "weller107",
       "available_today": 0,
-      "streak": 1,
+      "streak": 2,
       "streak_direction": "unavailable",
-      "overall_pct": 42.9,
-      "rolling_10d_pct": 42.9,
-      "rolling_30d_pct": 42.9,
+      "overall_pct": 37.5,
+      "rolling_10d_pct": 37.5,
+      "rolling_30d_pct": 37.5,
       "avg_days_between_releases": 2.0,
-      "prediction_tomorrow_pct": 56.9,
+      "prediction_tomorrow_pct": 53.9,
       "confidence": "Prior only",
       "last_seen": "2026-03-18",
       "prior_frequency": 0.75
@@ -47,30 +47,30 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 2,
+      "streak": 3,
       "streak_direction": "available",
-      "overall_pct": 71.4,
-      "rolling_10d_pct": 71.4,
-      "rolling_30d_pct": 71.4,
+      "overall_pct": 75.0,
+      "rolling_10d_pct": 75.0,
+      "rolling_30d_pct": 75.0,
       "avg_days_between_releases": 1.2,
-      "prediction_tomorrow_pct": 90.8,
+      "prediction_tomorrow_pct": 91.2,
       "confidence": "Prior only",
-      "last_seen": "2026-03-19",
+      "last_seen": "2026-03-20",
       "prior_frequency": 0.93
     },
     {
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
       "available_today": 1,
-      "streak": 1,
+      "streak": 2,
       "streak_direction": "available",
-      "overall_pct": 42.9,
-      "rolling_10d_pct": 42.9,
-      "rolling_30d_pct": 42.9,
-      "avg_days_between_releases": 3.0,
-      "prediction_tomorrow_pct": 26.5,
+      "overall_pct": 50.0,
+      "rolling_10d_pct": 50.0,
+      "rolling_30d_pct": 50.0,
+      "avg_days_between_releases": 2.3,
+      "prediction_tomorrow_pct": 30.6,
       "confidence": "Prior only",
-      "last_seen": "2026-03-19",
+      "last_seen": "2026-03-20",
       "prior_frequency": 0.17
     }
   ],
@@ -130,6 +130,14 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null
+    },
+    {
+      "date": "2026-03-20",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null
     }
   ],
   "price_history": [
@@ -138,32 +146,32 @@
       "blantons": 74.99,
       "weller107": 59.99,
       "ehtaylor_sb": 59.99,
-      "eagle_rare": 43.0,
-      "weller_sr": 30.0,
-      "ehtaylor_rye": "TBD",
-      "sazerac_rye": 30.0,
-      "bt_bourbon": 27.0,
+      "eagle_rare": 43,
+      "weller_special_reserve": 30,
+      "ehtaylor_straight_rye": "TBD",
+      "sazerac_rye": 30,
+      "buffalo_trace": 27,
       "wheatley_vodka": "TBD",
-      "bt_cream": "TBD"
+      "bourbon_cream": "TBD"
     },
     {
       "date": "2026-03-18 00:00:00",
       "blantons": 74.99,
       "weller107": 59.99,
       "ehtaylor_sb": 59.99,
-      "eagle_rare": 43.0,
-      "weller_sr": 30.0,
-      "ehtaylor_rye": "TBD",
+      "eagle_rare": 43,
+      "weller_special_reserve": 30,
+      "ehtaylor_straight_rye": "TBD",
       "sazerac_rye": 29.99,
-      "bt_bourbon": 27.0,
+      "buffalo_trace": 27,
       "wheatley_vodka": 16.99,
-      "bt_cream": 21.99
+      "bourbon_cream": 21.99
     }
   ],
   "special_releases_log": [
     {
       "date": "2026-03-13",
-      "name": "Thursday"
+      "name": "E.H. Taylor Straight Rye"
     }
   ]
 }
