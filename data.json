@@ -3,7 +3,7 @@
     "last_updated": "2026-03-20",
     "days_tracked": 8,
     "site_version": "1.0",
-    "data_source": "https://www.buffalotracedistillery.com/visit-us/product-availability/"
+    "data_source": "https://www.buffalotracebottledrops.com"
   },
   "today": {
     "date": "2026-03-20",
@@ -138,34 +138,6 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null
-    }
-  ],
-  "price_history": [
-    {
-      "date": "2026-03-14 00:00:00",
-      "blantons": 74.99,
-      "weller107": 59.99,
-      "ehtaylor_sb": 59.99,
-      "eagle_rare": 43,
-      "weller_special_reserve": 30,
-      "ehtaylor_straight_rye": "TBD",
-      "sazerac_rye": 30,
-      "buffalo_trace": 27,
-      "wheatley_vodka": "TBD",
-      "bourbon_cream": "TBD"
-    },
-    {
-      "date": "2026-03-18 00:00:00",
-      "blantons": 74.99,
-      "weller107": 59.99,
-      "ehtaylor_sb": 59.99,
-      "eagle_rare": 43,
-      "weller_special_reserve": 30,
-      "ehtaylor_straight_rye": "TBD",
-      "sazerac_rye": 29.99,
-      "buffalo_trace": 27,
-      "wheatley_vodka": 16.99,
-      "bourbon_cream": 21.99
     }
   ],
   "special_releases_log": [
