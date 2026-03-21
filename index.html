@@ -327,16 +327,6 @@
     .guide-tip-text{font-size:.8rem;color:var(--text2);line-height:1.55}
     .guide-tip-text strong{color:var(--text);font-weight:600}
     .guide-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .guide-price-card{border-radius:10px;padding:18px 20px;text-align:center}
-    .guide-price-card.msrp{background:var(--green-bg);border:1px solid var(--green-bd)}
-    .guide-price-card.secondary{background:var(--red-bg);border:1px solid var(--red-bd)}
-    .gpc-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}
-    .gpc-label.msrp{color:var(--green)}
-    .gpc-label.secondary{color:var(--red)}
-    .gpc-prices{display:flex;flex-direction:column;gap:4px}
-    .gpc-price-row{display:flex;justify-content:space-between;align-items:center;font-size:.78rem}
-    .gpc-bottle{color:var(--text2)}
-    .gpc-amt{font-weight:700;color:var(--text)}
     .faq{display:flex;flex-direction:column;gap:1px}
     .faq-item{border-bottom:1px solid var(--border)}
     .faq-q{padding:14px 0;font-size:.84rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;user-select:none}
@@ -360,8 +350,8 @@
     .sr-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;display:flex;box-shadow:var(--shadow);transition:box-shadow .2s}
     .sr-card:hover{box-shadow:var(--shadow-md)}
     .sr-accent{width:4px;flex-shrink:0;background:linear-gradient(180deg,var(--amber),var(--amber2))}
-    .sr-accent.ehtaylor{background:linear-gradient(180deg,#C07328,#F0C060)}
-    .sr-accent.blantons{background:linear-gradient(180deg,#1E3A8A,#3B82F6)}
+    .sr-accent.blantons{background:linear-gradient(180deg,#C07328,#E09040)}
+    .sr-accent.ehtaylor{background:linear-gradient(180deg,#1E3A8A,#3B82F6)}
     .sr-accent.weller{background:linear-gradient(180deg,#166534,#4ADE80)}
     .sr-accent.vanwinkle{background:linear-gradient(180deg,#6B21A8,#C084FC)}
     .sr-card-body{padding:16px 20px;flex:1}
@@ -647,14 +637,14 @@
     <button class="bn-item" data-page="calendar"><span class="bn-icon">📅</span><span class="bn-label">Calendar</span></button>
     <button class="bn-item" data-page="bottles"><span class="bn-icon">🛢️</span><span class="bn-label">Bottles</span></button>
     <button class="bn-item" data-page="guide"><span class="bn-icon">🗺</span><span class="bn-label">Guide</span></button>
+    <button class="bn-item" data-page="specials"><span class="bn-icon">⭐</span><span class="bn-label">Rare</span></button>
     <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="bn-item bn-tip"><span class="bn-icon">💛</span><span class="bn-label">Tip</span></a>
   </div>
 </nav>
 
 <footer>
   <p>Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a></p>
-  <p>Auto-updated each morning Mon–Sat &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
-  <p style="margin-top:8px;font-size:.65rem;color:rgba(255,255,255,.2)">Preview build — v2 design concept</p>
+  <p>Auto-updated Mon–Sat at 7am EST · Sun at 8am EST &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
 </footer>
 
 <script>
@@ -836,8 +826,9 @@ function renderToday(data) {
   const avgAvailPerDay = data.calendar.length
     ? (data.calendar.reduce((sum,d)=>sum+BOTTLE_KEYS.filter(k=>d[k]===1).length,0)/data.calendar.length).toFixed(1)
     : '—';
+  const startDateLabel = data.calendar.length ? 'Since '+fmtDate(data.calendar[0].date) : 'Tracking in progress';
   document.getElementById('quick-stats').innerHTML = `
-    <div class="qs-card"><div class="qs-label">Days Tracked</div><div class="qs-value">${meta.days_tracked}</div><div class="qs-sub">Since Mar 13, 2026</div></div>
+    <div class="qs-card"><div class="qs-label">Days Tracked</div><div class="qs-value">${meta.days_tracked}</div><div class="qs-sub">${startDateLabel}</div></div>
     <div class="qs-card"><div class="qs-label">Days w/ Bottles</div><div class="qs-value">${allAvailDays}</div><div class="qs-sub">${data.calendar.length?Math.round(allAvailDays/data.calendar.length*100):0}% of tracked days</div></div>
     <div class="qs-card"><div class="qs-label">Avg Bottles/Day</div><div class="qs-value">${avgAvailPerDay}</div><div class="qs-sub">Of 4 rotating bottles</div></div>
     <div class="qs-card"><div class="qs-label">Special Releases</div><div class="qs-value">${specialCount}</div><div class="qs-sub">${specialCount===0?'None yet logged':'Rare drop'+(specialCount!==1?'s':'')+' logged'}</div></div>`;
