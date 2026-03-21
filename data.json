@@ -5,12 +5,19 @@
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total": 7,
+      "total_days": 7,
       "correct": 0,
       "partial": 6,
       "incorrect": 1,
-      "correct_pct": 0.0,
-      "correct_or_partial_pct": 85.7
+      "binary_total": 28,
+      "binary_correct": 16,
+      "binary_accuracy_pct": 57.1,
+      "per_bottle": {
+        "blantons": 57.1,
+        "weller107": 42.9,
+        "ehtaylor_sb": 71.4,
+        "eagle_rare": 57.1
+      }
     }
   },
   "today": {
