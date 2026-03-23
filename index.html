@@ -653,30 +653,30 @@
 // ─────────────────────────────────────────────
 const INLINE_DATA = {
   "meta": {
-    "last_updated": "2026-03-22",
-    "days_tracked": 10,
+    "last_updated": "2026-03-23",
+    "days_tracked": 11,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 8,
+      "total_days": 9,
       "correct": 1,
       "partial": 6,
-      "incorrect": 1,
-      "binary_total": 32,
+      "incorrect": 2,
+      "binary_total": 36,
       "binary_correct": 20,
-      "binary_accuracy_pct": 62.5,
+      "binary_accuracy_pct": 55.6,
       "per_bottle": {
-        "blantons": 62.5,
-        "weller107": 50.0,
-        "ehtaylor_sb": 75.0,
-        "eagle_rare": 62.5
+        "blantons": 55.6,
+        "weller107": 44.4,
+        "ehtaylor_sb": 66.7,
+        "eagle_rare": 55.6
       }
     }
   },
   "today": {
-    "date": "2026-03-22",
-    "day_of_week": "Sunday",
-    "last_site_update": "11:00am EST",
+    "date": "2026-03-23",
+    "day_of_week": "Monday",
+    "last_site_update": "6:55am EST",
     "special_release": null,
     "notes": ""
   },
@@ -684,14 +684,14 @@ const INLINE_DATA = {
     {
       "name": "Blanton's Single Barrel",
       "key": "blantons",
-      "available_today": 1,
-      "streak": 4,
-      "streak_direction": "available",
-      "overall_pct": 70.0,
-      "rolling_10d_pct": 70.0,
-      "rolling_30d_pct": 70.0,
-      "avg_days_between_releases": 1.5,
-      "prediction_tomorrow_pct": 64.3,
+      "available_today": 0,
+      "streak": 1,
+      "streak_direction": "unavailable",
+      "overall_pct": 63.6,
+      "rolling_10d_pct": 60.0,
+      "rolling_30d_pct": 63.6,
+      "avg_days_between_releases": 1.0,
+      "prediction_tomorrow_pct": 58.3,
       "confidence": "Prior only",
       "last_seen": "2026-03-22",
       "prior_frequency": 0.63
@@ -699,14 +699,14 @@ const INLINE_DATA = {
     {
       "name": "Weller Antique 107",
       "key": "weller107",
-      "available_today": 1,
-      "streak": 2,
-      "streak_direction": "available",
-      "overall_pct": 50.0,
+      "available_today": 0,
+      "streak": 1,
+      "streak_direction": "unavailable",
+      "overall_pct": 45.5,
       "rolling_10d_pct": 50.0,
-      "rolling_30d_pct": 50.0,
+      "rolling_30d_pct": 45.5,
       "avg_days_between_releases": 2.0,
-      "prediction_tomorrow_pct": 72.1,
+      "prediction_tomorrow_pct": 56.2,
       "confidence": "Prior only",
       "last_seen": "2026-03-22",
       "prior_frequency": 0.75
@@ -714,14 +714,14 @@ const INLINE_DATA = {
     {
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
-      "available_today": 1,
+      "available_today": 0,
       "streak": 1,
-      "streak_direction": "available",
-      "overall_pct": 70.0,
+      "streak_direction": "unavailable",
+      "overall_pct": 63.6,
       "rolling_10d_pct": 70.0,
-      "rolling_30d_pct": 70.0,
+      "rolling_30d_pct": 63.6,
       "avg_days_between_releases": 1.3,
-      "prediction_tomorrow_pct": 86.9,
+      "prediction_tomorrow_pct": 76.7,
       "confidence": "Prior only",
       "last_seen": "2026-03-22",
       "prior_frequency": 0.93
@@ -729,16 +729,16 @@ const INLINE_DATA = {
     {
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
-      "available_today": 0,
-      "streak": 2,
-      "streak_direction": "unavailable",
-      "overall_pct": 40.0,
+      "available_today": 1,
+      "streak": 1,
+      "streak_direction": "available",
+      "overall_pct": 45.5,
       "rolling_10d_pct": 40.0,
-      "rolling_30d_pct": 40.0,
-      "avg_days_between_releases": 2.3,
-      "prediction_tomorrow_pct": 19.0,
+      "rolling_30d_pct": 45.5,
+      "avg_days_between_releases": 2.0,
+      "prediction_tomorrow_pct": 28.9,
       "confidence": "Prior only",
-      "last_seen": "2026-03-20",
+      "last_seen": "2026-03-23",
       "prior_frequency": 0.17
     }
   ],
@@ -821,6 +821,14 @@ const INLINE_DATA = {
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-23",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 1,
       "special_release": null
     }
   ],
