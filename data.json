@@ -1,0 +1,252 @@
+{
+  "meta": {
+    "last_updated": "2026-03-31",
+    "days_tracked": 19,
+    "site_version": "1.0",
+    "data_source": "https://www.buffalotracebottledrops.com",
+    "prediction_accuracy": {
+      "total_days": 17,
+      "correct": 3,
+      "partial": 11,
+      "incorrect": 2,
+      "binary_total": 68,
+      "binary_correct": 43,
+      "binary_accuracy_pct": 63.2,
+      "per_bottle": {
+        "blantons": 70.6,
+        "weller107": 35.3,
+        "ehtaylor_sb": 76.5,
+        "eagle_rare": 70.6
+      }
+    }
+  },
+  "today": {
+    "date": "2026-03-31",
+    "day_of_week": "Tuesday",
+    "last_site_update": "9:00am EST",
+    "special_release": null,
+    "notes": ""
+  },
+  "bottles": [
+    {
+      "name": "Blanton's Single Barrel",
+      "key": "blantons",
+      "available_today": 1,
+      "streak": 1,
+      "streak_direction": "available",
+      "overall_pct": 68.42,
+      "rolling_10d_pct": 70.0,
+      "rolling_30d_pct": 68.42,
+      "avg_days_between_releases": 1.5,
+      "prediction_tomorrow_pct": 61.1,
+      "confidence": "Medium",
+      "last_seen": "2026-03-31",
+      "prior_frequency": 0.63
+    },
+    {
+      "name": "Weller Antique 107",
+      "key": "weller107",
+      "available_today": 0,
+      "streak": 1,
+      "streak_direction": "unavailable",
+      "overall_pct": 36.84,
+      "rolling_10d_pct": 30.0,
+      "rolling_30d_pct": 36.84,
+      "avg_days_between_releases": 2.67,
+      "prediction_tomorrow_pct": 47.1,
+      "confidence": "Medium",
+      "last_seen": "2026-03-30",
+      "prior_frequency": 0.75
+    },
+    {
+      "name": "E.H. Taylor Small Batch",
+      "key": "ehtaylor_sb",
+      "available_today": 1,
+      "streak": 8,
+      "streak_direction": "available",
+      "overall_pct": 78.95,
+      "rolling_10d_pct": 90.0,
+      "rolling_30d_pct": 78.95,
+      "avg_days_between_releases": 1.21,
+      "prediction_tomorrow_pct": 87.1,
+      "confidence": "Medium",
+      "last_seen": "2026-03-31",
+      "prior_frequency": 0.93
+    },
+    {
+      "name": "Eagle Rare 10-Year",
+      "key": "eagle_rare",
+      "available_today": 0,
+      "streak": 6,
+      "streak_direction": "unavailable",
+      "overall_pct": 31.58,
+      "rolling_10d_pct": 20.0,
+      "rolling_30d_pct": 31.58,
+      "avg_days_between_releases": 2.4,
+      "prediction_tomorrow_pct": 21.5,
+      "confidence": "Medium",
+      "last_seen": "2026-03-25",
+      "prior_frequency": 0.17
+    }
+  ],
+  "calendar": [
+    {
+      "date": "2026-03-13",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 1,
+      "special_release": "E.H. Taylor Straight Rye"
+    },
+    {
+      "date": "2026-03-14",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-15",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-16",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-17",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-18",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-19",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-20",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-21",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-22",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-23",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 1,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-24",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-25",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-26",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-27",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-28",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-29",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-30",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    },
+    {
+      "date": "2026-03-31",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null
+    }
+  ],
+  "special_releases_log": [
+    {
+      "date": "2026-03-13",
+      "name": "E.H. Taylor Straight Rye"
+    }
+  ]
+}
