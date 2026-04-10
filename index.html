@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buffalo Trace Bottle Drops | Availability Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:#F7F3ED; --surface:#FFFFFF; --surface2:#F2EDE4;
+      --border:rgba(0,0,0,0.08); --border-s:#E8DDD0;
+      --text:#1A0F05; --text2:#5C4A32; --muted:#9C8B75;
+      --amber:#C07328; --amber2:#E09040; --gold:#F0C060;
+      --green:#166534; --green2:#4CAF50; --green-bg:#F0FDF4; --green-bd:#BBF7D0;
+      --red:#991B1B; --red2:#EF5350; --red-bg:#FEF2F2; --red-bd:#FECACA;
+      --blantons:#C07328; --weller:#2D6A4F; --ehtaylor:#1E3A8A; --eagle:#7F1D1D;
+      --ui:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      --display:'Playfair Display',Georgia,serif;
+      --radius:12px;
+      --shadow-sm:0 1px 2px rgba(0,0,0,0.05);
+      --shadow:0 1px 4px rgba(0,0,0,0.06),0 0 0 1px rgba(0,0,0,0.04);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.09),0 0 0 1px rgba(0,0,0,0.04);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;scroll-behavior:smooth}
+    body{font-family:var(--ui);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+    /* ── HEADER ── */
+    header{background:var(--text);position:sticky;top:0;z-index:200}
+    .header-bar{max-width:1100px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer}
+    .brand-mark{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--amber),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .brand-text h1{font-family:var(--display);font-size:1.2rem;color:#fff;font-weight:700;line-height:1.1}
+    .brand-text h1 span{color:var(--gold)}
+    .brand-text p{font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px;letter-spacing:.02em}
+    .hdr-right{display:flex;align-items:center;gap:20px}
+    .hdr-meta{text-align:right}
+    .hdr-update{font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.6)}
+    .hdr-days{font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:2px}
+
+    /* ── DESKTOP NAV ── */
+    .top-nav{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);position:sticky;top:64px;z-index:199}
+    .top-nav-inner{max-width:1100px;margin:0 auto;padding:0 16px 0 28px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
+    .top-nav-inner::-webkit-scrollbar{display:none}
+    .nav-link{text-decoration:none;font-size:0.78rem;font-weight:500;color:var(--muted);padding:13px 16px;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--ui)}
+    .nav-link:hover{color:var(--text2)}
+    .nav-link.active{color:var(--amber);border-bottom-color:var(--amber)}
+    .nav-spacer{flex:1}
+    .nav-venmo{display:flex;align-items:center;gap:6px;background:var(--amber);color:#fff;font-size:0.72rem;font-weight:700;letter-spacing:.04em;padding:7px 14px;border-radius:20px;text-decoration:none;white-space:nowrap;flex-shrink:0;margin:8px 0;box-shadow:0 2px 8px rgba(192,115,40,.35);transition:background .2s,transform .15s}
+    .nav-venmo:hover{background:var(--amber2);transform:translateY(-1px)}
+
+    /* ── SPECIAL ALERT ── */
+
+    /* ── MAIN ── */
+    main{max-width:1100px;margin:0 auto;padding:36px 28px 100px}
+    .page{display:none}
+    .page.active{display:block}
+
+    /* ── SECTION HEAD ── */
+    .sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+    .sec-head::after{content:'';flex:1;height:1px;background:var(--border);margin-left:16px}
+    .sec-title{font-family:var(--display);font-size:1.25rem;font-weight:700;color:var(--text);letter-spacing:-.01em;white-space:nowrap}
+    .sec-sub{font-size:.75rem;color:var(--muted);font-style:italic;margin-left:10px;white-space:nowrap}
+
+    /* ── TODAY PAGE ── */
+    .today-hero{background:var(--text);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-md);position:relative}
+    .today-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.3) 0%,transparent 60%);pointer-events:none}
+    .today-hero-top{padding:32px 36px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;position:relative;z-index:1}
+    .today-eyebrow{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4);margin-bottom:10px}
+    .today-headline{font-family:var(--display);font-size:2.4rem;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.02em}
+    .today-headline .hl-green{color:#4ADE80}
+    .today-headline .hl-red{color:#FCA5A5}
+    .today-headline .hl-closed{color:#94a3b8}
+    .today-sub{font-size:.8rem;color:rgba(255,255,255,.45);margin-top:10px;line-height:1.5}
+    .today-kpis{display:flex;gap:10px;flex-shrink:0}
+    .kpi{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;text-align:center;min-width:72px}
+    .kpi-num{font-size:2rem;font-weight:700;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+    .kpi-num.green{color:#4ADE80}
+    .kpi-num.red{color:#FCA5A5}
+    .kpi-num.gold{color:var(--gold)}
+    .kpi-lbl{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.35);margin-top:4px}
+    .today-avail-panel{background:#1C3829;border-top:1px solid #2D6A4F;padding:20px 36px}
+    .tap-eyebrow{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:14px}
+    .tap-bottles{display:flex;flex-wrap:wrap;gap:10px 24px}
+    .tap-bottle-avail{font-size:.95rem;font-weight:600;color:#4ADE80;display:flex;align-items:center;gap:6px}
+    .tap-bottle-avail::before{content:'✓';font-size:.8rem;opacity:.8}
+    .tap-bottle-unavail{font-size:.85rem;font-weight:500;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:6px}
+    .tap-bottle-unavail::before{content:'✗';font-size:.75rem}
+    .today-sr-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:#FFFBEB;border-top:1px solid #FDE68A;font-size:.8rem;color:var(--text2)}
+    .today-sr-strip.show{display:flex}
+    .today-closure-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:#111827;border-top:1px solid #334155;font-size:.8rem;color:#94a3b8}
+    .today-closure-strip.show{display:flex}
+
+    /* Today quick stats row */
+    .quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+    .qs-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow)}
+    .qs-label{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+    .qs-value{font-size:1.45rem;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
+    .qs-sub{font-size:.7rem;color:var(--muted);margin-top:4px}
+
+    /* Bottle grid (today) */
+    .bottle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+    .bottle-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;transition:box-shadow .2s,transform .2s}
+    .bottle-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+    .bottle-card.avail{border-left:3px solid var(--green);padding-left:17px}
+    .bottle-card.unavail{border-left:3px solid #E5E7EB;padding-left:17px}
+    .bc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .bc-name{font-size:.88rem;font-weight:600;color:var(--text);line-height:1.4}
+    .bc-badge{font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;letter-spacing:.04em;text-transform:uppercase}
+    .bc-badge.in{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+    .bc-badge.out{background:#F9FAFB;color:var(--muted);border:1px solid #E5E7EB}
+    .bc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+    .bcs-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+    .bcs-val{font-size:.78rem;font-weight:700;color:var(--text2)}
+    .bcs-bar{background:var(--surface2);border-radius:3px;height:4px;margin-top:4px;overflow:hidden}
+    .bcs-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--amber2))}
+    .bcs-fill-pred{background:linear-gradient(90deg,var(--green),var(--green2))}
+    .bc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)}
+    .bc-conf{font-size:.62rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border-s);padding:2px 7px;border-radius:6px}
+    .bc-days{font-size:.62rem;color:var(--muted)}
+    .pct-high{color:var(--green)}
+    .pct-mid{color:var(--amber)}
+    .pct-low{color:var(--red)}
+
+    /* Tomorrow best bets */
+    .best-bets-grid{display:flex;flex-direction:column;gap:8px}
+    .bet-row{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:box-shadow .2s}
+    .bet-row:hover{box-shadow:var(--shadow-md)}
+    .bet-rank{font-size:.78rem;font-weight:700;color:var(--muted);width:22px;flex-shrink:0;text-align:center}
+    .bet-rank.r1{color:var(--amber)}
+    .bet-name{font-size:.85rem;font-weight:600;color:var(--text);width:160px;flex-shrink:0;line-height:1.3}
+    .bet-bar-wrap{flex:1}
+    .bet-bar-track{background:var(--surface2);border-radius:4px;height:6px;overflow:hidden;margin-bottom:7px}
+    .bet-bar-fill{height:100%;border-radius:4px}
+    .fill-strong{background:linear-gradient(90deg,#059669,#34D399)}
+    .fill-good{background:linear-gradient(90deg,#16A34A,#4ADE80)}
+    .fill-flip{background:linear-gradient(90deg,var(--amber),var(--amber2))}
+    .fill-low{background:linear-gradient(90deg,#DC2626,#FCA5A5)}
+    .bet-meta{display:flex;justify-content:space-between;align-items:center}
+    .bet-pct{font-size:.95rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+    .bet-verdict{font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+    .v-strong{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+    .v-good{background:#F0FDF4;color:#15803D;border:1px solid #86EFAC}
+    .v-flip{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+    .v-low{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+
+    /* ── ANALYTICS PAGE ── */
+    .analytics-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+    .ak-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:20px;box-shadow:var(--shadow);text-align:center}
+    .ak-num{font-size:2rem;font-weight:700;color:var(--amber);line-height:1;font-variant-numeric:tabular-nums}
+    .ak-label{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:6px}
+    .ak-sub{font-size:.7rem;color:var(--muted);margin-top:4px}
+
+    /* Hunt Outlook hero */
+    .hunt-outlook{background:var(--text);border-radius:20px;overflow:hidden;margin-bottom:28px;box-shadow:var(--shadow-md);position:relative}
+    .hunt-outlook::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.32) 0%,transparent 60%);pointer-events:none}
+    .ho-inner{padding:32px 36px;position:relative;z-index:1}
+    .ho-eyebrow{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.35);margin-bottom:10px}
+    .ho-verdict{font-family:var(--display);font-size:2rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:8px}
+    .ho-verdict .vg{color:#4ADE80}.ho-verdict .vm{color:var(--gold)}.ho-verdict .vs{color:#FCA5A5}
+    .ho-sub{font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:24px;line-height:1.5}
+    .ho-bottles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .ho-bottle{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 10px;text-align:center}
+    .ho-bottle-short{font-size:.6rem;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ho-bottle-pct{font-size:1.55rem;font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+    .ho-bottle-bar{background:rgba(255,255,255,.1);border-radius:4px;height:4px;margin:8px 0;overflow:hidden}
+    .ho-bottle-bar-fill{height:100%;border-radius:4px}
+    .ho-bottle-verdict{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 7px;border-radius:10px;display:inline-block}
+    .hbv-strong{background:rgba(74,222,128,.2);color:#4ADE80}
+    .hbv-good{background:rgba(134,239,172,.15);color:#86EFAC}
+    .hbv-flip{background:rgba(240,192,96,.2);color:var(--gold)}
+    .hbv-low{background:rgba(252,165,165,.15);color:#FCA5A5}
+
+    /* Frequency cards */
+    .freq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px}
+    .freq-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:20px 22px;box-shadow:var(--shadow)}
+    .freq-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+    .freq-name{font-size:.78rem;font-weight:600;color:var(--text);line-height:1.35}
+    .freq-fraction{font-size:1.5rem;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
+    .freq-fraction-label{font-size:.7rem;color:var(--muted);margin-top:3px;margin-bottom:12px}
+    .freq-dots{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+    .freq-dot{width:14px;height:14px;border-radius:50%}
+    .freq-dot.on{opacity:1}.freq-dot.off{opacity:.12}.freq-dot.is-closure{opacity:.35!important;filter:grayscale(1)}
+    .freq-meta{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);padding-top:10px;border-top:1px solid var(--border)}
+    .freq-meta strong{color:var(--text2);font-weight:600}
+
+    /* Pattern heatmap (replaces timeline chart) */
+    .pattern-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow);margin-bottom:28px;overflow-x:auto}
+    .pattern-card-title{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:4px}
+    .pattern-card-sub{font-size:.72rem;color:var(--muted);font-style:italic;margin-bottom:18px}
+    .pg-inner{min-width:320px}
+    .pg-header-row{display:flex;align-items:center;margin-bottom:8px}
+    .pg-spacer{width:118px;flex-shrink:0}
+    .pg-date{flex:1;text-align:center;font-size:.54rem;color:var(--muted);line-height:1.3}
+    .pg-row{display:flex;align-items:center;margin-bottom:10px}
+    .pg-label{width:118px;flex-shrink:0;font-size:.72rem;font-weight:600;color:var(--text2);padding-right:6px}
+    .pg-cell{flex:1;display:flex;align-items:center;justify-content:center}
+    .pg-dot{width:22px;height:22px;border-radius:50%;cursor:default;transition:transform .15s}
+    .pg-dot:hover{transform:scale(1.2)}
+    .pg-dot.on{opacity:1}.pg-dot.off{opacity:.11}.pg-dot.is-closure{opacity:.2!important;filter:grayscale(1)}
+    .pg-legend{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+    .pg-leg-item{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--text2)}
+
+    /* Chart card (analytics happy medium) */
+    .chart-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow);margin-bottom:24px}
+    .chart-card-title{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:3px}
+    .chart-card-sub{font-size:.72rem;color:var(--muted);font-style:italic;margin-bottom:16px}
+    .chart-wrap{position:relative;height:220px}
+
+    /* Smart Insights */
+    .insights-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .insight-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start}
+    .insight-card.hl{background:linear-gradient(135deg,#FFFBEB 0%,#FFF 60%);border-color:#FDE68A}
+    .insight-icon{font-size:1.5rem;flex-shrink:0;line-height:1;margin-top:2px}
+    .insight-head{font-size:.83rem;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.35}
+    .insight-body{font-size:.74rem;color:var(--text2);line-height:1.65}
+
+    /* ── CALENDAR PAGE ── */
+    .cal-controls{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .cal-nav-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--text2);transition:background .15s}
+    .cal-nav-btn:hover{background:var(--surface2)}
+    .cal-month-label{font-family:var(--display);font-size:1.2rem;font-weight:700;color:var(--text);flex:1}
+    .cal-month-summary{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:18px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border-s)}
+    .cal-sum-item{font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:5px}
+    .cal-sum-val{font-weight:700;color:var(--text)}
+    .cal-grid-outer{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 18px;box-shadow:var(--shadow)}
+    .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
+    .cal-dow{text-align:center;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0}
+    .cal-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+    .cal-day{min-height:82px;background:var(--surface2);border-radius:10px;padding:7px 6px 5px;display:flex;flex-direction:column;border:1.5px solid transparent;transition:all .15s;cursor:default}
+    .cal-day.has-data{background:var(--surface);border-color:var(--border-s)}
+    .cal-day.count-4{background:#d4edda!important;border-color:#9fcea9!important}
+    .cal-day.count-3{background:#e8f5e9!important;border-color:#b8dfbc!important}
+    .cal-day.count-2{background:#fef9e7!important;border-color:#f9e4a0!important}
+    .cal-day.count-1{background:#fff4e8!important;border-color:#f5d4a0!important}
+    .cal-day.count-0{background:#fdecea!important;border-color:#f5bdb8!important}
+    .cal-day.is-closure{background:#1e2535!important;border-color:#334155!important}
+    .cal-day.is-closure .cal-score{color:#475569!important}
+    .cal-day.today-cell{border:2px solid var(--amber)!important;box-shadow:0 0 0 3px rgba(196,135,40,.13)!important}
+    .cal-day.today-cell.count-4{background:#d4edda!important}
+    .cal-day.today-cell.count-3{background:#e8f5e9!important}
+    .cal-day.today-cell.count-2{background:#fef9e7!important}
+    .cal-day.today-cell.count-1{background:#fff4e8!important}
+    .cal-day.today-cell.count-0{background:#fdecea!important}
+    .cal-day.today-cell.has-data:not([class*="count-"]){background:#FFFBEB!important}
+    .cal-day.empty{background:transparent;border:none}
+    .cal-day-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+    .cal-day-num{font-size:.68rem;font-weight:600;color:var(--muted);line-height:1}
+    .cal-day.has-data .cal-day-num{color:var(--text2)}
+    .cal-day.today-cell .cal-day-num{color:var(--amber);font-weight:800}
+    .cal-today-badge{font-size:.46rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--amber);color:#fff;padding:1px 4px;border-radius:3px;line-height:1.4}
+    .cal-score{font-size:.58rem;font-weight:700;color:var(--muted);line-height:1}
+    .cal-score.s4{color:#276c3e}
+    .cal-score.s3{color:#3a8a50}
+    .cal-score.s2{color:#b07d00}
+    .cal-score.s1{color:#c06820}
+    .cal-score.s0{color:#c0392b}
+    .cal-chips{display:flex;flex-wrap:wrap;gap:3px;flex:1;align-content:flex-start}
+    .cal-chip{font-size:.54rem;font-weight:800;padding:2px 5px;border-radius:4px;color:#fff;letter-spacing:.02em;line-height:1.45;white-space:nowrap}
+    .cal-chip.cc-blantons{background:var(--blantons)}
+    .cal-chip.cc-weller107{background:var(--weller)}
+    .cal-chip.cc-ehtaylor_sb{background:var(--ehtaylor)}
+    .cal-chip.cc-eagle_rare{background:var(--eagle)}
+    .cal-chip.cc-special{background:var(--gold);color:#1a1a1a}
+    .cal-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;align-items:center}
+    .cal-leg-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text2)}
+    .cal-leg-chip{font-size:.54rem;font-weight:800;padding:2px 6px;border-radius:4px;color:#fff;line-height:1.45}
+    .cal-leg-divider{width:1px;height:14px;background:var(--border-s);margin:0 4px}
+    .cal-leg-heat{display:flex;align-items:center;gap:4px}
+    .cal-leg-sq{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+    /* ── BOTTLES PAGE ── */
+    .bottle-profiles{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+    .bp-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-md);transition:box-shadow .2s,transform .2s}
+    .bp-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.13);transform:translateY(-2px)}
+    .bp-header{padding:24px 28px 20px;position:relative;overflow:hidden}
+    .bp-header::before{content:'';position:absolute;inset:0;opacity:.12}
+    .bp-header.blantons::before{background:var(--blantons)}
+    .bp-header.weller::before{background:var(--weller)}
+    .bp-header.ehtaylor::before{background:var(--ehtaylor)}
+    .bp-header.eagle::before{background:var(--eagle)}
+    .bp-series{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;position:relative;z-index:1}
+    .bp-name{font-family:var(--display);font-size:1.4rem;font-weight:700;color:var(--text);line-height:1.15;position:relative;z-index:1}
+    .bp-tagline{font-size:.78rem;color:var(--text2);margin-top:6px;font-style:italic;position:relative;z-index:1}
+    .bp-availability-strip{display:flex;align-items:center;gap:8px;margin-top:14px;position:relative;z-index:1}
+    .bp-avail-badge{font-size:.62rem;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+    .bp-avail-badge.in{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+    .bp-avail-badge.out{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+    .bp-streak{font-size:.72rem;color:var(--muted)}
+    .bp-body{padding:20px 28px 24px}
+    .bp-desc{font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:18px}
+    .bp-section-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+    .bp-notes{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+    .bp-note{font-size:.78rem;color:var(--text2);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+    .bp-note::before{content:'◆';font-size:.45rem;color:var(--amber);flex-shrink:0;margin-top:5px}
+    .bp-value-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+    .bp-val-cell{background:var(--surface2);border-radius:8px;padding:10px 12px;text-align:center}
+    .bp-val-num{font-size:1.1rem;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
+    .bp-val-lbl{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:4px}
+    .bp-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--border);padding-top:16px}
+    .bp-stat{text-align:center}
+    .bp-stat-num{font-size:1rem;font-weight:700;color:var(--text2);font-variant-numeric:tabular-nums}
+    .bp-stat-lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+    .bp-donut-wrap{position:relative;width:60px;height:60px;margin:0 auto 6px}
+    .bp-donut-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--text2)}
+
+    /* ── GUIDE PAGE ── */
+    .guide-hero{background:var(--text);border-radius:20px;padding:40px 44px;margin-bottom:32px;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
+    .guide-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.35) 0%,transparent 60%);pointer-events:none}
+    .guide-hero-inner{position:relative;z-index:1;max-width:600px}
+    .guide-hero-eyebrow{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.4);margin-bottom:10px}
+    .guide-hero-title{font-family:var(--display);font-size:2.2rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:12px}
+    .guide-hero-title span{color:var(--gold)}
+    .guide-hero-body{font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.7}
+    .guide-sections{display:flex;flex-direction:column;gap:20px}
+    .guide-section{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:28px 32px;box-shadow:var(--shadow)}
+    .guide-section-icon{font-size:1.6rem;margin-bottom:12px}
+    .guide-section-title{font-family:var(--display);font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:10px}
+    .guide-section-body{font-size:.82rem;color:var(--text2);line-height:1.75}
+    .guide-section-body p{margin-bottom:10px}
+    .guide-section-body p:last-child{margin-bottom:0}
+    .guide-tips{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+    .guide-tip{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:var(--surface2);border-radius:8px}
+    .guide-tip-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+    .guide-tip-text{font-size:.8rem;color:var(--text2);line-height:1.55}
+    .guide-tip-text strong{color:var(--text);font-weight:600}
+    .guide-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .faq{display:flex;flex-direction:column;gap:1px}
+    .faq-item{border-bottom:1px solid var(--border)}
+    .faq-q{padding:14px 0;font-size:.84rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;user-select:none}
+    .faq-q::after{content:'＋';font-size:1rem;color:var(--muted);flex-shrink:0;transition:transform .2s}
+    .faq-item.open .faq-q::after{content:'－'}
+    .faq-a{display:none;font-size:.8rem;color:var(--text2);line-height:1.7;padding-bottom:14px}
+    .faq-item.open .faq-a{display:block}
+
+    /* ── SPECIALS PAGE ── */
+    .specials-hero{display:flex;align-items:center;gap:16px;background:var(--text);border-radius:var(--radius);padding:22px 28px;margin-bottom:20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+    .specials-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.25) 0%,transparent 55%);pointer-events:none}
+    .sh-icon{font-size:1.8rem;flex-shrink:0;position:relative;z-index:1}
+    .sh-body{flex:1;position:relative;z-index:1}
+    .sh-eyebrow{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:3px}
+    .sh-name{font-family:var(--display);font-size:1.1rem;font-weight:700;color:#fff}
+    .sh-meta{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:3px}
+    .sh-count{flex-shrink:0;text-align:right;position:relative;z-index:1}
+    .sh-count-num{font-size:2.2rem;font-weight:700;color:var(--gold);line-height:1}
+    .sh-count-lbl{font-size:.56rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.35);margin-top:2px}
+    .sr-cards{display:flex;flex-direction:column;gap:10px}
+    .sr-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;display:flex;box-shadow:var(--shadow);transition:box-shadow .2s}
+    .sr-card:hover{box-shadow:var(--shadow-md)}
+    .sr-accent{width:4px;flex-shrink:0;background:linear-gradient(180deg,var(--amber),var(--amber2))}
+    .sr-accent.blantons{background:linear-gradient(180deg,#C07328,#E09040)}
+    .sr-accent.ehtaylor{background:linear-gradient(180deg,#1E3A8A,#3B82F6)}
+    .sr-accent.weller{background:linear-gradient(180deg,#166534,#4ADE80)}
+    .sr-accent.vanwinkle{background:linear-gradient(180deg,#6B21A8,#C084FC)}
+    .sr-card-body{padding:16px 20px;flex:1}
+    .sr-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+    .sr-series{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--amber)}
+    .sr-name-text{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text)}
+    .sr-date-col{text-align:right;flex-shrink:0}
+    .sr-date{font-size:.73rem;font-weight:600;color:var(--text2)}
+    .sr-ago{font-size:.63rem;color:var(--muted);margin-top:2px}
+    .sr-empty{color:var(--muted);font-style:italic;background:var(--surface);border-radius:var(--radius);padding:40px 24px;text-align:center;border:1px dashed var(--border-s);font-size:.9rem}
+
+    /* ── VENMO (footer only) ── */
+    .venmo-btn{display:inline-block;background:var(--amber);color:#fff;font-size:.78rem;font-weight:600;letter-spacing:.04em;padding:10px 20px;border-radius:8px;text-decoration:none;white-space:nowrap;box-shadow:0 2px 8px rgba(192,115,40,.4);transition:background .2s}
+    .venmo-btn:hover{background:var(--amber2)}
+
+    /* ── FOOTER ── */
+    footer{background:var(--text);color:rgba(255,255,255,.4);padding:28px;text-align:center;font-size:.72rem;line-height:1.9}
+    footer a{color:rgba(255,255,255,.55);text-decoration:none}
+    footer a:hover{color:var(--gold)}
+
+    /* ── MOBILE BOTTOM NAV ── */
+    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+    .bottom-nav-inner{display:flex;height:58px}
+    .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;background:none;color:var(--muted);font-family:var(--ui);transition:color .15s;padding:0}
+    .bn-item.active{color:var(--amber)}
+    .bn-icon{font-size:1rem;line-height:1}
+    .bn-label{font-size:.5rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+    .bn-tip{background:var(--amber);color:#fff!important;border-radius:10px;margin:8px 4px;flex:1.1}
+    .bn-tip .bn-icon{font-size:.95rem}
+    .bn-tip .bn-label{color:#fff!important;font-size:.5rem}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .bottle-profiles{grid-template-columns:1fr}
+      .analytics-kpis{grid-template-columns:repeat(3,1fr)}
+      .freq-grid{grid-template-columns:1fr}
+      .insights-grid{grid-template-columns:1fr}
+      .ho-bottles{grid-template-columns:repeat(2,1fr)}
+      .quick-stats{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:768px){
+      .top-nav{display:none}
+      .bottom-nav{display:block}
+      main{padding:24px 16px 80px}
+      .header-bar{padding:0 16px}
+      .brand-text p{display:none}
+      .hdr-days{display:none}
+      .today-hero-top{flex-direction:column;padding:24px 22px 20px;gap:16px}
+      .today-headline{font-size:1.8rem}
+      .today-kpis{width:100%;justify-content:flex-start}
+      .kpi{flex:1;min-width:0;padding:12px 10px}
+      .kpi-num{font-size:1.6rem}
+      .today-avail-panel{padding:16px 22px}
+      .today-sr-strip{padding:12px 22px}
+      .bottle-grid{grid-template-columns:1fr}
+      .bet-name{width:110px;font-size:.78rem}
+      .bet-pct{font-size:.85rem}
+      .guide-hero{padding:28px 22px}
+      .guide-hero-title{font-size:1.6rem}
+      .guide-section{padding:20px}
+      .guide-two-col{grid-template-columns:1fr}
+      .cal-day{min-height:58px;padding:5px 4px}
+      .cal-day-num{font-size:.6rem}
+      .cal-chip{font-size:.48rem;padding:1px 4px}
+      .cal-score{font-size:.5rem}
+      .cal-today-badge{display:none}
+      .analytics-kpis{grid-template-columns:repeat(2,1fr)}
+      .freq-grid{grid-template-columns:1fr}
+      .insights-grid{grid-template-columns:1fr}
+      .ho-bottles{grid-template-columns:repeat(2,1fr)}
+      .quick-stats{grid-template-columns:repeat(2,1fr)}
+      .nav-venmo{display:none}
+    }
+    @media(max-width:480px){
+      .today-headline{font-size:1.5rem}
+      .guide-hero-title{font-size:1.4rem}
+      .bottle-profiles{grid-template-columns:1fr}
+      .bp-header{padding:18px 20px 16px}
+      .bp-body{padding:16px 20px 20px}
+      .cal-dow{font-size:.54rem}
+      .cal-day{min-height:44px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-bar">
+    <div class="brand" onclick="showPage('today')">
+      <div class="brand-mark">🥃</div>
+      <div class="brand-text">
+        <h1>Buffalo Trace <span>Bottle Drops</span></h1>
+        <p>Gift Shop Availability Tracker · Frankfort, KY</p>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-meta">
+        <div class="hdr-update" id="hdr-update">Loading…</div>
+        <div class="hdr-days" id="hdr-days"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- DESKTOP NAV -->
+<nav class="top-nav">
+  <div class="top-nav-inner">
+    <button class="nav-link active" data-page="today">Today</button>
+    <button class="nav-link" data-page="analytics">Analytics</button>
+    <button class="nav-link" data-page="calendar">Calendar</button>
+    <button class="nav-link" data-page="bottles">Bottles</button>
+    <button class="nav-link" data-page="guide">Plan Your Visit</button>
+    <div class="nav-spacer"></div>
+    <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="nav-venmo">💛 Tip the Tracker</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div id="loading-msg" style="text-align:center;padding:80px 24px;color:var(--muted);font-style:italic">Loading tracker data…</div>
+  <div id="content" style="display:none">
+
+    <!-- ═══ PAGE: TODAY ═══ -->
+    <div id="page-today" class="page active">
+      <div id="today-hero-wrap"></div>
+      <div class="quick-stats" id="quick-stats"></div>
+
+      <div style="margin-bottom:52px">
+        <div class="sec-head">
+          <div class="sec-title">Rotating Bottles</div>
+          <span class="sec-sub">Available first</span>
+        </div>
+        <div class="bottle-grid" id="bottle-grid"></div>
+      </div>
+
+      <div style="margin-bottom:52px">
+        <div class="sec-head">
+          <div class="sec-title">Tomorrow's Best Bets</div>
+          <span class="sec-sub">Bayesian prediction</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;padding-left:14px;border-left:2px solid var(--border-s);line-height:1.6">Ranked by predicted availability. Predictions improve as more days are tracked.</p>
+        <div class="best-bets-grid" id="best-bets-list"></div>
+        <p style="font-size:.74rem;color:var(--muted);margin-top:14px;font-style:italic;padding-left:12px;border-left:2px solid var(--border-s);line-height:1.6">Early-data territory — model uses Bayesian priors from historical patterns. Confidence grows with each day tracked.</p>
+      </div>
+
+      <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
+        <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="venmo-btn">💛 Tip on Venmo</a>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: ANALYTICS ═══ -->
+    <div id="page-analytics" class="page">
+      <div class="sec-head" style="margin-bottom:24px">
+        <div class="sec-title">Analytics</div>
+        <span class="sec-sub">No stats degree required</span>
+      </div>
+
+      <!-- 3 KPIs -->
+      <div class="analytics-kpis" id="analytics-kpis"></div>
+
+      <!-- Tomorrow's Hunt Outlook (answer-first hero) -->
+      <div id="hunt-outlook-wrap"></div>
+
+      <!-- Single readable chart — daily shop richness -->
+      <div class="chart-card">
+        <div class="chart-card-title">How Stocked Has the Shop Been?</div>
+        <div class="chart-card-sub">Number of bottles available each day — higher is a better day to visit</div>
+        <div class="chart-wrap"><canvas id="chart-daily-score"></canvas></div>
+      </div>
+
+      <!-- How often does each bottle show up -->
+      <div class="sec-head" style="margin-bottom:16px">
+        <div class="sec-title" style="font-size:1.05rem">How Often Does Each Bottle Show Up?</div>
+        <span class="sec-sub">Based on days tracked so far</span>
+      </div>
+      <div class="freq-grid" id="freq-grid"></div>
+
+      <!-- Pattern heatmap — replaces confusing line chart -->
+      <div class="pattern-card">
+        <div class="pattern-card-title">The Last <span id="pattern-days">9</span> Days at a Glance</div>
+        <div class="pattern-card-sub">Each row is one bottle. A filled circle = available that day. Read left to right.</div>
+        <div class="pg-inner" id="pattern-grid"></div>
+        <div class="pg-legend" id="pattern-legend"></div>
+      </div>
+
+      <!-- Smart insights — plain English observations -->
+      <div class="sec-head" style="margin-bottom:16px">
+        <div class="sec-title" style="font-size:1.05rem">What the Data Says</div>
+        <span class="sec-sub">Auto-generated from tracked days</span>
+      </div>
+      <div class="insights-grid" id="insights-grid"></div>
+    </div>
+
+    <!-- ═══ PAGE: CALENDAR ═══ -->
+    <div id="page-calendar" class="page">
+      <div class="sec-head" style="margin-bottom:24px">
+        <div class="sec-title">Availability Calendar</div>
+        <span class="sec-sub">Month view</span>
+      </div>
+      <div class="cal-controls">
+        <button class="cal-nav-btn" id="cal-prev">‹</button>
+        <div class="cal-month-label" id="cal-month-label"></div>
+        <button class="cal-nav-btn" id="cal-next">›</button>
+      </div>
+      <div class="cal-month-summary" id="cal-month-summary"></div>
+      <div class="cal-grid-outer">
+        <div class="cal-dow-row">
+          <div class="cal-dow">Sun</div><div class="cal-dow">Mon</div><div class="cal-dow">Tue</div>
+          <div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div>
+        </div>
+        <div class="cal-days-grid" id="cal-days-grid"></div>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--blantons)">B</span>Blanton's</div>
+        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--weller)">W</span>Weller 107</div>
+        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--ehtaylor)">EH</span>E.H. Taylor</div>
+        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
+        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:#1e2535;color:#64748b;border:1px solid #334155">🔒</span>Closed</div>
+        <div class="cal-leg-divider"></div>
+        <div class="cal-leg-heat">
+          <div class="cal-leg-sq" style="background:#d4edda;border:1px solid #9fcea9"></div>
+          <div class="cal-leg-sq" style="background:#fef9e7;border:1px solid #f9e4a0"></div>
+          <div class="cal-leg-sq" style="background:#fdecea;border:1px solid #f5bdb8"></div>
+        </div>
+        <span style="font-size:.68rem;color:var(--muted)">More → fewer bottles</span>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: BOTTLES ═══ -->
+    <div id="page-bottles" class="page">
+      <div class="sec-head" style="margin-bottom:8px">
+        <div class="sec-title">Bottle Profiles</div>
+        <span class="sec-sub">Know what you're hunting</span>
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:24px;line-height:1.65">Buffalo Trace's rotating gift shop bottles are some of the most sought-after bourbons in America. Here's everything you need to know before making the trip.</p>
+      <div class="bottle-profiles" id="bottle-profiles"></div>
+    </div>
+
+    <!-- ═══ PAGE: GUIDE ═══ -->
+    <div id="page-guide" class="page">
+      <div class="guide-hero">
+        <div class="guide-hero-inner">
+          <div class="guide-hero-eyebrow">Planning Your Visit</div>
+          <div class="guide-hero-title">Your Guide to <span>Scoring a Bottle</span><br>at Buffalo Trace</div>
+          <div class="guide-hero-body">Everything a first-timer (or seasoned hunter) needs to know about visiting the gift shop, what to expect, and how to maximize your chances.</div>
+        </div>
+      </div>
+      <div class="guide-sections" id="guide-sections"></div>
+    </div>
+
+  </div><!-- #content -->
+</main>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bn-item active" data-page="today"><span class="bn-icon">🥃</span><span class="bn-label">Today</span></button>
+    <button class="bn-item" data-page="analytics"><span class="bn-icon">📊</span><span class="bn-label">Analytics</span></button>
+    <button class="bn-item" data-page="calendar"><span class="bn-icon">📅</span><span class="bn-label">Calendar</span></button>
+    <button class="bn-item" data-page="bottles"><span class="bn-icon">🛢️</span><span class="bn-label">Bottles</span></button>
+    <button class="bn-item" data-page="guide"><span class="bn-icon">🗺</span><span class="bn-label">Guide</span></button>
+    <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="bn-item bn-tip"><span class="bn-icon">💛</span><span class="bn-label">Tip</span></a>
+  </div>
+</nav>
+
+<footer>
+  <p>Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a></p>
+  <p>Auto-updated Mon–Sat at 7am EST · Sun at 8am EST &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+//  INLINE DATA FALLBACK
+// ─────────────────────────────────────────────
+const INLINE_DATA = {"meta": {"last_updated": "2026-04-10", "days_tracked": 29, "site_version": "1.0", "data_source": "https://www.buffalotracebottledrops.com", "prediction_accuracy": {"total_days": 27, "correct": 3, "partial": 20, "incorrect": 2, "binary_total": 108, "binary_correct": 63, "binary_accuracy_pct": 58.3, "per_bottle": {"blantons": 48.1, "weller107": 29.6, "ehtaylor_sb": 81.5, "eagle_rare": 74.1}}}, "today": {"date": "2026-04-10", "day_of_week": "Friday", "last_site_update": "7:05am EST", "special_release": null, "notes": "", "is_closure": false}, "bottles": [{"name": "Blanton's Single Barrel", "key": "blantons", "available_today": 1, "streak": 1, "streak_direction": "available", "overall_pct": 48.0, "rolling_10d_pct": 10.0, "rolling_30d_pct": 48.0, "avg_days_between_releases": 2.15, "prediction_tomorrow_pct": 58.9, "confidence": "Medium", "last_seen": "2026-04-10", "prior_frequency": 0.63}, {"name": "Weller Antique 107", "key": "weller107", "available_today": 0, "streak": 2, "streak_direction": "unavailable", "overall_pct": 41.0, "rolling_10d_pct": 50.0, "rolling_30d_pct": 41.0, "avg_days_between_releases": 2.27, "prediction_tomorrow_pct": 49.2, "confidence": "Medium", "last_seen": "2026-04-08", "prior_frequency": 0.75}, {"name": "E.H. Taylor Small Batch", "key": "ehtaylor_sb", "available_today": 1, "streak": 5, "streak_direction": "available", "overall_pct": 83.0, "rolling_10d_pct": 90.0, "rolling_30d_pct": 83.0, "avg_days_between_releases": 1.17, "prediction_tomorrow_pct": 87.5, "confidence": "Medium", "last_seen": "2026-04-10", "prior_frequency": 0.93}, {"name": "Eagle Rare 10-Year", "key": "eagle_rare", "available_today": 0, "streak": 1, "streak_direction": "unavailable", "overall_pct": 28.0, "rolling_10d_pct": 20.0, "rolling_30d_pct": 28.0, "avg_days_between_releases": 3.86, "prediction_tomorrow_pct": 22.3, "confidence": "Medium", "last_seen": "2026-04-09", "prior_frequency": 0.17}], "calendar": [{"date": "2026-03-13", "blantons": 1, "weller107": 0, "ehtaylor_sb": 0, "eagle_rare": 1, "special_release": "E.H. Taylor Straight Rye", "is_closure": false, "notes": null}, {"date": "2026-03-14", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-15", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-16", "blantons": 0, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-17", "blantons": 1, "weller107": 1, "ehtaylor_sb": 0, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-18", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-19", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-20", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-21", "blantons": 1, "weller107": 1, "ehtaylor_sb": 0, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-22", "blantons": 1, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-23", "blantons": 0, "weller107": 0, "ehtaylor_sb": 0, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-24", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-25", "blantons": 0, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-26", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-27", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-28", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-29", "blantons": 1, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-30", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-03-31", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-01", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-02", "blantons": 0, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-03", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-04", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-05", "blantons": 0, "weller107": 0, "ehtaylor_sb": 0, "eagle_rare": 0, "special_release": null, "is_closure": true, "notes": "Easter Sunday"}, {"date": "2026-04-06", "blantons": 0, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-07", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-08", "blantons": 0, "weller107": 1, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-09", "blantons": 0, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 1, "special_release": null, "is_closure": false, "notes": null}, {"date": "2026-04-10", "blantons": 1, "weller107": 0, "ehtaylor_sb": 1, "eagle_rare": 0, "special_release": null, "is_closure": false, "notes": null}], "special_releases_log": [{"date": "2026-03-13", "name": "E.H. Taylor Straight Rye"}]};
+
+// ─────────────────────────────────────────────
+//  CONSTANTS
+// ─────────────────────────────────────────────
+const BOTTLE_KEYS   = ['blantons','weller107','ehtaylor_sb','eagle_rare'];
+const BOTTLE_COLORS = { blantons:'#C07328', weller107:'#2D6A4F', ehtaylor_sb:'#1E3A8A', eagle_rare:'#7F1D1D' };
+const BOTTLE_LIGHT  = { blantons:'rgba(192,115,40,.15)', weller107:'rgba(45,106,79,.15)', ehtaylor_sb:'rgba(30,58,138,.15)', eagle_rare:'rgba(127,29,29,.15)' };
+const BOTTLE_PROFILES_DATA = {
+  blantons: {
+    cssClass:'blantons', series:'Buffalo Trace Distillery',
+    fullName:"Blanton's Single Barrel",
+    tagline:'The Pioneer — world\'s first commercially marketed single barrel bourbon.',
+    desc:"Introduced in 1984, Blanton's is the bourbon that launched the single barrel category. Each barrel is bottled individually, meaning every bottle is slightly different. The iconic wax-dipped top is hand-stamped with one of 8 letters — collect them all to spell B-L-A-N-T-O-N-S.",
+    proof:'93 proof (46.5% ABV)',
+    notes:['Rich caramel and vanilla up front','Orange peel and baking spice mid-palate','Long, warm finish with toasted oak','Subtle floral notes from the single barrel selection'],
+    aged:'NAS (typically 6–8 years)',
+  },
+  weller107: {
+    cssClass:'weller', series:'W.L. Weller Collection',
+    fullName:'Weller Antique 107',
+    tagline:'The Wheater — same mash bill as Pappy Van Winkle, a fraction of the price.',
+    desc:"Weller 107 uses wheat as the secondary grain instead of rye, producing a softer, sweeter profile. It shares its mash bill with the legendary Van Winkle line, which is why bourbon hunters often call it a gateway to Pappy. At 107 proof, it delivers exceptional richness.",
+    proof:'107 proof (53.5% ABV)',
+    notes:['Brown sugar and butterscotch on the nose','Dried fruit and caramel on the palate','Warm, lingering wheated finish','Soft and approachable despite high proof'],
+    aged:'NAS (typically 7+ years)',
+  },
+  ehtaylor_sb: {
+    cssClass:'ehtaylor', series:'Buffalo Trace Antique Collection',
+    fullName:'E.H. Taylor Small Batch',
+    tagline:'The Heritage — bottled-in-bond, honoring the father of modern bourbon standards.',
+    desc:"Named for Edmund Haynes Taylor Jr., who championed the Bottled-in-Bond Act of 1897 to protect consumers from adulterated whiskey. Bottled-in-Bond means 100 proof, aged at least 4 years, and produced in a single distillation season. The collectible canister makes it a standout gift.",
+    proof:'100 proof / Bottled-in-Bond',
+    notes:['Vanilla, caramel, and honey on the nose','Toasted oak and baking spice mid-palate','Bright citrus notes from the bond requirement','Clean, structured finish typical of BiB expressions'],
+    aged:'4+ years (Bottled-in-Bond)',
+  },
+  eagle_rare: {
+    cssClass:'eagle', series:'Buffalo Trace Distillery',
+    fullName:'Eagle Rare 10-Year',
+    tagline:'The Sleeper — a decade of aging at a price that defies all logic.',
+    desc:"Eagle Rare is arguably the best value in American whiskey at MSRP. Aged a minimum of 10 years and selected as a single barrel, it delivers complexity and depth that most bourbons twice its price struggle to match. Its relative scarcity at gift shops makes it the hardest of the four to track down.",
+    proof:'90 proof (45% ABV)',
+    notes:['Dried fruits, herbs, and honey on the nose','Rich toffee and leather mid-palate','Long finish with notes of vanilla and oak','Exceptional complexity for the proof level'],
+    aged:'10+ years (Single Barrel)',
+  }
+};
+
+// ─────────────────────────────────────────────
+//  UTILS
+// ─────────────────────────────────────────────
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(String(d).slice(0,10)+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function fmtDateShort(d) {
+  if (!d) return '—';
+  return new Date(String(d).slice(0,10)+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function fmtPct(v,dec=1){ return (v===null||v===undefined)?'—':v.toFixed(dec)+'%'; }
+function pctClass(v){ return v>=70?'pct-high':v>=40?'pct-mid':'pct-low'; }
+function fmtLastSeen(dateStr,todayStr){
+  if(!dateStr) return '—';
+  if(dateStr===todayStr) return 'Today';
+  const diff=Math.round((new Date(todayStr+'T00:00:00')-new Date(dateStr+'T00:00:00'))/86400000);
+  return diff===1?'Yesterday':fmtDateShort(dateStr);
+}
+function daysAgo(dateStr,todayStr){
+  const diff=Math.round((new Date(todayStr+'T00:00:00')-new Date(dateStr+'T00:00:00'))/86400000);
+  if(diff===0) return 'Today';
+  if(diff===1) return 'Yesterday';
+  return diff+' days ago';
+}
+function betVerdict(pct){
+  if(pct>=80) return {label:'Strong Bet',cls:'strong'};
+  if(pct>=65) return {label:'Worth It',cls:'good'};
+  if(pct>=40) return {label:'Coin Flip',cls:'flip'};
+  return {label:'Unlikely',cls:'low'};
+}
+function detectSeries(name){
+  if(!name) return '';
+  if(/e\.?h\.?\s*taylor/i.test(name)) return 'ehtaylor';
+  if(/blanton/i.test(name)) return 'blantons';
+  if(/weller/i.test(name)) return 'weller';
+  if(/van winkle|pappy/i.test(name)) return 'vanwinkle';
+  return '';
+}
+
+// ─────────────────────────────────────────────
+//  ROUTER
+// ─────────────────────────────────────────────
+const PAGES = ['today','analytics','calendar','bottles','guide','specials'];
+let chartsInit = {};
+let appData = null;
+
+function showPage(pageId) {
+  if (!PAGES.includes(pageId)) pageId = 'today';
+  PAGES.forEach(id => {
+    const el = document.getElementById('page-'+id);
+    if(el) el.classList.toggle('active', id===pageId);
+  });
+  document.querySelectorAll('.nav-link,.bn-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page===pageId);
+  });
+  window.scrollTo(0,0);
+  if(appData) {
+    if(pageId==='analytics' && !chartsInit.analytics) { buildAnalyticsCharts(appData); chartsInit.analytics=true; }
+    if(pageId==='calendar' && !chartsInit.calendar) { buildCalendar(appData); chartsInit.calendar=true; }
+  }
+}
+
+document.querySelectorAll('.nav-link,.bn-item').forEach(btn => {
+  btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+// ─────────────────────────────────────────────
+//  RENDER: TODAY
+// ─────────────────────────────────────────────
+function renderToday(data) {
+  const { meta, today, bottles } = data;
+  const availCount = bottles.filter(b=>b.available_today===1).length;
+
+  // Closure detection — checks both explicit flag and notes string for backward compat
+  const isClosure = (today.is_closure || false) || (today.notes && today.notes.startsWith('Gift shop closed'));
+  const closureHoliday = isClosure
+    ? (today.notes || '').replace(/^Gift shop closed\s*[—–\-]\s*/,'').trim() || 'Holiday'
+    : '';
+
+  // Header meta
+  const d = new Date(meta.last_updated+'T00:00:00');
+  document.getElementById('hdr-update').textContent =
+    d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) +
+    (today.last_site_update ? ' · '+today.last_site_update : '');
+  document.getElementById('hdr-days').textContent = meta.days_tracked+' day'+(meta.days_tracked!==1?'s':'')+' tracked';
+
+  // Hero — normal vs. closure path
+  let heroHeadline, heroBottomPanel;
+  if (isClosure) {
+    heroHeadline = `<span class="hl-closed">Gift Shop Closed</span>`;
+    heroBottomPanel = `<div class="today-closure-strip show">🔒 &nbsp; Gift shop closed today — ${closureHoliday}. Prediction for tomorrow is below.</div>`;
+  } else {
+    const avail = bottles.filter(b=>b.available_today===1);
+    const unavail = bottles.filter(b=>b.available_today!==1);
+    const tapRows = [
+      ...avail.map(b=>`<div class="tap-bottle-avail">${b.name}</div>`),
+      ...unavail.map(b=>`<div class="tap-bottle-unavail">${b.name}</div>`)
+    ].join('');
+    heroHeadline = availCount>0
+      ? `<span class="hl-green">${availCount} bottle${availCount!==1?'s':''}</span> available now`
+      : `<span class="hl-red">No bottles</span> available today`;
+    heroBottomPanel = `<div class="today-avail-panel">
+        <div class="tap-eyebrow">🥃 &nbsp; Available Today at the Gift Shop</div>
+        <div class="tap-bottles">${tapRows}</div>
+      </div>`;
+  }
+
+  document.getElementById('today-hero-wrap').innerHTML = `
+    <div class="today-hero" style="margin-bottom:24px">
+      <div class="today-hero-top">
+        <div>
+          <div class="today-eyebrow">${today.day_of_week}, ${fmtDate(today.date)}</div>
+          <div class="today-headline">${heroHeadline}</div>
+          <div class="today-sub">Buffalo Trace Gift Shop · 113 Great Buffalo Trace, Frankfort, KY</div>
+        </div>
+        <div class="today-kpis">
+          <div class="kpi"><div class="kpi-num ${isClosure?'':'green'}">${isClosure?'—':availCount}</div><div class="kpi-lbl">Available</div></div>
+          <div class="kpi"><div class="kpi-num ${isClosure?'':'red'}">${isClosure?'—':bottles.length-availCount}</div><div class="kpi-lbl">Out</div></div>
+          <div class="kpi"><div class="kpi-num gold">${meta.days_tracked}</div><div class="kpi-lbl">Days Tracked</div></div>
+        </div>
+      </div>
+      ${heroBottomPanel}
+    </div>`;
+
+  // Quick stats — exclude closure days from bottle averages
+  const openCalDays = data.calendar.filter(d=>!(d.is_closure||false));
+  const closureCalDays = data.calendar.length - openCalDays.length;
+  const allAvailDays = openCalDays.filter(d=>BOTTLE_KEYS.some(k=>d[k]===1)).length;
+  const avgAvailPerDay = openCalDays.length
+    ? (openCalDays.reduce((sum,d)=>sum+BOTTLE_KEYS.filter(k=>d[k]===1).length,0)/openCalDays.length).toFixed(1)
+    : '—';
+  const avgSub = closureCalDays > 0 ? 'Of 4 rotating bottles (excl. holidays)' : 'Of 4 rotating bottles';
+  const startDateLabel = data.calendar.length ? 'Since '+fmtDate(data.calendar[0].date) : 'Tracking in progress';
+  document.getElementById('quick-stats').innerHTML = `
+    <div class="qs-card"><div class="qs-label">Days Tracked</div><div class="qs-value">${meta.days_tracked}</div><div class="qs-sub">${startDateLabel}</div></div>
+    <div class="qs-card"><div class="qs-label">Days w/ Bottles</div><div class="qs-value">${allAvailDays}</div><div class="qs-sub">${openCalDays.length?Math.round(allAvailDays/openCalDays.length*100):0}% of open days</div></div>
+    <div class="qs-card"><div class="qs-label">Avg Bottles/Day</div><div class="qs-value">${avgAvailPerDay}</div><div class="qs-sub">${avgSub}</div></div>`;
+
+  // Bottle cards
+  const sorted = [...bottles].sort((a,b)=>(b.available_today??0)-(a.available_today??0));
+  const daysTracked = meta.days_tracked;
+  const win10 = Math.min(10,daysTracked), win30 = Math.min(30,daysTracked);
+  document.getElementById('bottle-grid').innerHTML = sorted.map(b=>{
+    const isAvail = b.available_today===1;
+    const streak = isAvail
+      ? `Available ${b.streak} day${b.streak!==1?'s':''} in a row`
+      : `Out for ${b.streak} day${b.streak!==1?'s':''}`;
+    const pred = b.prediction_tomorrow_pct;
+    const trackedDays = Math.round((b.overall_pct/100)*daysTracked);
+    return `
+      <div class="bottle-card ${isAvail?'avail':'unavail'}">
+        <div class="bc-top">
+          <div class="bc-name">${b.name}</div>
+          <span class="bc-badge ${isAvail?'in':'out'}">${isAvail?'In Stock':'Out'}</span>
+        </div>
+        <div class="bc-stats">
+          <div><div class="bcs-label">Streak</div><div class="bcs-val">${streak}</div></div>
+          <div>
+            <div class="bcs-label">Rate (${win10}d)</div>
+            <div class="bcs-val">${fmtPct(b.rolling_10d_pct,1)}</div>
+            <div class="bcs-bar"><div class="bcs-fill" style="width:${b.rolling_10d_pct??0}%"></div></div>
+          </div>
+          <div>
+            <div class="bcs-label">Overall Rate</div>
+            <div class="bcs-val">${fmtPct(b.overall_pct,1)}</div>
+            <div class="bcs-bar"><div class="bcs-fill" style="width:${b.overall_pct??0}%"></div></div>
+          </div>
+          <div>
+            <div class="bcs-label">Tomorrow</div>
+            <div class="bcs-val ${pctClass(pred)}">${fmtPct(pred,1)}</div>
+            <div class="bcs-bar"><div class="bcs-fill bcs-fill-pred" style="width:${pred??0}%"></div></div>
+          </div>
+          <div><div class="bcs-label">Last Seen</div><div class="bcs-val">${fmtLastSeen(b.last_seen,today.date)}</div></div>
+          <div><div class="bcs-label">Avg Gap</div><div class="bcs-val">${b.avg_days_between_releases!==null?b.avg_days_between_releases.toFixed(1)+'d':'—'}</div></div>
+        </div>
+        <div class="bc-footer">
+          <span class="bc-conf">${b.confidence??'Early data'}</span>
+          <span class="bc-days">${trackedDays}/${daysTracked} days tracked</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Best bets
+  const sortedBets = [...bottles].sort((a,b)=>(b.prediction_tomorrow_pct??0)-(a.prediction_tomorrow_pct??0));
+  document.getElementById('best-bets-list').innerHTML = sortedBets.map((b,i)=>{
+    const pred = b.prediction_tomorrow_pct??0;
+    const v = betVerdict(pred);
+    return `
+      <div class="bet-row">
+        <div class="bet-rank ${i===0?'r1':''}">#${i+1}</div>
+        <div class="bet-name">${b.name}</div>
+        <div class="bet-bar-wrap">
+          <div class="bet-bar-track"><div class="bet-bar-fill fill-${v.cls}" style="width:${Math.round(pred)}%"></div></div>
+          <div class="bet-meta">
+            <span class="bet-pct">${Math.round(pred)}%</span>
+            <span class="bet-verdict v-${v.cls}">${v.label}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: ANALYTICS
+// ─────────────────────────────────────────────
+let chartInstance = null;
+function buildDailyScoreChart(calendar) {
+  if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
+  const ctx = document.getElementById('chart-daily-score').getContext('2d');
+  const labels = calendar.map(d=>{
+    const dt = new Date(d.date+'T00:00:00');
+    return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  });
+  const scores = calendar.map(d=>BOTTLE_KEYS.filter(k=>d[k]===1).length);
+  const barColors = calendar.map((d,i)=>
+    (d.is_closure||false)   ? 'rgba(100,116,139,0.45)' :
+    scores[i]>=3            ? 'rgba(74,222,128,0.85)'  :
+    scores[i]===2           ? 'rgba(192,115,40,0.85)'  :
+    scores[i]===1           ? 'rgba(240,192,96,0.75)'  :
+                              'rgba(239,68,68,0.55)'
+  );
+  chartInstance = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Bottles Available',
+        data:scores,
+        backgroundColor:barColors,
+        borderRadius:6,
+        borderSkipped:false,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title:items=>`${items[0].label}`,
+          label:item=>{
+            const d = calendar[item.dataIndex];
+            if(d && (d.is_closure||false)) return ` Closed — ${d.notes||'Holiday'}`;
+            const n=item.raw;
+            return ` ${n} bottle${n!==1?'s':''} available`;
+          }
+        }}
+      },
+      scales:{
+        y:{
+          min:0, max:4,
+          ticks:{stepSize:1, callback:v=>v===0?'None':v===4?'All 4':v===1?'1 bottle':`${v} bottles`, font:{size:10}},
+          grid:{color:'rgba(0,0,0,.05)'}
+        },
+        x:{ticks:{font:{size:10}}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+function buildAnalyticsCharts(data) {
+  const { meta, bottles, calendar } = data;
+
+  // 3 KPIs — only the ones a normal person cares about
+  const predAcc = meta.prediction_accuracy;
+  const accDays = predAcc && predAcc.total_days > 0 ? predAcc.total_days : 0;
+  const accDisplay = accDays > 0 ? predAcc.binary_accuracy_pct.toFixed(1) + '%' : '—';
+  const accSub = accDays > 0
+    ? `${predAcc.binary_correct}/${predAcc.binary_total} bottle-days · ${accDays} days scored`
+    : 'Building accuracy data…';
+  document.getElementById('analytics-kpis').innerHTML = `
+    <div class="ak-card">
+      <div class="ak-num">${meta.days_tracked}</div>
+      <div class="ak-label">Days Tracked</div>
+      <div class="ak-sub">More = better predictions</div>
+    </div>
+    <div class="ak-card">
+      <div class="ak-num">${accDisplay}</div>
+      <div class="ak-label">Prediction Accuracy</div>
+      <div class="ak-sub">${accSub}</div>
+    </div>
+`;
+
+  // Daily shop score chart — build it, then continue
+  buildDailyScoreChart(calendar);
+
+  // Hunt outlook — answer first
+  const sorted = [...bottles].sort((a,b)=>(b.prediction_tomorrow_pct||0)-(a.prediction_tomorrow_pct||0));
+  const likelyCount = sorted.filter(b=>(b.prediction_tomorrow_pct||0)>=50).length;
+  let vClass, vText, vSub;
+  if(likelyCount>=3){ vClass='vg'; vText='Great Day to Visit Tomorrow'; vSub=`${likelyCount} of 4 bottles predicted available — worth the drive.`; }
+  else if(likelyCount===2){ vClass='vm'; vText='Decent Day Tomorrow'; vSub='2 of 4 bottles predicted available — solid if you\'re nearby.'; }
+  else if(likelyCount===1){ vClass='vm'; vText='Slim Pickings Tomorrow'; vSub='Only 1 bottle looking likely — plan accordingly.'; }
+  else { vClass='vs'; vText='Tough Day Tomorrow'; vSub='Nothing looks above 50% right now — might be worth waiting.'; }
+
+  const shortN = { blantons:"Blanton's", weller107:'Weller 107', ehtaylor_sb:'E.H. Taylor', eagle_rare:'Eagle Rare' };
+  const pillsHTML = sorted.map(b=>{
+    const pct = Math.round(b.prediction_tomorrow_pct||0);
+    const barColor = pct>=65?'#4ADE80':pct>=40?'var(--gold)':'#FCA5A5';
+    const vCls = pct>=80?'hbv-strong':pct>=65?'hbv-good':pct>=40?'hbv-flip':'hbv-low';
+    const vLabel = pct>=80?'Strong Bet':pct>=65?'Worth It':pct>=40?'Coin Flip':'Unlikely';
+    return `<div class="ho-bottle">
+      <div class="ho-bottle-short">${shortN[b.key]||b.name}</div>
+      <div class="ho-bottle-pct">${pct}%</div>
+      <div class="ho-bottle-bar"><div class="ho-bottle-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="ho-bottle-verdict ${vCls}">${vLabel}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('hunt-outlook-wrap').innerHTML = `
+    <div class="hunt-outlook">
+      <div class="ho-inner">
+        <div class="ho-eyebrow">Tomorrow's Hunt Outlook</div>
+        <div class="ho-verdict"><span class="${vClass}">${vText}</span></div>
+        <div class="ho-sub">${vSub}</div>
+        <div class="ho-bottles">${pillsHTML}</div>
+      </div>
+    </div>`;
+
+  // Frequency cards — plain English
+  const frqLabels = { blantons:"Blanton's Single Barrel", weller107:'Weller Antique 107', ehtaylor_sb:'E.H. Taylor Small Batch', eagle_rare:'Eagle Rare 10-Year' };
+  document.getElementById('freq-grid').innerHTML = bottles.map(b=>{
+    const isAvail = b.available_today===1;
+    const n = Math.round((b.overall_pct/100)*meta.days_tracked);
+    const total = meta.days_tracked;
+    let label;
+    if(b.overall_pct>=90)      label='Nearly every day';
+    else if(b.overall_pct>=75) label='More days than not';
+    else if(b.overall_pct>=55) label='More days than not';
+    else if(b.overall_pct>=40) label='About every other day';
+    else if(b.overall_pct>=20) label='Less than half the time';
+    else                        label='Rarely shows up';
+    const pred = b.prediction_tomorrow_pct||0;
+    const streak = b.streak_direction==='available'
+      ? `On a ${b.streak}-day hot streak 🔥`
+      : `Out for ${b.streak} day${b.streak!==1?'s':''}`;
+    return `
+      <div class="freq-card">
+        <div class="freq-card-top">
+          <div class="freq-name">${frqLabels[b.key]||b.name}</div>
+          <span class="bc-badge ${isAvail?'in':'out'}">${isAvail?'In Stock':'Out Today'}</span>
+        </div>
+        <div class="freq-fraction">${n} of ${total} days</div>
+        <div class="freq-fraction-label">${label}</div>
+        <div class="freq-dots" id="freq-dots-${b.key}"></div>
+        <div class="freq-meta">
+          <span>${streak}</span>
+          <span>Tomorrow: <strong class="${pctClass(pred)}">${Math.round(pred)}%</strong></span>
+        </div>
+      </div>`;
+  }).join('');
+  // Fill dots from actual calendar data
+  bottles.forEach(b=>{
+    const el = document.getElementById('freq-dots-'+b.key);
+    if(!el) return;
+    el.innerHTML = calendar.map(d=>{
+      const isClos = d.is_closure||false;
+      const avail = d[b.key]===1;
+      const dotClass = isClos ? 'is-closure' : (avail?'on':'off');
+      const titleText = isClos
+        ? `${fmtDateShort(d.date)}: Closed — ${d.notes||'Holiday'}`
+        : `${fmtDateShort(d.date)}: ${avail?'Available':'Not available'}`;
+      return `<div class="freq-dot ${dotClass}" style="background:${BOTTLE_COLORS[b.key]}" title="${titleText}"></div>`;
+    }).join('');
+  });
+
+  // Pattern heatmap
+  document.getElementById('pattern-days').textContent = calendar.length;
+  const shortLabels = { blantons:"Blanton's", weller107:'Weller 107', ehtaylor_sb:'E.H. Taylor SB', eagle_rare:'Eagle Rare' };
+  const headerRow = `<div class="pg-header-row">
+    <div class="pg-spacer"></div>
+    ${calendar.map(d=>`<div class="pg-date">${d.date.slice(5)}</div>`).join('')}
+  </div>`;
+  const bottleRows = bottles.map(b=>{
+    const cells = calendar.map(d=>{
+      const isClos = d.is_closure||false;
+      const avail = d[b.key]===1;
+      const dotClass = isClos ? 'is-closure' : (avail?'on':'off');
+      const dotTitle = isClos
+        ? `${fmtDateShort(d.date)}: 🔒 Closed — ${d.notes||'Holiday'}`
+        : `${fmtDateShort(d.date)}: ${avail?'✓ Available':'✗ Not available'}`;
+      return `<div class="pg-cell"><div class="pg-dot ${dotClass}" style="background:${BOTTLE_COLORS[b.key]}" title="${dotTitle}"></div></div>`;
+    }).join('');
+    return `<div class="pg-row"><div class="pg-label">${shortLabels[b.key]||b.name}</div>${cells}</div>`;
+  }).join('');
+  document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows;
+  document.getElementById('pattern-legend').innerHTML =
+    BOTTLE_KEYS.map(k=>`<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:${BOTTLE_COLORS[k]};flex-shrink:0"></div>${shortLabels[k]}</div>`).join('') +
+    `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:#9C8B75;opacity:.2;flex-shrink:0"></div>Not available</div>`;
+
+  // Smart insights — generated from the data in plain English
+  const names = shortN;
+  const insights = [];
+
+  // 1. Rarest vs most common
+  const byRate = [...bottles].sort((a,b)=>a.overall_pct-b.overall_pct);
+  const rarest = byRate[0], mostCommon = byRate[byRate.length-1];
+  if(rarest && mostCommon && rarest.key!==mostCommon.key){
+    const rarestN = Math.round((rarest.overall_pct/100)*meta.days_tracked);
+    const commonN = Math.round((mostCommon.overall_pct/100)*meta.days_tracked);
+    insights.push({ icon:'🦅', hl:true,
+      head:`${names[rarest.key]} is the hardest to find`,
+      body:`Only spotted ${rarestN} of ${meta.days_tracked} days tracked. ${names[mostCommon.key]} is your safest bet — available ${commonN} of ${meta.days_tracked} days.`
+    });
+  }
+
+  // 2. Best bet tomorrow
+  const bestBet = sorted[0];
+  if(bestBet){
+    const pct = Math.round(bestBet.prediction_tomorrow_pct||0);
+    const verdict = pct>=65?'Worth making the trip for this one alone.':pct>=40?'Decent odds — worth checking in the morning.':'Predictions improve with more data — check back.';
+    insights.push({ icon:'🎯',
+      head:`Best bet tomorrow: ${names[bestBet.key]||bestBet.name}`,
+      body:`${pct}% predicted available tomorrow. ${verdict}`
+    });
+  }
+
+  // 3. Never appeared together (meaningful pattern)
+  let neverPair = null;
+  for(let i=0;i<BOTTLE_KEYS.length&&!neverPair;i++){
+    for(let j=i+1;j<BOTTLE_KEYS.length&&!neverPair;j++){
+      const together = calendar.filter(d=>d[BOTTLE_KEYS[i]]===1&&d[BOTTLE_KEYS[j]]===1).length;
+      if(together===0 && calendar.length>=4) neverPair={a:BOTTLE_KEYS[i],b:BOTTLE_KEYS[j]};
+    }
+  }
+  if(neverPair){
+    insights.push({ icon:'🤔',
+      head:`${names[neverPair.a]} & ${names[neverPair.b]} haven't appeared together yet`,
+      body:`In ${calendar.length} days of tracking, these two haven't shared a day. Could be coincidence — or a real alternating pattern. Worth watching.`
+    });
+  }
+
+  // 4. Active hot streak
+  const hotStreak = bottles.filter(b=>b.streak_direction==='available'&&b.streak>=2)
+    .sort((a,b)=>b.streak-a.streak)[0];
+  if(hotStreak){
+    insights.push({ icon:'🔥',
+      head:`${names[hotStreak.key]||hotStreak.name} is on a ${hotStreak.streak}-day run`,
+      body:`It's been available ${hotStreak.streak} days in a row. Hot streaks don't last forever — if you want it, this is a good window.`
+    });
+  }
+
+  // 5. Best combo day so far
+  const bestDay = calendar.reduce((best,d)=>{
+    const c=BOTTLE_KEYS.filter(k=>d[k]===1).length;
+    return c>(best.count||0)?{date:d.date,count:c}:best;
+  },{count:0});
+  if(bestDay.count>=3){
+    const available = BOTTLE_KEYS.filter(k=>calendar.find(d=>d.date===bestDay.date)?.[k]===1).map(k=>names[k]);
+    insights.push({ icon:'🏆',
+      head:`Best single day so far: ${fmtDateShort(bestDay.date)}`,
+      body:`${bestDay.count} bottles available: ${available.join(', ')}. Days like this are worth planning around.`
+    });
+  }
+
+  // Pad to even number (for 2-col grid)
+  while(insights.length<2) insights.push({ icon:'📊',
+    head:'More data, better predictions',
+    body:`Only ${meta.days_tracked} days tracked so far. Insights get sharper with every day. Check back as the dataset grows.`
+  });
+  if(insights.length%2!==0) insights.push({ icon:'📅',
+    head:'Tracking 4 bottles daily',
+    body:`Every morning Mon–Sat at 7am EST, we check the Buffalo Trace gift shop site and log what\'s available. Sunday checks run at 8am.`
+  });
+
+  document.getElementById('insights-grid').innerHTML = insights.slice(0,4).map(ins=>`
+    <div class="insight-card ${ins.hl?'hl':''}">
+      <div class="insight-icon">${ins.icon}</div>
+      <div>
+        <div class="insight-head">${ins.head}</div>
+        <div class="insight-body">${ins.body}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: CALENDAR
+// ─────────────────────────────────────────────
+let calViewYear, calViewMonth;
+
+function buildCalendar(data) {
+  const today = new Date(data.today.date+'T00:00:00');
+  calViewYear  = calViewYear  || today.getFullYear();
+  calViewMonth = calViewMonth !== undefined ? calViewMonth : today.getMonth();
+  renderCalendarMonth(data, calViewYear, calViewMonth);
+
+  document.getElementById('cal-prev').onclick = ()=>{
+    calViewMonth--; if(calViewMonth<0){calViewMonth=11;calViewYear--;}
+    renderCalendarMonth(data,calViewYear,calViewMonth);
+  };
+  document.getElementById('cal-next').onclick = ()=>{
+    calViewMonth++; if(calViewMonth>11){calViewMonth=0;calViewYear++;}
+    renderCalendarMonth(data,calViewYear,calViewMonth);
+  };
+}
+
+function renderCalendarMonth(data, year, month) {
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent = monthNames[month]+' '+year;
+
+  const todayStr = data.today.date;
+  const calMap = {};
+  data.calendar.forEach(d=>{ calMap[d.date]=d; });
+
+  const CHIP_LABELS = { blantons:'B', weller107:'W', ehtaylor_sb:'EH', eagle_rare:'ER' };
+
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const grid = document.getElementById('cal-days-grid');
+  let html = '';
+
+  // Compute month summary stats — exclude closure days from bottle averages
+  let daysTracked=0, totalBottles=0, bestCount=0, perfectDays=0, closureDays=0;
+  for(let d=1;d<=daysInMonth;d++){
+    const mm=String(month+1).padStart(2,'0'), dd=String(d).padStart(2,'0');
+    const e=calMap[`${year}-${mm}-${dd}`];
+    if(!e) continue;
+    daysTracked++;
+    if(e.is_closure||false){ closureDays++; continue; }
+    const cnt=BOTTLE_KEYS.reduce((s,k)=>s+(e[k]===1?1:0),0);
+    totalBottles+=cnt;
+    if(cnt>bestCount) bestCount=cnt;
+    if(cnt===BOTTLE_KEYS.length) perfectDays++;
+  }
+  const openDaysInMonth = daysTracked - closureDays;
+  const avgBottles = openDaysInMonth>0 ? (totalBottles/openDaysInMonth).toFixed(1) : '—';
+  const summaryEl = document.getElementById('cal-month-summary');
+  if(daysTracked>0){
+    summaryEl.innerHTML = `
+      <div class="cal-sum-item">📅 <span><span class="cal-sum-val">${daysTracked}</span> days tracked</span></div>
+      <div class="cal-sum-item">🍾 <span>Avg <span class="cal-sum-val">${avgBottles}</span> bottles/day</span></div>
+      <div class="cal-sum-item">🏆 <span>Best: <span class="cal-sum-val">${bestCount}/4</span> bottles</span></div>
+      ${perfectDays>0?`<div class="cal-sum-item">✨ <span><span class="cal-sum-val">${perfectDays}</span> full haul${perfectDays!==1?'s':''}</span></div>`:''}
+      ${closureDays>0?`<div class="cal-sum-item">🔒 <span><span class="cal-sum-val">${closureDays}</span> closure day${closureDays!==1?'s':''}</span></div>`:''}
+    `;
+    summaryEl.style.display='flex';
+  } else {
+    summaryEl.style.display='none';
+  }
+
+  for(let i=0;i<firstDay;i++) html += `<div class="cal-day empty"></div>`;
+
+  for(let day=1;day<=daysInMonth;day++){
+    const mm=String(month+1).padStart(2,'0'), dd=String(day).padStart(2,'0');
+    const dateStr=`${year}-${mm}-${dd}`;
+    const entry=calMap[dateStr];
+    const isToday=dateStr===todayStr;
+    const hasData=!!entry;
+
+    let countClass='', scoreHTML='', chipsHTML='', tooltipAttr='';
+    if(hasData){
+      const isClos = entry.is_closure || false;
+      if(isClos){
+        const closureLabel = entry.notes || 'Holiday';
+        countClass = 'is-closure';
+        scoreHTML = `<span class="cal-score">🔒</span>`;
+        chipsHTML = '';
+        tooltipAttr = ` title="Closed — ${closureLabel}"`;
+      } else {
+        const cnt=BOTTLE_KEYS.reduce((s,k)=>s+(entry[k]===1?1:0),0);
+        countClass=`count-${cnt}`;
+        const scoreClass=['s0','s1','s2','s3','s4'][cnt]||'';
+        scoreHTML=`<span class="cal-score ${scoreClass}">${cnt}/${BOTTLE_KEYS.length}</span>`;
+        BOTTLE_KEYS.forEach(key=>{
+          if(entry[key]===1) chipsHTML+=`<span class="cal-chip cc-${key}" title="${key}">${CHIP_LABELS[key]}</span>`;
+        });
+      }
+    }
+
+    const todayBadge = isToday ? `<span class="cal-today-badge">Today</span>` : '';
+
+    html+=`<div class="cal-day ${hasData?'has-data':''} ${hasData?countClass:''} ${isToday?'today-cell':''}"${tooltipAttr}>
+      <div class="cal-day-top">
+        <div style="display:flex;align-items:center;gap:3px">
+          <span class="cal-day-num">${day}</span>${todayBadge}
+        </div>
+        ${scoreHTML}
+      </div>
+      <div class="cal-chips">${chipsHTML}</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: BOTTLES PROFILES
+// ─────────────────────────────────────────────
+function renderBottles(data) {
+  const { bottles, meta } = data;
+  const keyOrder = ['blantons','weller107','ehtaylor_sb','eagle_rare'];
+  document.getElementById('bottle-profiles').innerHTML = keyOrder.map(key=>{
+    const b = bottles.find(x=>x.key===key);
+    const p = BOTTLE_PROFILES_DATA[key];
+    if(!b||!p) return '';
+    const isAvail = b.available_today===1;
+    const streakLabel = b.streak_direction==='available'
+      ? `${b.streak} day${b.streak!==1?'s':''} in stock`
+      : `${b.streak} day${b.streak!==1?'s':''} out`;
+    const trackedDays=Math.round((b.overall_pct/100)*meta.days_tracked);
+    return `
+      <div class="bp-card">
+        <div class="bp-header ${p.cssClass}">
+          <div class="bp-series">${p.series}</div>
+          <div class="bp-name">${p.fullName}</div>
+          <div class="bp-tagline">${p.tagline}</div>
+          <div class="bp-availability-strip">
+            <span class="bp-avail-badge ${isAvail?'in':'out'}">${isAvail?'✓ In Stock Today':'✗ Out Today'}</span>
+            <span class="bp-streak">${streakLabel}</span>
+          </div>
+        </div>
+        <div class="bp-body">
+          <div class="bp-desc">${p.desc}</div>
+
+          <div class="bp-section-label">Tasting Notes</div>
+          <div class="bp-notes">${p.notes.map(n=>`<div class="bp-note">${n}</div>`).join('')}</div>
+
+          <div class="bp-section-label">The Bottle</div>
+          <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+            <span style="background:var(--surface2);border:1px solid var(--border-s);border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;color:var(--text2)">${p.proof}</span>
+            <span style="background:var(--surface2);border:1px solid var(--border-s);border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;color:var(--text2)">Aged: ${p.aged}</span>
+          </div>
+
+          <div class="bp-section-label">Our Tracked Stats</div>
+          <div class="bp-stats-row">
+            <div class="bp-stat">
+              <div class="bp-stat-num">${fmtPct(b.overall_pct,1)}</div>
+              <div class="bp-stat-lbl">Availability Rate</div>
+            </div>
+            <div class="bp-stat">
+              <div class="bp-stat-num">${b.avg_days_between_releases!==null?b.avg_days_between_releases.toFixed(1)+'d':'—'}</div>
+              <div class="bp-stat-lbl">Avg Days Between</div>
+            </div>
+            <div class="bp-stat">
+              <div class="bp-stat-num ${pctClass(b.prediction_tomorrow_pct)}">${fmtPct(b.prediction_tomorrow_pct,0)}</div>
+              <div class="bp-stat-lbl">Tomorrow's Forecast</div>
+            </div>
+          </div>
+          <div style="font-size:.65rem;color:var(--muted);text-align:center;margin-top:10px">${trackedDays} of ${meta.days_tracked} tracked days available · ${b.confidence} confidence</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+//  RENDER: GUIDE
+// ─────────────────────────────────────────────
+function renderGuide() {
+  const sections = [
+    {
+      icon:'🗓',
+      title:'When to Go',
+      body:`<p>The gift shop at Buffalo Trace is open <strong>Monday–Saturday 9am–5pm</strong> and <strong>Sunday noon–5pm</strong>. Bottle availability is posted on their website each morning — this tracker checks it at 7am EST Mon–Sat and 8am EST on Sunday.</p>
+      <p>Bottles can sell out quickly on high-demand days. Your best strategy is to check this tracker first thing in the morning and arrive near opening time.</p>`,
+      tips:[
+        {icon:'⏰', text:'<strong>Arrive early.</strong> Lines can form before the gift shop opens, especially on weekends and days when multiple bottles are available.'},
+        {icon:'📱', text:'<strong>Check the tracker before you leave.</strong> No sense making the drive if today\'s selection doesn\'t include what you\'re hunting.'},
+        {icon:'🗺', text:'<strong>Plan the drive.</strong> Frankfort is about 25 min from Lexington and 50 min from Louisville. Worth calling ahead if you\'re making a long trip.'},
+      ]
+    },
+    {
+      icon:'🛍',
+      title:'What to Expect at the Gift Shop',
+      body:`<p>The gift shop carries Buffalo Trace\'s full retail lineup plus gift shop–exclusive expressions. The four <em>rotating</em> bottles — Blanton\'s, Weller 107, E.H. Taylor Small Batch, and Eagle Rare — are allocated daily and typically limited to <strong>one bottle per person per variety</strong>.</p>
+      <p>Bring your ID (must be 21+). Cash and card are accepted. The staff are knowledgeable and friendly — don\'t be afraid to ask questions.</p>`,
+      tips:[
+        {icon:'🪪', text:'<strong>ID required.</strong> Must be 21+. No exceptions.'},
+        {icon:'👥', text:'<strong>Bring friends.</strong> Each person can purchase one of each available bottle, so a group of four can walk away with four Blanton\'s.'},
+        {icon:'🎟', text:'<strong>Limit one per person per variety.</strong> The staff enforces this consistently. Don\'t ask for more.'},
+      ]
+    },
+    {
+      icon:'🏛',
+      title:'While You\'re at the Distillery',
+      body:`<p>Buffalo Trace is one of America\'s oldest continually operating distilleries, with records dating to 1775. Even if you strike out on bottles, the distillery itself is worth the visit.</p>`,
+      tips:[
+        {icon:'🚶', text:'<strong>Free tours run regularly</strong> Mon–Sat. Book ahead at buffalotracedistillery.com — spots fill up on weekends.'},
+        {icon:'🥃', text:'<strong>The tasting room</strong> offers samples of the full lineup, including expressions you can\'t easily find elsewhere.'},
+        {icon:'🎁', text:'<strong>The gift shop carries exclusives</strong> — special editions and gift sets not available at retail. Worth browsing even if the allocated bottles are sold out.'},
+        {icon:'📸', text:'<strong>Photo opportunities</strong> are everywhere. The rickhouses, the still house, the grounds along the Kentucky River — it\'s a beautiful property.'},
+      ]
+    },
+    {
+      icon:'🗺',
+      title:'The Kentucky Bourbon Trail',
+      body:`<p>Buffalo Trace is a must-stop on any bourbon trail itinerary. While it\'s not technically on the official Kentucky Bourbon Trail route (it\'s in Frankfort, slightly off the main corridor), it\'s close enough to combine with a full day of distillery visits.</p>`,
+      tips:[
+        {icon:'🏷', text:'<strong>Download the Bourbon Trail passport app</strong> to track your stamps across Kentucky\'s 95+ distilleries.'},
+        {icon:'🚗', text:'<strong>Nearby distilleries:</strong> Four Roses (45 min), Wild Turkey (20 min from Lawrenceburg), Town Branch in Lexington (25 min).'},
+        {icon:'🌆', text:'<strong>Frankfort itself</strong> is worth exploring — it\'s Kentucky\'s state capital with great restaurants, craft beer, and a walkable downtown.'},
+        {icon:'🛏', text:'<strong>Book ahead for weekends.</strong> The bourbon trail draws serious visitors. Hotels in Lexington and Louisville are good bases.'},
+      ]
+    },
+    {
+      icon:'❓',
+      title:'FAQ',
+      faq: true,
+      faqs:[
+        {q:'Is the availability tracker always accurate?', a:'We check the Buffalo Trace website each morning at 7am EST (8am on Sundays). The gift shop opens at 9am, so the data is as fresh as possible. Availability can occasionally change after we check, but we\'ve found it to be reliable for planning purposes.'},
+        {q:'Can I buy these bottles online?', a:'No. These are in-person-only purchases at the gift shop. That\'s part of what makes visiting special — you have to be there.'},
+        {q:'What if the bottle I want isn\'t available today?', a:'Come back tomorrow — or check the forecast. Our Bayesian model predicts tomorrow\'s likelihood for each bottle. Most bottles appear multiple times per week based on historical patterns.'},
+        {q:'Why are these bottles so hard to find at regular retailers?', a:'Buffalo Trace\'s production capacity is limited relative to demand. Allocated bottles are distributed in small quantities to retailers, where they\'re often snapped up immediately or sold at a markup. The distillery gift shop is one of the few places to reliably find them at MSRP.'},
+        {q:'Are tours really free?', a:'Yes! Buffalo Trace offers free guided tours of the distillery. You just need to book ahead. Some specialty tours (like the Blanton\'s Warehouse Tour) may have a fee.'},
+        {q:'Can I bring kids?', a:'Minors are allowed on tours but cannot purchase alcohol. The gift shop has non-alcoholic souvenirs as well.'},
+      ]
+    }
+  ];
+
+  document.getElementById('guide-sections').innerHTML = sections.map(s=>{
+    if(s.faq){
+      const faqItems = s.faqs.map(f=>`
+        <div class="faq-item">
+          <div class="faq-q">${f.q}</div>
+          <div class="faq-a">${f.a}</div>
+        </div>`).join('');
+      return `
+        <div class="guide-section">
+          <div class="guide-section-icon">${s.icon}</div>
+          <div class="guide-section-title">${s.title}</div>
+          <div class="faq">${faqItems}</div>
+        </div>`;
+    }
+    const tipsHTML = s.tips ? `<div class="guide-tips">${s.tips.map(t=>`<div class="guide-tip"><div class="guide-tip-icon">${t.icon}</div><div class="guide-tip-text">${t.text}</div></div>`).join('')}</div>` : '';
+    return `
+      <div class="guide-section">
+        <div class="guide-section-icon">${s.icon}</div>
+        <div class="guide-section-title">${s.title}</div>
+        <div class="guide-section-body">${s.body}</div>
+        ${tipsHTML}
+      </div>`;
+  }).join('');
+
+  // FAQ toggle
+  document.querySelectorAll('.faq-q').forEach(q=>{
+    q.addEventListener('click',()=>q.parentElement.classList.toggle('open'));
+  });
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+function init(data) {
+  appData = data;
+  document.getElementById('loading-msg').style.display='none';
+  document.getElementById('content').style.display='block';
+  renderToday(data);
+  renderBottles(data);
+  renderGuide();
+  // Analytics and calendar init lazily on first visit
+}
+
+fetch('./data.json?_='+Date.now())
+  .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+  .then(d=>init(d))
+  .catch(()=>init(INLINE_DATA));
+</script>
+</body>
+</html>
