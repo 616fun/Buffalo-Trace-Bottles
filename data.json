@@ -5,18 +5,18 @@
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 29,
+      "total_days": 28,
       "correct": 4,
       "partial": 21,
-      "incorrect": 2,
-      "binary_total": 116,
-      "binary_correct": 70,
-      "binary_accuracy_pct": 60.3,
+      "incorrect": 3,
+      "binary_total": 112,
+      "binary_correct": 69,
+      "binary_accuracy_pct": 61.6,
       "per_bottle": {
-        "blantons": 51.7,
-        "weller107": 31.0,
-        "ehtaylor_sb": 82.8,
-        "eagle_rare": 75.9
+        "blantons": 53.6,
+        "weller107": 32.1,
+        "ehtaylor_sb": 85.7,
+        "eagle_rare": 75.0
       }
     }
   },
@@ -33,13 +33,13 @@
       "name": "Blanton's Single Barrel",
       "key": "blantons",
       "available_today": 1,
-      "streak": 4,
+      "streak": 3,
       "streak_direction": "available",
-      "overall_pct": 53.1,
-      "rolling_10d_pct": 40.0,
-      "rolling_30d_pct": 53.3,
-      "avg_days_between_releases": 1.94,
-      "prediction_tomorrow_pct": 62.9,
+      "overall_pct": 51.6,
+      "rolling_10d_pct": 30.0,
+      "rolling_30d_pct": 50.0,
+      "avg_days_between_releases": 2.0,
+      "prediction_tomorrow_pct": 61.7,
       "confidence": "High",
       "last_seen": "2026-04-12",
       "prior_frequency": 0.63
@@ -48,13 +48,13 @@
       "name": "Weller Antique 107",
       "key": "weller107",
       "available_today": 1,
-      "streak": 2,
+      "streak": 1,
       "streak_direction": "available",
-      "overall_pct": 43.8,
+      "overall_pct": 41.9,
       "rolling_10d_pct": 50.0,
       "rolling_30d_pct": 43.3,
-      "avg_days_between_releases": 2.31,
-      "prediction_tomorrow_pct": 63.2,
+      "avg_days_between_releases": 2.42,
+      "prediction_tomorrow_pct": 61.9,
       "confidence": "High",
       "last_seen": "2026-04-12",
       "prior_frequency": 0.75
@@ -63,13 +63,13 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 8,
+      "streak": 7,
       "streak_direction": "available",
-      "overall_pct": 84.4,
+      "overall_pct": 83.9,
       "rolling_10d_pct": 90.0,
       "rolling_30d_pct": 86.7,
-      "avg_days_between_releases": 1.15,
-      "prediction_tomorrow_pct": 88.4,
+      "avg_days_between_releases": 1.16,
+      "prediction_tomorrow_pct": 88.1,
       "confidence": "High",
       "last_seen": "2026-04-12",
       "prior_frequency": 0.93
@@ -78,13 +78,13 @@
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
       "available_today": 0,
-      "streak": 4,
+      "streak": 3,
       "streak_direction": "unavailable",
-      "overall_pct": 25.0,
+      "overall_pct": 25.8,
       "rolling_10d_pct": 20.0,
       "rolling_30d_pct": 23.3,
       "avg_days_between_releases": 3.86,
-      "prediction_tomorrow_pct": 20.5,
+      "prediction_tomorrow_pct": 21.1,
       "confidence": "High",
       "last_seen": "2026-04-09",
       "prior_frequency": 0.17
@@ -98,7 +98,7 @@
       "ehtaylor_sb": 0,
       "eagle_rare": 1,
       "special_release": "E.H. Taylor Straight Rye",
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -108,7 +108,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -128,7 +128,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -138,7 +138,7 @@
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -148,7 +148,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -158,7 +158,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -168,7 +168,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -198,7 +198,7 @@
       "ehtaylor_sb": 0,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -208,7 +208,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -218,7 +218,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -228,7 +228,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -238,7 +238,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -248,7 +248,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -278,7 +278,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -298,7 +298,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -308,7 +308,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -318,7 +318,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -338,7 +338,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -348,7 +348,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -358,7 +358,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -368,7 +368,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -378,7 +378,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -388,7 +388,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     },
     {
@@ -398,7 +398,7 @@
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
       "special_release": null,
-      "is_closure": false,
+      "is_closure": null,
       "notes": null
     }
   ],
