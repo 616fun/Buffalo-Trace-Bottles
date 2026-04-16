@@ -2,7 +2,7 @@
   "schema_version": "2.0",
   "meta": {
     "last_updated": "2026-04-16",
-    "last_run_by": "export_to_tracker_data.py (one-time migration)",
+    "last_run_by": "update_tracker_data.py",
     "total_days_tracked": 35
   },
   "config": {
@@ -318,7 +318,7 @@
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
       "special_release": null,
-      "notes": "Gift shop closed — Easter Sunday",
+      "notes": "Gift shop closed \u2014 Easter Sunday",
       "last_site_update": null,
       "is_closure": true
     },
@@ -472,7 +472,7 @@
       "correct": "No",
       "result": "Incorrect",
       "model_used": "Bayesian Markov",
-      "notes": "Corrected — initial run used stale 3/14 data; actual reflects site updated 8:40am EST 3/15/2026",
+      "notes": "Corrected \u2014 initial run used stale 3/14 data; actual reflects site updated 8:40am EST 3/15/2026",
       "missing_prediction": false
     },
     {
@@ -492,7 +492,7 @@
       "correct": "Partial",
       "result": "Partial",
       "model_used": "Bayesian Markov",
-      "notes": "Reconstructed — prediction row was missing; inserted during 3/18 quality audit",
+      "notes": "Reconstructed \u2014 prediction row was missing; inserted during 3/18 quality audit",
       "missing_prediction": false
     },
     {
@@ -1089,8 +1089,8 @@
       "per_bottle_pct": null,
       "confidence": null,
       "actual_bottles": [
-        "weller107",
-        "blantons"
+        "blantons",
+        "weller107"
       ],
       "correct": "Partial",
       "result": "Partial",
@@ -1105,10 +1105,15 @@
         "blantons",
         "weller107"
       ],
-      "overall_confidence_pct": 65.8,
-      "per_bottle_pct": null,
-      "confidence": null,
-      "actual_bottles": [],
+      "overall_confidence_pct": 65.5,
+      "per_bottle_pct": {
+        "blantons": 60.9,
+        "weller107": 57.6,
+        "ehtaylor_sb": 77.9,
+        "eagle_rare": 22.6
+      },
+      "confidence": "High",
+      "actual_bottles": null,
       "correct": null,
       "result": null,
       "model_used": "Bayesian Markov",
