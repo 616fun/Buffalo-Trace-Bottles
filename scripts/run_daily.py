@@ -142,12 +142,16 @@ def get_resend_creds() -> dict:
 
 
 def get_twilio_creds() -> dict:
+    # TWILIO_ENABLED defaults to true; set to "false" to suppress SMS
+    # (e.g. while Twilio phone number verification is pending)
+    enabled_str = os.environ.get("TWILIO_ENABLED", "true").strip().lower()
+    enabled = enabled_str not in ("false", "0", "no", "off")
     return {
         "account_sid":  os.environ.get("TWILIO_ACCOUNT_SID", "").strip(),
         "auth_token":   os.environ.get("TWILIO_AUTH_TOKEN",  "").strip(),
         "from_number":  os.environ.get("TWILIO_FROM_NUMBER", "").strip(),
         "to_number":    os.environ.get("TWILIO_TO_NUMBER",   "").strip(),
-        "enabled":      True,
+        "enabled":      enabled,
     }
 
 

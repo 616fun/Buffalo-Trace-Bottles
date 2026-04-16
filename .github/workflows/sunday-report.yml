@@ -51,6 +51,7 @@ jobs:
           TWILIO_AUTH_TOKEN:    ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM_NUMBER:   ${{ secrets.TWILIO_FROM_NUMBER }}
           TWILIO_TO_NUMBER:     ${{ secrets.TWILIO_TO_NUMBER }}
+          TWILIO_ENABLED:       ${{ secrets.TWILIO_ENABLED }}
           DRY_RUN:              ${{ inputs.dry_run || 'false' }}
         run: >
           python scripts/run_daily.py
