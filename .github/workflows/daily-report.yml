@@ -1,11 +1,14 @@
 name: Buffalo Trace Daily Report (Mon–Sat)
 
-# Runs Mon–Sat at 7:00 AM EST (12:00 UTC).
+# Runs Mon–Sat at 6:00 AM EST (11:00 UTC).
+# Starting at 6 AM lets the scraper begin polling before the BT site refreshes
+# (typically 6:30–7:30 AM), so the pipeline completes minutes after the refresh
+# rather than waiting for a delayed cron fire after the fact.
 # Indiana stays on EST year-round — no DST adjustment needed.
 
 on:
   schedule:
-    - cron: '0 12 * * 1-6'   # 12:00 UTC = 7:00 AM EST, Mon–Sat
+    - cron: '0 11 * * 1-6'   # 11:00 UTC = 6:00 AM EST, Mon–Sat
   workflow_dispatch:
     inputs:
       dry_run:
@@ -16,7 +19,7 @@ on:
       max_poll_minutes:
         description: 'Max scraper poll minutes (use 10 for quick tests)'
         required: false
-        default: '180'
+        default: '240'
         type: string
 
 permissions:
@@ -25,7 +28,7 @@ permissions:
 jobs:
   daily-report:
     runs-on: ubuntu-latest
-    timeout-minutes: 270   # 4.5 hours — covers 180-min poll + overhead
+    timeout-minutes: 330   # 5.5 hours — covers 240-min poll + overhead
 
     steps:
       - name: Checkout repo
@@ -56,4 +59,4 @@ jobs:
           DRY_RUN:              ${{ inputs.dry_run || 'false' }}
         run: >
           python scripts/run_daily.py
-          --max-poll-minutes ${{ inputs.max_poll_minutes || '180' }}
+          --max-poll-minutes ${{ inputs.max_poll_minutes || '240' }}
