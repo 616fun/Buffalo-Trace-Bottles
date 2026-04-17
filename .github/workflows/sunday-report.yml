@@ -1,12 +1,14 @@
 name: Buffalo Trace Sunday Report
 
-# Runs Sunday at 8:00 AM EST (13:00 UTC).
-# Uses 240-minute poll window because the gift shop opens at 11am EST on Sundays.
+# Runs Sunday at 7:00 AM EST (12:00 UTC).
+# Starting at 7 AM (one hour before the old 8 AM schedule) lets the scraper begin
+# polling well before the gift shop opens at 11am EST. 240-minute poll window
+# covers 7:00 AM through 11:00 AM with buffer.
 # Indiana stays on EST year-round — no DST adjustment needed.
 
 on:
   schedule:
-    - cron: '0 13 * * 0'   # 13:00 UTC = 8:00 AM EST, Sunday only
+    - cron: '0 12 * * 0'   # 12:00 UTC = 7:00 AM EST, Sunday only
   workflow_dispatch:
     inputs:
       dry_run:
