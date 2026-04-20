@@ -1,0 +1,60 @@
+name: Buffalo Trace Sunday Report
+
+# Runs Sunday at 7:00 AM EST (12:00 UTC).
+# Starting at 7 AM (one hour before the old 8 AM schedule) lets the scraper begin
+# polling well before the gift shop opens at 11am EST. 240-minute poll window
+# covers 7:00 AM through 11:00 AM with buffer.
+# Indiana stays on EST year-round — no DST adjustment needed.
+
+on:
+  schedule:
+    - cron: '0 12 * * 0'   # 12:00 UTC = 7:00 AM EST, Sunday only
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run — skip email, SMS, and git push'
+        required: false
+        default: 'false'
+        type: boolean
+      max_poll_minutes:
+        description: 'Max scraper poll minutes (use 10 for quick tests)'
+        required: false
+        default: '240'
+        type: string
+
+permissions:
+  contents: write   # needed to git push tracker_data.json + data.json
+
+jobs:
+  sunday-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330   # 5.5 hours — covers 240-min poll + overhead
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Run Sunday report pipeline
+        env:
+          RESEND_API_KEY:       ${{ secrets.RESEND_API_KEY }}
+          REPORT_FROM_EMAIL:    "Buffalo Trace Daily <drops@buffalotracebottledrops.com>"
+          REPORT_TO_EMAIL:      "brianwulff@yahoo.com"
+          TWILIO_ACCOUNT_SID:   ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:    ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM_NUMBER:   ${{ secrets.TWILIO_FROM_NUMBER }}
+          TWILIO_TO_NUMBER:     ${{ secrets.TWILIO_TO_NUMBER }}
+          TWILIO_ENABLED:       ${{ secrets.TWILIO_ENABLED }}
+          DRY_RUN:              ${{ inputs.dry_run || 'false' }}
+        run: >
+          python scripts/run_daily.py
+          --max-poll-minutes ${{ inputs.max_poll_minutes || '240' }}
