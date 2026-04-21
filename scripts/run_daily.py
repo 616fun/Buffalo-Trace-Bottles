@@ -555,6 +555,27 @@ def main() -> None:
     log(f"Repo root: {REPO_ROOT}")
     log(f"Dry run: {dry_run}")
 
+    # -----------------------------------------------------------------------
+    # Idempotency guard — exit cleanly if today's row already exists.
+    #
+    # Prevents duplicate runs when both the repository_dispatch trigger (fired
+    # by the Claude dispatcher task at 7 AM) AND the cron backup both execute
+    # on the same day.  The first run to finish writes the row; the second hits
+    # this guard and exits without scraping, emailing, or double-appending data.
+    # Skipped in dry-run mode so tests always proceed regardless.
+    # -----------------------------------------------------------------------
+    if not dry_run and TRACKER_DATA_PATH.exists():
+        try:
+            tracker = json.loads(TRACKER_DATA_PATH.read_text())
+            if any(row.get("date") == today_str
+                   for row in tracker.get("daily_log", [])):
+                log(f"[SKIP] Row for {today_str} already exists in "
+                    f"tracker_data.json — a previous run completed successfully.")
+                log(f"[SKIP] Exiting cleanly. No scrape, no email, no duplicate data.")
+                sys.exit(0)
+        except Exception as e:
+            log(f"[WARN] Could not check idempotency guard: {e} — proceeding normally.")
+
     # Load Twilio creds early so we can send failure SMSes
     try:
         sms_creds = get_twilio_creds()
