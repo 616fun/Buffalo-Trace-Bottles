@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SMS Alerts | Buffalo Trace Bottle Drops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#F7F3ED; --surface:#FFFFFF; --surface2:#F2EDE4;
+      --border:rgba(0,0,0,0.08); --border-s:#E8DDD0;
+      --text:#1A0F05; --text2:#5C4A32; --muted:#9C8B75;
+      --amber:#C07328; --amber2:#E09040; --gold:#F0C060;
+      --green:#166534; --green2:#4CAF50; --green-bg:#F0FDF4; --green-bd:#BBF7D0;
+      --ui:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      --display:'Playfair Display',Georgia,serif;
+      --radius:12px;
+      --shadow-sm:0 1px 2px rgba(0,0,0,0.05);
+      --shadow:0 1px 4px rgba(0,0,0,0.06),0 0 0 1px rgba(0,0,0,0.04);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.09),0 0 0 1px rgba(0,0,0,0.04);
+    }
+
+    /* ── RESET ── */
+    *,*::before,*::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      /* FIX: prevent any element from blowing out its container */
+      overflow-wrap: break-word;
+      word-break: break-word;
+      min-width: 0;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--ui);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      /* FIX: prevent horizontal scroll on body */
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header { background: var(--text); position: sticky; top: 0; z-index: 200; }
+    .header-bar {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      /* FIX: don't let brand shrink and clip */
+      flex-shrink: 0;
+    }
+    .brand-mark {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--amber), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .brand-text h1 {
+      font-family: var(--display);
+      font-size: 1.15rem;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .brand-text h1 span { color: var(--gold); }
+    .brand-text p {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+      letter-spacing: .02em;
+    }
+    .back-link {
+      font-size: .78rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .back-link:hover { color: rgba(255,255,255,0.85); }
+    .back-link::before { content: '←'; font-size: .85rem; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--text);
+      padding: 56px 28px 52px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(192,115,40,.25) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+    .hero-eyebrow {
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-family: var(--display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      margin-bottom: 14px;
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-sub {
+      font-size: .9rem;
+      color: rgba(255,255,255,.5);
+      max-width: 540px;
+      line-height: 1.65;
+    }
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: .7rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.6);
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+    .hero-badge .dot.green { background: #4ADE80; }
+
+    /* ── MAIN ── */
+    main { max-width: 900px; margin: 0 auto; padding: 48px 28px 100px; }
+
+    /* ── SECTION HEADER ── */
+    /* FIX: was align-items:baseline which misaligned the number circle */
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .sec-head::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .sec-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--amber);
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .sec-title {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.01em;
+      white-space: nowrap;
+    }
+
+    /* ── HOW IT WORKS ── */
+    /* FIX: was minmax(240px,1fr) — too wide, caused overflow on mid-size screens */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+    .how-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 22px 20px 20px;
+      box-shadow: var(--shadow);
+    }
+    .how-icon { font-size: 1.5rem; margin-bottom: 12px; }
+    .how-label {
+      font-size: .62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .how-value {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .how-sub {
+      font-size: .74rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── STATUS BANNER ── */
+    .status-banner {
+      background: var(--surface);
+      border: 1px solid var(--border-s);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow);
+    }
+    .sb-label {
+      font-size: .6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+    .sb-text { font-size: .85rem; color: var(--text2); line-height: 1.65; }
+
+    /* ── OPT-IN FORM ── */
+    .form-wrap {
+      background: var(--surface);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .form-header {
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber2) 100%);
+      padding: 28px 32px;
+    }
+    .form-header h2 {
+      font-family: var(--display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .form-header p {
+      font-size: .82rem;
+      color: rgba(255,255,255,.75);
+      line-height: 1.55;
+    }
+    .form-body { padding: 32px; }
+
+    /* FIX: unified field spacing — replaced conflicting inline margin-bottom:0 / margin-top:22px */
+    .field-stack { display: flex; flex-direction: column; gap: 20px; }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+
+    .form-label {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text2);
+      letter-spacing: .01em;
+    }
+    .form-label .req { color: var(--amber); margin-left: 2px; }
+    .form-input {
+      width: 100%;
+      padding: 11px 14px;
+      font-family: var(--ui);
+      font-size: .9rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border-s);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-input:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(192,115,40,.12);
+    }
+    .form-input::placeholder { color: var(--muted); }
+
+    /* ── CONSENT CHECKBOX ── */
+    .consent-block {
+      background: var(--surface2);
+      border: 1px solid var(--border-s);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .consent-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .consent-check {
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--amber);
+      cursor: pointer;
+    }
+    .consent-text {
+      font-size: .82rem;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+    .consent-text strong { color: var(--text); }
+    .consent-note {
+      font-size: .71rem;
+      color: var(--muted);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      line-height: 1.6;
+    }
+    .consent-note a { color: var(--amber); text-decoration: none; }
+    .consent-note a:hover { text-decoration: underline; }
+
+    /* ── LEGAL DISCLOSURE ── */
+    .disclosure {
+      background: var(--surface2);
+      border: 1px solid var(--border-s);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .disclosure p {
+      font-size: .73rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .disclosure p + p { margin-top: 8px; }
+    .disclosure a { color: var(--amber); text-decoration: none; }
+    .disclosure a:hover { text-decoration: underline; }
+
+    /* ── SUBMIT ── */
+    .btn-submit {
+      width: 100%;
+      padding: 13px 20px;
+      background: var(--amber);
+      color: #fff;
+      font-family: var(--ui);
+      font-size: .92rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      box-shadow: 0 2px 8px rgba(192,115,40,.35);
+    }
+    .btn-submit:hover { background: var(--amber2); transform: translateY(-1px); }
+    .btn-submit:active { transform: none; }
+    .btn-note {
+      font-size: .69rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.55;
+    }
+
+    /* ── SUCCESS ── */
+    .success-msg {
+      display: none;
+      background: var(--green-bg);
+      border: 1px solid var(--green-bd);
+      border-radius: 10px;
+      padding: 22px;
+      text-align: center;
+    }
+    .success-msg.show { display: block; }
+    .success-msg p { font-size: .88rem; color: var(--green); font-weight: 600; }
+    .success-msg span { font-size: .78rem; color: var(--text2); display: block; margin-top: 6px; }
+
+    /* ── PROGRAM DETAILS ── */
+    /* FIX: was minmax(200px,1fr) — too wide at ~700px viewport causing overflow */
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 168px), 1fr));
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .detail-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .dc-label {
+      font-size: .6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .dc-value {
+      font-size: .86rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    /* ── POLICY SECTIONS ── */
+    .policy-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+    }
+    .policy-section h3 {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .policy-section h3 + h3 { margin-top: 22px; }
+    .policy-section p {
+      font-size: .82rem;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .policy-section p:last-child { margin-bottom: 0; }
+    .policy-section ul { list-style: none; padding: 0; margin: 8px 0 14px; }
+    .policy-section li {
+      font-size: .82rem;
+      color: var(--text2);
+      line-height: 1.6;
+      padding: 5px 0 5px 20px;
+      position: relative;
+    }
+    .policy-section li::before { content: '—'; position: absolute; left: 0; color: var(--muted); }
+    .policy-section a { color: var(--amber); text-decoration: none; }
+    .policy-section a:hover { text-decoration: underline; }
+    .policy-section .last-updated {
+      margin-top: 14px;
+      font-size: .74rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* FIX: policy-table — wrap in overflow container, drop white-space:nowrap */
+    .table-scroll { overflow-x: auto; margin: 14px 0; border-radius: 8px; }
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 320px; /* ensures table is readable, scroll kicks in below this */
+    }
+    .policy-table td {
+      padding: 10px 14px;
+      font-size: .82rem;
+      color: var(--text2);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    .policy-table td:first-child {
+      font-weight: 700;
+      color: var(--text);
+      font-size: .84rem;
+      width: 80px;
+      /* FIX: removed white-space:nowrap — caused first-column overflow */
+    }
+    .policy-table tr:last-child td { border-bottom: none; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--text); padding: 32px 28px; }
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-brand {
+      font-family: var(--display);
+      font-size: .95rem;
+      font-weight: 700;
+      color: rgba(255,255,255,.7);
+    }
+    .footer-brand span { color: var(--gold); }
+    .footer-copy {
+      font-size: .65rem;
+      color: rgba(255,255,255,.25);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      padding-top: 2px;
+    }
+    .footer-links a {
+      font-size: .72rem;
+      color: rgba(255,255,255,.35);
+      text-decoration: none;
+      transition: color .15s;
+      white-space: nowrap;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,.7); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .hero { padding: 40px 20px 36px; }
+      .hero-title { font-size: 1.75rem; }
+      main { padding: 36px 16px 80px; }
+      .header-bar { padding: 0 16px; }
+      /* FIX: brand text can be hidden on very small screens */
+      .brand-text p { display: none; }
+      .form-header { padding: 22px 20px; }
+      .form-body { padding: 20px; }
+      .field-row { grid-template-columns: 1fr; }
+      .policy-section { padding: 20px; }
+      .how-grid { grid-template-columns: 1fr 1fr; }
+      .sec-title { font-size: 1.05rem; }
+    }
+    @media (max-width: 420px) {
+      .how-grid { grid-template-columns: 1fr; }
+      .details-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-bar">
+    <a class="brand" href="/">
+      <div class="brand-mark">🥃</div>
+      <div class="brand-text">
+        <h1>Buffalo Trace <span>Bottle Drops</span></h1>
+        <p>Frankfort, KY · Availability Tracker</p>
+      </div>
+    </a>
+    <a class="back-link" href="/">Back to Tracker</a>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">SMS Alert Program</div>
+    <h1 class="hero-title">Bottle Drop <span>Text Alerts</span></h1>
+    <p class="hero-sub">
+      Get a daily text message when Buffalo Trace bottle availability updates.
+      Know what dropped before you make the drive.
+    </p>
+    <div class="hero-badges">
+      <span class="hero-badge"><span class="dot green"></span>Daily Updates</span>
+      <span class="hero-badge"><span class="dot"></span>Mon – Sun</span>
+      <span class="hero-badge"><span class="dot"></span>Reply STOP anytime</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- ── SECTION 1: HOW IT WORKS ── -->
+  <div class="sec-head">
+    <span class="sec-num">1</span>
+    <h2 class="sec-title">How the Program Works</h2>
+  </div>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-icon">📡</div>
+      <div class="how-label">Data Source</div>
+      <div class="how-value">Buffalo Trace Distillery</div>
+      <div class="how-sub">Pulled daily from the official product availability page at buffalotracedistillery.com</div>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">📲</div>
+      <div class="how-label">Delivery</div>
+      <div class="how-value">One SMS per day</div>
+      <div class="how-sub">Sent Mon–Sun after availability updates, typically 7–11 AM EST</div>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">🍶</div>
+      <div class="how-label">What's Tracked</div>
+      <div class="how-value">4 allocated bottles</div>
+      <div class="how-sub">Blanton's, Weller 107, E.H. Taylor Small Batch, and Eagle Rare</div>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">🔇</div>
+      <div class="how-label">Opt-Out</div>
+      <div class="how-value">Reply STOP anytime</div>
+      <div class="how-sub">Unsubscribe instantly by replying STOP. No questions asked, no delay.</div>
+    </div>
+  </div>
+
+  <!-- Status banner -->
+  <div class="status-banner">
+    <div class="sb-label">Program Status</div>
+    <div class="sb-text">
+      This SMS program currently operates as an <strong>owner-notification system</strong> —
+      alerts are sent to the site administrator only. If text notifications are developed as a
+      public service, sign-up will be offered via this page.
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: OPT-IN FORM ── -->
+  <div class="sec-head">
+    <span class="sec-num">2</span>
+    <h2 class="sec-title">Sign Up for Alerts</h2>
+  </div>
+
+  <div class="form-wrap">
+    <div class="form-header">
+      <h2>Buffalo Trace Bottle Drop SMS Alerts</h2>
+      <p>Daily availability updates for Blanton's, Weller 107, E.H. Taylor Small Batch, and Eagle Rare.</p>
+    </div>
+    <div class="form-body">
+
+      <div class="success-msg" id="successMsg">
+        <p>✓ You're on the waitlist!</p>
+        <span>We'll text you when public SMS alerts go live. Standard message &amp; data rates apply.</span>
+      </div>
+
+      <form id="smsOptInForm" novalidate>
+        <div class="field-stack">
+
+          <!-- Name row -->
+          <div class="field-row">
+            <div class="field">
+              <label class="form-label" for="firstName">First Name <span class="req">*</span></label>
+              <input class="form-input" type="text" id="firstName" name="firstName"
+                     placeholder="Jane" autocomplete="given-name" required>
+            </div>
+            <div class="field">
+              <label class="form-label" for="lastName">Last Name</label>
+              <input class="form-input" type="text" id="lastName" name="lastName"
+                     placeholder="Smith" autocomplete="family-name">
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="field">
+            <label class="form-label" for="phone">Mobile Phone Number <span class="req">*</span></label>
+            <input class="form-input" type="tel" id="phone" name="phone"
+                   placeholder="(317) 555-0100" autocomplete="tel" required>
+          </div>
+
+          <!-- Consent checkbox — must NOT be pre-checked per Twilio requirements -->
+          <div class="consent-block">
+            <label class="consent-label" for="consentCheck">
+              <input class="consent-check" type="checkbox" id="consentCheck" name="consent" required>
+              <span class="consent-text">
+                By checking this box, I give <strong>buffalotracebottledrops.com</strong> express
+                written consent to send me automated SMS text message alerts about Buffalo Trace bottle
+                availability at the Frankfort, KY gift shop. I understand I will receive approximately
+                <strong>1 message per day, 7 days per week</strong>. Message &amp; data rates may apply.
+                Consent is not a condition of any purchase or use of this website.
+              </span>
+            </label>
+            <p class="consent-note">
+              This checkbox must be selected by you — it cannot be pre-checked on your behalf.
+              To stop receiving messages at any time, reply <strong>STOP</strong> to any alert.
+              For help, reply <strong>HELP</strong> or email
+              <a href="mailto:alerts@buffalotracebottledrops.com">alerts@buffalotracebottledrops.com</a>.
+            </p>
+          </div>
+
+          <!-- Legal disclosure -->
+          <div class="disclosure">
+            <p>
+              <strong>Buffalo Trace Bottle Drop SMS Alerts</strong> — By subscribing, you agree to
+              receive recurring automated text message alerts from buffalotracebottledrops.com regarding
+              daily bottle availability at the Buffalo Trace Distillery gift shop (Frankfort, KY).
+              Message frequency: approximately 1 message per day, 7 days/week.
+              Msg &amp; data rates may apply.
+            </p>
+            <p>
+              To stop receiving messages, reply <strong>STOP</strong>. For help, reply <strong>HELP</strong>.
+              See our <a href="#privacy-policy">Privacy Policy</a> and <a href="#terms">Terms of Service</a> below.
+              This service is independently operated and is not affiliated with Buffalo Trace Distillery
+              or Sazerac Company.
+            </p>
+          </div>
+
+          <!-- Submit -->
+          <div>
+            <button class="btn-submit" type="submit">Join the Waitlist</button>
+            <p class="btn-note">
+              We'll notify you when public SMS alerts launch. Your number is only used to send
+              availability alerts — we do not sell or share your information.
+            </p>
+          </div>
+
+        </div><!-- /.field-stack -->
+      </form>
+    </div><!-- /.form-body -->
+  </div><!-- /.form-wrap -->
+
+  <!-- ── SECTION 3: PROGRAM DETAILS ── -->
+  <div class="sec-head">
+    <span class="sec-num">3</span>
+    <h2 class="sec-title">Program Details</h2>
+  </div>
+
+  <div class="details-grid">
+    <div class="detail-card">
+      <div class="dc-label">Program Name</div>
+      <div class="dc-value">Bottle Drop SMS Alerts</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Sender</div>
+      <div class="dc-value">buffalotracebottledrops.com</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Message Type</div>
+      <div class="dc-value">Informational alerts</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Frequency</div>
+      <div class="dc-value">~1 message/day, 7 days/week</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Delivery Time</div>
+      <div class="dc-value">7–11 AM EST (Mon–Sun)</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Country</div>
+      <div class="dc-value">United States only</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: OPT-OUT & HELP ── -->
+  <div class="sec-head">
+    <span class="sec-num">4</span>
+    <h2 class="sec-title">Opt-Out &amp; Help</h2>
+  </div>
+
+  <div class="policy-section" style="margin-bottom:32px">
+    <p>
+      You may withdraw consent and stop receiving messages at any time by replying to any
+      Buffalo Trace Bottle Drop SMS Alert with one of the following commands:
+    </p>
+    <div class="table-scroll">
+      <table class="policy-table">
+        <tr>
+          <td>STOP</td>
+          <td>Unsubscribe immediately. You will receive one final confirmation message and no further alerts.</td>
+        </tr>
+        <tr>
+          <td>HELP</td>
+          <td>Receive a support message with contact information and unsubscribe instructions.</td>
+        </tr>
+        <tr>
+          <td>INFO</td>
+          <td>Receive program information including message frequency and this page URL.</td>
+        </tr>
+      </table>
+    </div>
+    <p>
+      After texting STOP, you may re-subscribe at any time by re-submitting the form above.
+      Your previous subscription will not be automatically restored.
+    </p>
+  </div>
+
+  <!-- ── SECTION 5: PRIVACY POLICY ── -->
+  <a id="privacy-policy"></a>
+  <div class="sec-head">
+    <span class="sec-num">5</span>
+    <h2 class="sec-title">Privacy Policy</h2>
+  </div>
+
+  <div class="policy-section" style="margin-bottom:32px">
+    <h3>Data We Collect</h3>
+    <p>
+      When you subscribe to Buffalo Trace Bottle Drop SMS Alerts, we collect your mobile phone
+      number and, optionally, your name. We use this information solely to deliver bottle
+      availability alerts.
+    </p>
+    <ul>
+      <li>Your phone number is used only to send the alerts you consented to receive.</li>
+      <li>We do not sell, rent, or share your phone number with third parties for marketing purposes.</li>
+      <li>We do not use your number for any purpose other than this SMS alert program.</li>
+      <li>Message delivery is handled by a third-party SMS provider, which processes your number
+          in accordance with its own privacy policy.</li>
+    </ul>
+
+    <h3>Data Retention</h3>
+    <p>
+      We retain your phone number while you are an active subscriber. Upon receipt of a STOP command
+      or an unsubscribe request by other means, your number is removed from the active send list.
+      We may retain a suppression record of your number to ensure we do not re-add it without
+      your explicit re-consent.
+    </p>
+
+    <h3>Contact</h3>
+    <p>
+      For privacy-related requests or questions about this program, email
+      <a href="mailto:alerts@buffalotracebottledrops.com">alerts@buffalotracebottledrops.com</a>.
+    </p>
+
+    <p class="last-updated">
+      Last updated: April 2026. This site is operated independently and is not affiliated
+      with Buffalo Trace Distillery or Sazerac Company.
+    </p>
+  </div>
+
+  <!-- ── SECTION 6: TERMS OF SERVICE ── -->
+  <a id="terms"></a>
+  <div class="sec-head">
+    <span class="sec-num">6</span>
+    <h2 class="sec-title">Terms of Service</h2>
+  </div>
+
+  <div class="policy-section">
+    <h3>Program Terms</h3>
+    <p>
+      The Buffalo Trace Bottle Drop SMS Alert program is a free informational service operated by
+      buffalotracebottledrops.com. Standard message and data rates charged by your mobile carrier
+      may apply to each message you receive. We are not responsible for carrier surcharges.
+    </p>
+
+    <h3>Availability &amp; Accuracy</h3>
+    <p>
+      Bottle availability data is sourced from the official Buffalo Trace Distillery website and
+      may not reflect real-time in-store inventory. We make no guarantees that bottles described
+      as available will remain in stock at the time of your visit. Always confirm availability
+      by calling the gift shop directly before making the trip.
+    </p>
+
+    <h3>Consent Requirement</h3>
+    <p>
+      Consent to receive SMS alerts is entirely voluntary and is never a condition of accessing
+      or using buffalotracebottledrops.com or any of its features. You may use the tracker
+      website freely without providing your phone number.
+    </p>
+
+    <h3>Program Changes</h3>
+    <p>
+      We reserve the right to modify or discontinue the SMS alert program at any time. If the
+      program is discontinued, enrolled subscribers will receive a final notification message
+      prior to termination.
+    </p>
+
+    <h3>Disclaimer</h3>
+    <p>
+      This service is operated independently. It is not affiliated with, endorsed by, or
+      sponsored by Buffalo Trace Distillery or Sazerac Company, Inc.
+    </p>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Buffalo Trace <span>Bottle Drops</span></div>
+      <div class="footer-copy">Independent tracker · Not affiliated with Buffalo Trace Distillery</div>
+    </div>
+    <div class="footer-links">
+      <a href="/">Tracker</a>
+      <a href="#privacy-policy">Privacy</a>
+      <a href="#terms">Terms</a>
+      <a href="mailto:alerts@buffalotracebottledrops.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('smsOptInForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const first   = document.getElementById('firstName').value.trim();
+    const phone   = document.getElementById('phone').value.trim();
+    const consent = document.getElementById('consentCheck').checked;
+
+    if (!first) {
+      alert('Please enter your first name.');
+      document.getElementById('firstName').focus();
+      return;
+    }
+    if (!phone) {
+      alert('Please enter your mobile phone number.');
+      document.getElementById('phone').focus();
+      return;
+    }
+    if (!consent) {
+      alert('Please check the consent box to subscribe to SMS alerts.');
+      document.getElementById('consentCheck').focus();
+      return;
+    }
+
+    // Show success, hide form
+    document.getElementById('successMsg').classList.add('show');
+    document.querySelector('.field-stack').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
