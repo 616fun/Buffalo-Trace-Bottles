@@ -1,14 +1,17 @@
 name: Buffalo Trace Sunday Report
 
-# Runs Sunday at 7:00 AM EST (12:00 UTC).
-# Starting at 7 AM (one hour before the old 8 AM schedule) lets the scraper begin
-# polling well before the gift shop opens at 11am EST. 240-minute poll window
-# covers 7:00 AM through 11:00 AM with buffer.
+# Primary trigger: repository_dispatch (type: sunday-report-trigger) fired by
+# the Claude dispatcher task at 8:00 AM EST — starts within seconds.
+# Backup trigger: cron at 7:00 AM EST (12:00 UTC) — fires 30–90 min late but
+# guarantees the run even if Claude is down. Gift shop opens 11am EST;
+# 240-min poll window covers 7:00 AM through 11:00 AM with buffer.
 # Indiana stays on EST year-round — no DST adjustment needed.
 
 on:
+  repository_dispatch:
+    types: [sunday-report-trigger]
   schedule:
-    - cron: '0 12 * * 0'   # 12:00 UTC = 7:00 AM EST, Sunday only
+    - cron: '0 12 * * 0'   # 12:00 UTC = 7:00 AM EST backup, Sunday only
   workflow_dispatch:
     inputs:
       dry_run:
@@ -21,6 +24,11 @@ on:
         required: false
         default: '240'
         type: string
+
+# Prevent duplicate concurrent runs when both dispatch and cron fire same day.
+concurrency:
+  group: sunday-report-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write   # needed to git push tracker_data.json + data.json
@@ -54,7 +62,7 @@ jobs:
           TWILIO_FROM_NUMBER:   ${{ secrets.TWILIO_FROM_NUMBER }}
           TWILIO_TO_NUMBER:     ${{ secrets.TWILIO_TO_NUMBER }}
           TWILIO_ENABLED:       ${{ secrets.TWILIO_ENABLED }}
-          DRY_RUN:              ${{ inputs.dry_run || 'false' }}
+          DRY_RUN:              ${{ github.event.client_payload.dry_run || inputs.dry_run || 'false' }}
         run: >
           python scripts/run_daily.py
-          --max-poll-minutes ${{ inputs.max_poll_minutes || '240' }}
+          --max-poll-minutes ${{ github.event.client_payload.max_poll_minutes || inputs.max_poll_minutes || '240' }}
