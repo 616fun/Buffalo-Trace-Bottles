@@ -1,14 +1,18 @@
 name: Buffalo Trace Daily Report (Mon–Sat)
 
-# Runs Mon–Sat at 6:00 AM EST (11:00 UTC).
-# Starting at 6 AM lets the scraper begin polling before the BT site refreshes
-# (typically 6:30–7:30 AM), so the pipeline completes minutes after the refresh
-# rather than waiting for a delayed cron fire after the fact.
+# Primary trigger: repository_dispatch fired by the Claude dispatcher task at
+# 7:00 AM EST — starts the pipeline within seconds of Claude's fire.
+# Backup trigger: cron at 6:00 AM EST (11:00 UTC) — fires 30–90 min late due to
+# GitHub scheduling, but guarantees the pipeline runs even if Claude is down.
+# The idempotency guard in run_daily.py ensures only one run completes per day
+# if both triggers fire.
 # Indiana stays on EST year-round — no DST adjustment needed.
 
 on:
+  repository_dispatch:
+    types: [daily-report-trigger]
   schedule:
-    - cron: '0 11 * * 1-6'   # 11:00 UTC = 6:00 AM EST, Mon–Sat
+    - cron: '0 11 * * 1-6'   # 11:00 UTC = 6:00 AM EST backup, Mon–Sat
   workflow_dispatch:
     inputs:
       dry_run:
@@ -21,6 +25,13 @@ on:
         required: false
         default: '240'
         type: string
+
+# Prevent duplicate concurrent runs when both dispatch and cron fire same day.
+# cancel-in-progress: false — let the first run finish; the second hits the
+# idempotency guard and exits cleanly in ~1 second.
+concurrency:
+  group: daily-report-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write   # needed to git push tracker_data.json + data.json
@@ -56,7 +67,7 @@ jobs:
           TWILIO_FROM_NUMBER:   ${{ secrets.TWILIO_FROM_NUMBER }}
           TWILIO_TO_NUMBER:     ${{ secrets.TWILIO_TO_NUMBER }}
           TWILIO_ENABLED:       ${{ secrets.TWILIO_ENABLED }}
-          DRY_RUN:              ${{ inputs.dry_run || 'false' }}
+          DRY_RUN:              ${{ github.event.client_payload.dry_run || inputs.dry_run || 'false' }}
         run: >
           python scripts/run_daily.py
-          --max-poll-minutes ${{ inputs.max_poll_minutes || '240' }}
+          --max-poll-minutes ${{ github.event.client_payload.max_poll_minutes || inputs.max_poll_minutes || '240' }}
