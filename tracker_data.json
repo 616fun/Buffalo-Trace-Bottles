@@ -1,0 +1,1346 @@
+{
+  "schema_version": "2.0",
+  "meta": {
+    "last_updated": "2026-04-21",
+    "last_run_by": "update_tracker_data.py",
+    "total_days_tracked": 40
+  },
+  "config": {
+    "bayesian_priors": {
+      "blantons": {
+        "frequency": 0.63,
+        "p_avail_given_avail": 0.7,
+        "p_avail_given_not": 0.5,
+        "effective_n": 15
+      },
+      "weller107": {
+        "frequency": 0.75,
+        "p_avail_given_avail": 0.78,
+        "p_avail_given_not": 0.55,
+        "effective_n": 15
+      },
+      "ehtaylor_sb": {
+        "frequency": 0.93,
+        "p_avail_given_avail": 0.95,
+        "p_avail_given_not": 0.72,
+        "effective_n": 15
+      },
+      "eagle_rare": {
+        "frequency": 0.17,
+        "p_avail_given_avail": 0.3,
+        "p_avail_given_not": 0.12,
+        "effective_n": 15
+      }
+    }
+  },
+  "daily_log": [
+    {
+      "date": "2026-03-13",
+      "day_of_week": "Friday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 1,
+      "special_release": "E.H. Taylor Straight Rye",
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-14",
+      "day_of_week": "Saturday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-15",
+      "day_of_week": "Sunday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Corrected: initial run used stale 3/14 data; fixed after site updated 8:40am EST",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-16",
+      "day_of_week": "Monday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-17",
+      "day_of_week": "Tuesday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-18",
+      "day_of_week": "Wednesday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-19",
+      "day_of_week": "Thursday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-20",
+      "day_of_week": "Friday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-21",
+      "day_of_week": "Saturday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Initial run used stale site data (timestamp 3.20.2026); corrected after site updated to 3.21.2026 post-9am. Sazerac Rye 100PF & Traveller Full Proof available while supplies last.",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-22",
+      "day_of_week": "Sunday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Corrected at 11:00am EST after site updated to 3.22.2026. Initial 8am run used stale 3.21 data.",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-23",
+      "day_of_week": "Monday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-24",
+      "day_of_week": "Tuesday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-25",
+      "day_of_week": "Wednesday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-26",
+      "day_of_week": "Thursday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-27",
+      "day_of_week": "Friday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-28",
+      "day_of_week": "Saturday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-29",
+      "day_of_week": "Sunday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Updated: 9:30am EST",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-30",
+      "day_of_week": "Monday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Corrected: scraper misread W107/Eagle Rare. Actual: EHT + W107 available.",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-03-31",
+      "day_of_week": "Tuesday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-01",
+      "day_of_week": "Wednesday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Updated: 6:30am EST",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-02",
+      "day_of_week": "Thursday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-03",
+      "day_of_week": "Friday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-04",
+      "day_of_week": "Saturday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-05",
+      "day_of_week": "Sunday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "Gift shop closed \u2014 Easter Sunday",
+      "last_site_update": null,
+      "is_closure": true
+    },
+    {
+      "date": "2026-04-06",
+      "day_of_week": "Monday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-07",
+      "day_of_week": "Tuesday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-08",
+      "day_of_week": "Wednesday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-09",
+      "day_of_week": "Thursday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-10",
+      "day_of_week": "Friday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-11",
+      "day_of_week": "Saturday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-12",
+      "day_of_week": "Sunday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-13",
+      "day_of_week": "Monday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-14",
+      "day_of_week": "Tuesday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-15",
+      "day_of_week": "Wednesday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-16",
+      "day_of_week": "Thursday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 0,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": null,
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-17",
+      "day_of_week": "Friday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": "6:34am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-18",
+      "day_of_week": "Saturday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": "7:57am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-19",
+      "day_of_week": "Sunday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": "9:00am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-20",
+      "day_of_week": "Monday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": "6:33am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-04-21",
+      "day_of_week": "Tuesday",
+      "blantons": 0,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": "6:51am EST",
+      "is_closure": false
+    }
+  ],
+  "predictions": [
+    {
+      "date": "2026-03-15",
+      "predicted_bottles": [
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "overall_confidence_pct": 51.5,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "No",
+      "result": "Incorrect",
+      "model_used": "Bayesian Markov",
+      "notes": "Corrected \u2014 initial run used stale 3/14 data; actual reflects site updated 8:40am EST 3/15/2026",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-16",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 68.2,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "Reconstructed \u2014 prediction row was missing; inserted during 3/18 quality audit",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-17",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 95.6,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-18",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 73.8,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-19",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 90.3,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-20",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 68.7,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-21",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 68.5,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-22",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 69.5,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-23",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 74.4,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "eagle_rare"
+      ],
+      "correct": "No",
+      "result": "Incorrect",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-24",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 63.7,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-25",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 66.0,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-26",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 65.1,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-27",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 71.6,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-28",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 72.7,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-29",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 73.8,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-03-30",
+      "predicted_bottles": [],
+      "overall_confidence_pct": null,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "N/A",
+      "result": "N/A",
+      "model_used": "Bayesian Markov",
+      "notes": "Prediction row not generated by Sunday task; actual corrected manually",
+      "missing_prediction": true
+    },
+    {
+      "date": "2026-03-31",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 73.0,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "Corrected: updated with fixed Mar 30 data",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-01",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 74.1,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-02",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 72.9,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-03",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 74.6,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-04",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 70.3,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-05",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 70.1,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": "Gift shop closed",
+      "correct": "N/A",
+      "result": "Gift shop closed",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-06",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 60.9,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-07",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 69.0,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-08",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 66.4,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-09",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "overall_confidence_pct": 75.5,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-10",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "overall_confidence_pct": 69.0,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-11",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 73.2,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-12",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 74.1,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-13",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 70.6,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-14",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 75.7,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-15",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107"
+      ],
+      "overall_confidence_pct": 74.2,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-16",
+      "predicted_bottles": [
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "overall_confidence_pct": 69.8,
+      "per_bottle_pct": null,
+      "confidence": null,
+      "actual_bottles": [
+        "blantons",
+        "weller107"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-17",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 65.5,
+      "per_bottle_pct": {
+        "blantons": 60.9,
+        "weller107": 57.6,
+        "ehtaylor_sb": 77.9,
+        "eagle_rare": 22.6
+      },
+      "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-18",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 68.3,
+      "per_bottle_pct": {
+        "blantons": 62.1,
+        "weller107": 53.7,
+        "ehtaylor_sb": 89.2,
+        "eagle_rare": 22.0
+      },
+      "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-19",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 68.3,
+      "per_bottle_pct": {
+        "blantons": 63.2,
+        "weller107": 52.1,
+        "ehtaylor_sb": 89.4,
+        "eagle_rare": 21.5
+      },
+      "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-20",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 68.2,
+      "per_bottle_pct": {
+        "blantons": 64.3,
+        "weller107": 50.7,
+        "ehtaylor_sb": 89.7,
+        "eagle_rare": 22.9
+      },
+      "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-21",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 77.6,
+      "per_bottle_pct": {
+        "blantons": 65.3,
+        "weller107": 49.3,
+        "ehtaylor_sb": 89.9,
+        "eagle_rare": 23.3
+      },
+      "confidence": "High",
+      "actual_bottles": [
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-04-22",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons"
+      ],
+      "overall_confidence_pct": 70.1,
+      "per_bottle_pct": {
+        "blantons": 50.0,
+        "weller107": 48.0,
+        "ehtaylor_sb": 90.1,
+        "eagle_rare": 22.0
+      },
+      "confidence": "High",
+      "actual_bottles": null,
+      "correct": null,
+      "result": null,
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    }
+  ],
+  "prices": [
+    {
+      "date": "2026-03-14",
+      "blantons_single_barrel": 74.99,
+      "weller_antique_107": 59.99,
+      "eh_taylor_small_batch": 59.99,
+      "eagle_rare_10-year": 43,
+      "weller_special_reserve": 30,
+      "eh_taylor_straight_rye": null,
+      "sazerac_rye": 30,
+      "buffalo_trace_bourbon": 27,
+      "wheatley_vodka": null,
+      "buffalo_trace_bourbon_cream": null
+    },
+    {
+      "date": "2026-03-18",
+      "blantons_single_barrel": 74.99,
+      "weller_antique_107": 59.99,
+      "eh_taylor_small_batch": 59.99,
+      "eagle_rare_10-year": 43,
+      "weller_special_reserve": 30,
+      "eh_taylor_straight_rye": null,
+      "sazerac_rye": 29.99,
+      "buffalo_trace_bourbon": 27,
+      "wheatley_vodka": 16.99,
+      "buffalo_trace_bourbon_cream": 21.99
+    }
+  ],
+  "special_releases_log": [
+    {
+      "date": "2026-03-13",
+      "name": "E.H. Taylor Straight Rye"
+    },
+    {
+      "date": "2026-03-17",
+      "name": "Bettinardi Golf x W.L. Weller Collection"
+    }
+  ]
+}
