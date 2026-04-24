@@ -1407,6 +1407,19 @@
       "buffalo_trace_bourbon": 27,
       "wheatley_vodka": 16.99,
       "buffalo_trace_bourbon_cream": 21.99
+    },
+    {
+      "date": "2026-04-24",
+      "blantons_single_barrel": null,
+      "weller_antique_107": null,
+      "eh_taylor_small_batch": null,
+      "eagle_rare_10-year": null,
+      "weller_special_reserve": null,
+      "eh_taylor_straight_rye": null,
+      "sazerac_rye": null,
+      "buffalo_trace_bourbon": null,
+      "wheatley_vodka": null,
+      "buffalo_trace_bourbon_cream": null
     }
   ],
   "special_releases_log": [
