@@ -166,11 +166,11 @@ def build_data_json(tracker: dict, today_str: str | None = None) -> dict:
         today_row = daily_log[-1]
         today_str = today_row["date"]
 
-    # Tracked days = rows that are NOT closure days
-    tracked_rows = [r for r in daily_log if not r.get("is_closure", False)]
+    # All logged rows (includes closure days like Easter)
+    closure_rows = [r for r in daily_log if r.get("is_closure", False)]
 
     log(f"  Building data.json for date: {today_str}")
-    log(f"  Daily log rows: {len(daily_log)} ({len(tracked_rows)} tracked, {len(daily_log)-len(tracked_rows)} closures)")
+    log(f"  Daily log rows: {len(daily_log)} ({len(daily_log)-len(closure_rows)} open, {len(closure_rows)} closures)")
     log(f"  Predictions rows: {len(predictions)}")
 
     # --- Compute analytics ---
@@ -180,7 +180,7 @@ def build_data_json(tracker: dict, today_str: str | None = None) -> dict:
     prediction_accuracy = compute_prediction_accuracy(predictions)
     meta = {
         "last_updated":       today_str,
-        "days_tracked":       len(tracked_rows),   # excludes closure days
+        "days_tracked":       len(daily_log),      # all logged days including closures
         "site_version":       "1.0",
         "data_source":        "https://www.buffalotracebottledrops.com",
         "prediction_accuracy": prediction_accuracy,
