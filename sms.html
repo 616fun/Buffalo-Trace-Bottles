@@ -594,11 +594,13 @@
     <p class="hero-sub">
       Get a daily text message when Buffalo Trace bottle availability updates.
       Know what dropped before you make the drive.
+      <strong style="color:rgba(255,255,255,.65);display:block;margin-top:10px;font-size:.82rem;">You must be 21 years of age or older to subscribe to this service.</strong>
     </p>
     <div class="hero-badges">
       <span class="hero-badge"><span class="dot green"></span>Daily Updates</span>
       <span class="hero-badge"><span class="dot"></span>Mon – Sun</span>
       <span class="hero-badge"><span class="dot"></span>Reply STOP anytime</span>
+      <span class="hero-badge" style="border-color:rgba(192,115,40,.5);color:rgba(255,220,120,.85);">🔞 Must Be 21+</span>
     </div>
   </div>
 </div>
@@ -659,6 +661,7 @@
     <div class="form-header">
       <h2>Buffalo Trace Bottle Drop SMS Alerts</h2>
       <p>Daily availability updates for Blanton's, Weller 107, E.H. Taylor Small Batch, and Eagle Rare.</p>
+      <p style="margin-top:10px;font-size:.78rem;color:rgba(255,255,255,.9);font-weight:600;background:rgba(0,0,0,.2);display:inline-block;padding:4px 10px;border-radius:6px;">🔞 Available to adults 21 years of age and older only</p>
     </div>
     <div class="form-body">
 
@@ -691,12 +694,24 @@
                    placeholder="(317) 555-0100" autocomplete="tel" required>
           </div>
 
+          <!-- Age verification — required, must not be pre-checked -->
+          <div class="consent-block" style="border-color:#C07328;background:#FFF8F0;">
+            <label class="consent-label" for="ageCheck">
+              <input class="consent-check" type="checkbox" id="ageCheck" name="ageVerify" required>
+              <span class="consent-text">
+                <strong>I confirm that I am 21 years of age or older.</strong> This SMS alert service
+                provides information about alcohol product availability at a licensed distillery gift shop.
+                You must be of legal drinking age (21+) in the United States to subscribe.
+              </span>
+            </label>
+          </div>
+
           <!-- Consent checkbox — must NOT be pre-checked per Twilio requirements -->
           <div class="consent-block">
             <label class="consent-label" for="consentCheck">
               <input class="consent-check" type="checkbox" id="consentCheck" name="consent" required>
               <span class="consent-text">
-                By checking this box, I give <strong>buffalotracebottledrops.com</strong> express
+                By checking this box, I confirm I am 21 years of age or older, and I give <strong>buffalotracebottledrops.com</strong> express
                 written consent to send me automated SMS text message alerts about Buffalo Trace bottle
                 availability at the Frankfort, KY gift shop. I understand I will receive approximately
                 <strong>1 message per day, 7 days per week</strong>. Message &amp; data rates may apply.
@@ -714,7 +729,7 @@
           <!-- Legal disclosure -->
           <div class="disclosure">
             <p>
-              <strong>Buffalo Trace Bottle Drop SMS Alerts</strong> — By subscribing, you agree to
+              <strong>Buffalo Trace Bottle Drop SMS Alerts</strong> — <strong>You must be 21 years of age or older to subscribe.</strong> By subscribing, you agree to
               receive recurring automated text message alerts from buffalotracebottledrops.com regarding
               daily bottle availability at the Buffalo Trace Distillery gift shop (Frankfort, KY).
               Message frequency: approximately 1 message per day, 7 days/week.
@@ -772,6 +787,10 @@
     <div class="detail-card">
       <div class="dc-label">Country</div>
       <div class="dc-value">United States only</div>
+    </div>
+    <div class="detail-card" style="border-color:#C07328;background:#FFF8F0;">
+      <div class="dc-label" style="color:#C07328;">Age Requirement</div>
+      <div class="dc-value">21 years or older</div>
     </div>
   </div>
 
@@ -845,8 +864,9 @@
     </p>
 
     <p class="last-updated">
-      Last updated: April 2026. This site is operated independently and is not affiliated
-      with Buffalo Trace Distillery or Sazerac Company.
+      Last updated: May 2026. This service provides information about alcohol product availability.
+      Subscribers must be 21 years of age or older. This site is operated independently and is
+      not affiliated with Buffalo Trace Distillery or Sazerac Company.
     </p>
   </div>
 
@@ -878,6 +898,15 @@
       Consent to receive SMS alerts is entirely voluntary and is never a condition of accessing
       or using buffalotracebottledrops.com or any of its features. You may use the tracker
       website freely without providing your phone number.
+    </p>
+
+    <h3>Age Requirement</h3>
+    <p>
+      You must be at least <strong>21 years of age</strong> to subscribe to Buffalo Trace Bottle
+      Drop SMS Alerts. This service provides information about alcohol product availability at a
+      licensed distillery. By subscribing, you represent and warrant that you are of legal drinking
+      age (21 or older) in the United States. We reserve the right to terminate any subscription
+      where we have reason to believe the subscriber is under 21 years of age.
     </p>
 
     <h3>Program Changes</h3>
@@ -918,6 +947,7 @@
 
     const first   = document.getElementById('firstName').value.trim();
     const phone   = document.getElementById('phone').value.trim();
+    const ageOk  = document.getElementById('ageCheck').checked;
     const consent = document.getElementById('consentCheck').checked;
 
     if (!first) {
@@ -928,6 +958,11 @@
     if (!phone) {
       alert('Please enter your mobile phone number.');
       document.getElementById('phone').focus();
+      return;
+    }
+    if (!ageOk) {
+      alert('You must confirm that you are 21 years of age or older to subscribe.');
+      document.getElementById('ageCheck').focus();
       return;
     }
     if (!consent) {
