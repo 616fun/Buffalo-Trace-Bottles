@@ -1,0 +1,58 @@
+name: Buffalo Trace Monthly Summary
+
+on:
+  repository_dispatch:
+    types: [monthly-summary-trigger]
+  schedule:
+    - cron: '0 14 28 * *'   # 14:00 UTC = 9:00 AM EST, 28th of each month
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run — skip email and SMS'
+        required: false
+        default: 'false'
+        type: boolean
+      month:
+        description: 'Month to summarize (YYYY-MM). Defaults to current month.'
+        required: false
+        default: ''
+        type: string
+
+concurrency:
+  group: monthly-summary-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  monthly-summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Run monthly summary
+        env:
+          RESEND_API_KEY:       ${{ secrets.RESEND_API_KEY }}
+          REPORT_FROM_EMAIL:    "Buffalo Trace Daily <drops@buffalotracebottledrops.com>"
+          REPORT_TO_EMAIL:      "brianwulff@yahoo.com"
+          TWILIO_ACCOUNT_SID:   ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:    ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM_NUMBER:   ${{ secrets.TWILIO_FROM_NUMBER }}
+          TWILIO_TO_NUMBER:     ${{ secrets.TWILIO_TO_NUMBER }}
+          TWILIO_ENABLED:       ${{ secrets.TWILIO_ENABLED }}
+          DRY_RUN:              ${{ github.event.client_payload.dry_run || inputs.dry_run || 'false' }}
+        run: >
+          python scripts/run_monthly_summary.py
+          ${{ (github.event.client_payload.month || inputs.month) && format('--month {0}', github.event.client_payload.month || inputs.month) || '' }}
