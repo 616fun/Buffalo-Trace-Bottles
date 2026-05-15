@@ -773,7 +773,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "E.H. Taylor Four Grain",
       "notes": "",
       "last_site_update": "7:58am EST",
       "is_closure": false
@@ -2256,6 +2256,10 @@
     {
       "date": "2026-03-17",
       "name": "Bettinardi Golf x W.L. Weller Collection"
+    },
+    {
+      "date": "2026-05-13",
+      "name": "E.H. Taylor Four Grain"
     }
   ]
 }
