@@ -62,7 +62,7 @@ POLL_INTERVAL_SECONDS = 600  # 10 minutes
 BOTTLE_KEYS = {
     "blantons":    ["blanton"],
     "weller107":   ["weller antique 107"],
-    "ehtaylor_sb": ["e.h. taylor small batch", "e.h. taylor"],
+    "ehtaylor_sb": ["e.h. taylor small batch"],
     "eagle_rare":  ["eagle rare"],
 }
 
