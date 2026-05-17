@@ -56,6 +56,7 @@ DATA_JSON_PATH    = REPO_ROOT / "data.json"
 SCRAPER_SCRIPT          = SCRIPTS_DIR / "scrape_availability.py"
 UPDATE_TRACKER_SCRIPT   = SCRIPTS_DIR / "update_tracker_data.py"
 BUILD_DATA_JSON_SCRIPT  = SCRIPTS_DIR / "build_data_json.py"
+REDDIT_SCRAPER_SCRIPT   = SCRIPTS_DIR / "scrape_reddit.py"
 
 BOTTLE_KEYS = ["blantons", "weller107", "ehtaylor_sb", "eagle_rare"]
 BOTTLE_DISPLAY = {
@@ -146,11 +147,18 @@ def get_twilio_creds() -> dict:
     # (e.g. while Twilio phone number verification is pending)
     enabled_str = os.environ.get("TWILIO_ENABLED", "true").strip().lower()
     enabled = enabled_str not in ("false", "0", "no", "off")
+    # Support TWILIO_TO_NUMBERS (comma-separated) or single TWILIO_TO_NUMBER
+    to_numbers_str = os.environ.get("TWILIO_TO_NUMBERS", "").strip()
+    if to_numbers_str:
+        to_numbers = [n.strip() for n in to_numbers_str.split(",") if n.strip()]
+    else:
+        single = os.environ.get("TWILIO_TO_NUMBER", "").strip()
+        to_numbers = [single] if single else []
     return {
         "account_sid":  os.environ.get("TWILIO_ACCOUNT_SID", "").strip(),
         "auth_token":   os.environ.get("TWILIO_AUTH_TOKEN",  "").strip(),
         "from_number":  os.environ.get("TWILIO_FROM_NUMBER", "").strip(),
-        "to_number":    os.environ.get("TWILIO_TO_NUMBER",   "").strip(),
+        "to_numbers":   to_numbers,
         "enabled":      enabled,
     }
 
@@ -195,42 +203,48 @@ def twilio_send_sms(body: str, creds: dict,
         log("[SMS] Twilio credentials not configured — skipping")
         return
 
+    # Support to_numbers list (preferred) or legacy to_number string
+    to_numbers = creds.get("to_numbers") or []
+    if not to_numbers and creds.get("to_number"):
+        to_numbers = [creds["to_number"]]
+
     url = (f"https://api.twilio.com/2010-04-01/Accounts/"
            f"{creds['account_sid']}/Messages.json")
     auth_header = base64.b64encode(
         f"{creds['account_sid']}:{creds['auth_token']}".encode()
     ).decode()
 
-    last_exc = None
-    for attempt in range(1, max_attempts + 1):
-        try:
-            payload = urllib.parse.urlencode({
-                "From": creds["from_number"],
-                "To":   creds["to_number"],
-                "Body": body,
-            }).encode()
-            req = urllib.request.Request(url, data=payload, method="POST")
-            req.add_header("Authorization", f"Basic {auth_header}")
-            req.add_header("Content-Type", "application/x-www-form-urlencoded")
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                resp.read()
-            log(f"[SMS] Sent: {body[:80]}")
-            return
-        except urllib.error.HTTPError as e:
-            err_body = e.read().decode(errors="replace")
-            if 400 <= e.code < 500:
-                raise Exception(f"Twilio error {e.code}: {err_body}") from e
-            last_exc = Exception(f"Twilio transient {e.code}: {err_body}")
-        except Exception as e:
-            last_exc = e
+    for to_number in to_numbers:
+        last_exc = None
+        for attempt in range(1, max_attempts + 1):
+            try:
+                payload = urllib.parse.urlencode({
+                    "From": creds["from_number"],
+                    "To":   to_number,
+                    "Body": body,
+                }).encode()
+                req = urllib.request.Request(url, data=payload, method="POST")
+                req.add_header("Authorization", f"Basic {auth_header}")
+                req.add_header("Content-Type", "application/x-www-form-urlencoded")
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    resp.read()
+                log(f"[SMS] Sent to {to_number}: {body[:80]}")
+                break  # success for this number; move to next recipient
+            except urllib.error.HTTPError as e:
+                err_body = e.read().decode(errors="replace")
+                if 400 <= e.code < 500:
+                    raise Exception(f"Twilio error {e.code}: {err_body}") from e
+                last_exc = Exception(f"Twilio transient {e.code}: {err_body}")
+            except Exception as e:
+                last_exc = e
 
-        if attempt < max_attempts:
-            log(f"[SMS] Attempt {attempt} failed: {last_exc}. "
-                f"Waiting {wait_seconds // 60} min before retry...")
-            time.sleep(wait_seconds)
-        else:
-            log(f"[SMS] All {max_attempts} attempts failed.")
-    raise last_exc
+            if attempt < max_attempts:
+                log(f"[SMS] Attempt {attempt} to {to_number} failed: {last_exc}. "
+                    f"Waiting {wait_seconds // 60} min before retry...")
+                time.sleep(wait_seconds)
+            else:
+                log(f"[SMS] All {max_attempts} attempts failed for {to_number}.")
+                raise last_exc
 
 
 def send_sms_safe(body: str, creds: dict) -> None:
@@ -239,6 +253,35 @@ def send_sms_safe(body: str, creds: dict) -> None:
         twilio_send_sms(body, creds)
     except Exception as exc:
         log(f"[SMS] Failed (non-fatal): {exc}")
+
+
+# ---------------------------------------------------------------------------
+# Reddit community intel
+# ---------------------------------------------------------------------------
+
+def fetch_reddit_posts(dry_run: bool = False) -> list:
+    """
+    Call scrape_reddit.py as a subprocess and return the posts list.
+    Non-critical — returns [] on any failure so the pipeline is never blocked.
+    """
+    try:
+        cmd = [sys.executable, str(REDDIT_SCRAPER_SCRIPT), "--days", "7", "--max-posts", "8"]
+        if dry_run:
+            cmd.append("--dry-run")
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        if result.stderr:
+            log(result.stderr.strip())
+        data = json.loads(result.stdout)
+        if data.get("success"):
+            posts = data.get("posts", [])
+            log(f"  Reddit: {len(posts)} post(s) found")
+            return posts
+        else:
+            log(f"  Reddit scrape returned success=false: {data.get('reason', 'unknown')}")
+            return []
+    except Exception as exc:
+        log(f"  Reddit scrape failed (non-fatal): {exc}")
+        return []
 
 
 # ---------------------------------------------------------------------------
@@ -289,7 +332,66 @@ def git_commit_and_push(commit_message: str, dry_run: bool = False) -> None:
 # HTML email generator (matches existing report format exactly)
 # ---------------------------------------------------------------------------
 
-def generate_email_html(data: dict, today: datetime.date) -> str:
+def _age_label(hours: float) -> str:
+    """Human-readable age: '45m ago', '3h ago', '2d ago'."""
+    if hours < 1:
+        return f"{int(hours * 60)}m ago"
+    elif hours < 24:
+        return f"{int(hours)}h ago"
+    else:
+        return f"{int(hours / 24)}d ago"
+
+
+def _build_reddit_section(reddit_posts: list) -> str:
+    """Return the Community Intel HTML section, or '' if no posts."""
+    if not reddit_posts:
+        return ""
+
+    rows = ""
+    for post in reddit_posts:
+        age     = _age_label(post.get("age_hours", 0))
+        sub     = post.get("subreddit", "")
+        title   = post.get("title", "").replace("<", "&lt;").replace(">", "&gt;")
+        url     = post.get("url", "#")
+        score   = post.get("score", 0)
+        n_cmts  = post.get("num_comments", 0)
+        snippet = post.get("snippet", "").replace("<", "&lt;").replace(">", "&gt;")
+        author  = post.get("author", "")
+
+        snippet_html = (
+            f'<br><span style="font-size: 12px; color: #666; font-style: italic;">'
+            f'{snippet}'
+            f'</span>'
+        ) if snippet else ""
+
+        rows += f"""
+    <tr style="border-bottom: 1px solid #e8dfc8;">
+        <td style="padding: 10px 12px;">
+            <a href="{url}" style="color: #2c1810; font-weight: 600; font-size: 13px; text-decoration: none;"
+               target="_blank">{title}</a>
+            {snippet_html}
+            <br>
+            <span style="font-size: 11px; color: #888;">{author} · {sub} · {age} · ▲{score} · {n_cmts} comments</span>
+        </td>
+    </tr>"""
+
+    return f"""
+<div style="padding: 16px 32px;">
+    <h2 style="color: #2c1810; font-size: 18px; border-bottom: 2px solid #d4c5a0; padding-bottom: 8px;">
+        🗨️ Community Intel <span style="font-size: 13px; font-weight: normal; color: #888;">(r/bourbon · r/whiskeybuds · last 7 days)</span>
+    </h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tbody>{rows}
+        </tbody>
+    </table>
+    <p style="font-size: 11px; color: #aaa; margin: 8px 0 0;">
+        Unverified community reports — always confirm at the gift shop.
+    </p>
+</div>"""
+
+
+def generate_email_html(data: dict, today: datetime.date,
+                        reddit_posts: list = None) -> str:
     """Build HTML report from data.json content."""
 
     today_info  = data.get("today", {})
@@ -440,6 +542,9 @@ def generate_email_html(data: dict, today: datetime.date) -> str:
     </table>
 </div>"""
 
+    # Community Intel (Reddit) — optional
+    reddit_section = _build_reddit_section(reddit_posts or [])
+
     # Prediction accuracy
     total_days  = accuracy.get("total_days", 0)
     correct     = accuracy.get("correct", 0)
@@ -506,6 +611,8 @@ def generate_email_html(data: dict, today: datetime.date) -> str:
 {history_section}
 
 {accuracy_section}
+
+{reddit_section}
 
 <!-- Footer -->
 <div style="background-color: #2c1810; color: #d4b896; padding: 16px 32px; text-align: center; font-size: 12px;">
@@ -704,12 +811,18 @@ def main() -> None:
         # Non-fatal — continue to email + SMS
 
     # -----------------------------------------------------------------------
+    # Step 4.5 — Fetch Reddit community intel (non-critical)
+    # -----------------------------------------------------------------------
+    log("\n=== Step 4.5: Reddit community intel ===")
+    reddit_posts = fetch_reddit_posts(dry_run=dry_run)
+
+    # -----------------------------------------------------------------------
     # Step 5 — Send HTML email
     # -----------------------------------------------------------------------
     log("\n=== Step 5: Send email ===")
     try:
         resend_creds = get_resend_creds()
-        html_body    = generate_email_html(data, today)
+        html_body    = generate_email_html(data, today, reddit_posts=reddit_posts)
 
         msg = email.message.EmailMessage()
         msg["Subject"] = f"Buffalo Trace Bottle Drops — {today.strftime('%A, %B %-d, %Y')}"
@@ -746,7 +859,8 @@ def main() -> None:
     )
     pred_labels = [BOTTLE_SHORT[k] for k in predicted_keys] if predicted_keys else ["None"]
     sms_body = (f"✅ BT {mon_dd}: {bottles_status} | "
-                f"Tomorrow's Prediction(s): {', '.join(pred_labels)}")
+                f"Tomorrow's Prediction(s): {', '.join(pred_labels)} | "
+                f"https://buffalotracebottledrops.com")
 
     if not dry_run:
         send_sms_safe(sms_body, sms_creds)
@@ -830,11 +944,15 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
         msg = f"⚠️ BT {mon_dd}: GitHub push failed. Spreadsheet+data.json OK. Site may be stale."
         send_sms_safe(msg, sms_creds)
 
+    # Step C7.5: Reddit community intel (non-critical)
+    log("\n=== Step C4.5: Reddit community intel ===")
+    reddit_posts = fetch_reddit_posts(dry_run=dry_run)
+
     # Step C8: Closure email
     log("\n=== Step C5: Send closure email ===")
     try:
         resend_creds = get_resend_creds()
-        html_body    = generate_email_html(data, today)
+        html_body    = generate_email_html(data, today, reddit_posts=reddit_posts)
 
         msg = email.message.EmailMessage()
         msg["Subject"] = f"Buffalo Trace Bottle Drops — {today.strftime('%A, %B %-d, %Y')}"
@@ -864,7 +982,8 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
     )
     pred_labels = [BOTTLE_SHORT[k] for k in predicted_keys] if predicted_keys else ["None"]
     sms_body = (f"ℹ️ BT {mon_dd}: Closed ({holiday_name}). "
-                f"Tomorrow's Prediction(s): {', '.join(pred_labels)}")
+                f"Tomorrow's Prediction(s): {', '.join(pred_labels)} | "
+                f"https://buffalotracebottledrops.com")
 
     if not dry_run:
         send_sms_safe(sms_body, sms_creds)
