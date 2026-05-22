@@ -857,7 +857,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "E.H. Taylor Four Grain",
       "notes": "",
       "last_site_update": "6:23am EST",
       "is_closure": false
@@ -2522,6 +2522,10 @@
     },
     {
       "date": "2026-05-13",
+      "name": "E.H. Taylor Four Grain"
+    },
+    {
+      "date": "2026-05-20",
       "name": "E.H. Taylor Four Grain"
     }
   ]
