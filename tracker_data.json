@@ -941,7 +941,7 @@
       "weller107": 0,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "E.H. Taylor Four Grain",
       "notes": "",
       "last_site_update": "6:52am EST",
       "is_closure": false
@@ -953,7 +953,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Weller C.Y.P.B.",
       "notes": "",
       "last_site_update": "7:22am EST",
       "is_closure": false
@@ -2780,6 +2780,14 @@
     {
       "date": "2026-05-20",
       "name": "E.H. Taylor Four Grain"
+    },
+    {
+      "date": "2026-05-27",
+      "name": "E.H. Taylor Four Grain"
+    },
+    {
+      "date": "2026-05-28",
+      "name": "Weller C.Y.P.B."
     }
   ]
 }
