@@ -61,7 +61,11 @@ jobs:
           TWILIO_AUTH_TOKEN:    ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM_NUMBER:   ${{ secrets.TWILIO_FROM_NUMBER }}
           TWILIO_TO_NUMBER:     ${{ secrets.TWILIO_TO_NUMBER }}
+          TWILIO_TO_NUMBERS:    ${{ secrets.TWILIO_TO_NUMBERS }}
           TWILIO_ENABLED:       ${{ secrets.TWILIO_ENABLED }}
+          PUSHOVER_TOKEN:       ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER:        ${{ secrets.PUSHOVER_USER }}
+          PUSHOVER_DEVICE:      "BriansPhone"
           DRY_RUN:              ${{ github.event.client_payload.dry_run || inputs.dry_run || 'false' }}
         run: >
           python scripts/run_daily.py

@@ -256,6 +256,73 @@ def send_sms_safe(body: str, creds: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Pushover push-notification helper
+#   Failure / error alerts are delivered via Pushover (not Twilio) as of
+#   2026-06-05. Daily / closure success notifications still use Twilio SMS.
+#   Reads PUSHOVER_TOKEN / PUSHOVER_USER from the environment.
+# ---------------------------------------------------------------------------
+
+def pushover_send(title: str, body: str, priority: int = 0,
+                  max_attempts: int = 2) -> None:
+    """Send a Pushover notification. Retries once on transient (5xx/network)
+    errors. Raises on permanent (4xx) failure."""
+    token   = os.environ.get("PUSHOVER_TOKEN", "").strip()
+    user    = os.environ.get("PUSHOVER_USER", "").strip()
+    enabled = os.environ.get("PUSHOVER_ENABLED", "true").strip().lower()
+    # Target only Brian's iPhone (not Nancy's). Override via PUSHOVER_DEVICE.
+    device  = os.environ.get("PUSHOVER_DEVICE", "BriansPhone").strip()
+
+    if enabled != "true" or not token or not user:
+        log(f"[Pushover] Disabled or unconfigured — skipping: {body[:80]}")
+        return
+
+    url = "https://api.pushover.net/1/messages.json"
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            payload = urllib.parse.urlencode({
+                "token":    token,
+                "user":     user,
+                "title":    title,
+                "message":  body,
+                "sound":    "cashregister",
+                "priority": priority,
+                "device":   device,
+            }).encode()
+            req = urllib.request.Request(url, data=payload, method="POST")
+            req.add_header("Content-Type", "application/x-www-form-urlencoded")
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                resp.read()
+            log(f"[Pushover] Sent (p{priority}): {title} — {body[:80]}")
+            return
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode(errors="replace")
+            if 400 <= e.code < 500:
+                raise Exception(f"Pushover error {e.code}: {err_body}") from e
+            last_exc = Exception(f"Pushover transient {e.code}: {err_body}")
+        except Exception as e:
+            last_exc = e
+        if attempt < max_attempts:
+            time.sleep(3)
+        else:
+            raise last_exc
+
+
+def pushover_send_safe(title: str, body: str, priority: int = 0) -> None:
+    """Send a Pushover notification, logging but not raising on failure."""
+    try:
+        pushover_send(title, body, priority)
+    except Exception as exc:
+        log(f"[Pushover] Failed (non-fatal): {exc}")
+
+
+def send_failure_alert(body: str) -> None:
+    """Route pipeline failure / error alerts to Pushover at high priority
+    (priority=1 bypasses Pushover quiet hours)."""
+    pushover_send_safe("Buffalo Trace — Failure", body, priority=1)
+
+
+# ---------------------------------------------------------------------------
 # Reddit community intel
 # ---------------------------------------------------------------------------
 
@@ -715,11 +782,11 @@ def main() -> None:
         scrape_data = json.loads(result.stdout)
     except subprocess.TimeoutExpired:
         msg = f"❌ BT {mon_dd}: Task crashed at scrape — subprocess timeout. Check logs."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         sys.exit(1)
     except (json.JSONDecodeError, Exception) as exc:
         msg = f"❌ BT {mon_dd}: Task crashed at scrape — {str(exc)[:60]}. Check logs."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         raise
 
     if not scrape_data.get("success"):
@@ -728,7 +795,7 @@ def main() -> None:
         log(f"  Scrape failed: {reason} (polls={polls})")
         n_min = args.max_poll_minutes
         msg = f"⚠️ BT {mon_dd}: Site still stale after {n_min}min poll. No row written today."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         sys.exit(1)
 
     scrape_data["date"] = today_str
@@ -752,14 +819,14 @@ def main() -> None:
             log(result.stderr)
     except Exception as exc:
         msg = f"❌ BT {mon_dd}: STOPPED — spreadsheet write failed. No downstream steps ran."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         raise
 
     if not output.get("success"):
         err = output.get("error", "unknown")
         log(f"  Update failed: {err}")
         msg = f"❌ BT {mon_dd}: STOPPED — spreadsheet write failed. No downstream steps ran."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         sys.exit(1)
 
     log("  tracker_data.json updated OK")
@@ -778,14 +845,14 @@ def main() -> None:
             log(result.stderr)
     except Exception as exc:
         msg = f"❌ BT {mon_dd}: data.json failed. Spreadsheet OK. GitHub/site NOT updated."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         raise
 
     if not output.get("success"):
         err = output.get("error", "unknown")
         log(f"  data.json failed: {err}")
         msg = f"❌ BT {mon_dd}: data.json failed. Spreadsheet OK. GitHub/site NOT updated."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         sys.exit(1)
 
     log("  data.json built OK")
@@ -807,7 +874,7 @@ def main() -> None:
     except RuntimeError as exc:
         log(f"  Git push failed: {exc}")
         msg = f"⚠️ BT {mon_dd}: GitHub push failed. Spreadsheet+data.json OK. Site may be stale."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         # Non-fatal — continue to email + SMS
 
     # -----------------------------------------------------------------------
@@ -839,7 +906,7 @@ def main() -> None:
     except Exception as exc:
         log(f"  Email failed: {exc}")
         fail_msg = f"⚠️ BT {mon_dd}: Report email failed. Data steps completed OK."
-        send_sms_safe(fail_msg, sms_creds)
+        send_failure_alert(fail_msg)
         # Non-fatal — continue to SMS
 
     # -----------------------------------------------------------------------
@@ -895,14 +962,14 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
             log(result.stderr)
     except Exception as exc:
         msg = f"❌ BT {mon_dd}: STOPPED — spreadsheet write failed. No downstream steps ran."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         raise
 
     if not output.get("success"):
         err = output.get("error", "unknown")
         log(f"  Closure update failed: {err}")
         msg = f"❌ BT {mon_dd}: STOPPED — spreadsheet write failed. No downstream steps ran."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         sys.exit(1)
 
     log("  tracker_data.json updated (closure)")
@@ -919,14 +986,14 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
             log(result.stderr)
     except Exception as exc:
         msg = f"❌ BT {mon_dd}: data.json failed. Spreadsheet OK. GitHub/site NOT updated."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         raise
 
     if not output.get("success"):
         err = output.get("error", "unknown")
         log(f"  data.json failed: {err}")
         msg = f"❌ BT {mon_dd}: data.json failed. Spreadsheet OK. GitHub/site NOT updated."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
         sys.exit(1)
 
     log("  data.json built OK (closure)")
@@ -942,7 +1009,7 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
     except RuntimeError as exc:
         log(f"  Git push failed: {exc}")
         msg = f"⚠️ BT {mon_dd}: GitHub push failed. Spreadsheet+data.json OK. Site may be stale."
-        send_sms_safe(msg, sms_creds)
+        send_failure_alert(msg)
 
     # Step C7.5: Reddit community intel (non-critical)
     log("\n=== Step C4.5: Reddit community intel ===")
@@ -969,7 +1036,7 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
     except Exception as exc:
         log(f"  Closure email failed: {exc}")
         fail_msg = f"⚠️ BT {mon_dd}: Report email failed. Data steps completed OK."
-        send_sms_safe(fail_msg, sms_creds)
+        send_failure_alert(fail_msg)
 
     # Step C9: Closure SMS
     log("\n=== Step C6: Send closure SMS ===")
@@ -1015,5 +1082,5 @@ if __name__ == "__main__":
         step = "unknown step"
         err_short = str(exc)[:60]
         fail_msg = f"❌ BT {mon_dd_fallback}: Task crashed at {step} — {err_short}. Check logs."
-        send_sms_safe(fail_msg, sms_creds_fallback)
+        send_failure_alert(fail_msg)
         sys.exit(1)

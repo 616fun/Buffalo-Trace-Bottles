@@ -169,6 +169,64 @@ def send_sms_safe(body):
     except Exception as exc:
         log(f"[SMS] Failed (non-fatal): {exc}")
 
+# ---------------------------------------------------------------------------
+# Pushover push-notification helper
+#   This task's notifications were moved from Twilio SMS to Pushover on
+#   2026-06-05. Reads PUSHOVER_TOKEN / PUSHOVER_USER from the environment.
+# ---------------------------------------------------------------------------
+
+def pushover_send(title, body, priority=0, max_attempts=2):
+    """Send a Pushover notification. Retries once on transient (5xx/network)
+    errors. Raises on permanent (4xx) failure."""
+    token   = os.environ.get("PUSHOVER_TOKEN", "").strip()
+    user    = os.environ.get("PUSHOVER_USER", "").strip()
+    enabled = os.environ.get("PUSHOVER_ENABLED", "true").strip().lower()
+    # Target only Brian's iPhone (not Nancy's). Override via PUSHOVER_DEVICE.
+    device  = os.environ.get("PUSHOVER_DEVICE", "BriansPhone").strip()
+
+    if enabled != "true" or not token or not user:
+        log(f"[Pushover] Disabled or unconfigured — skipping: {body[:80]}")
+        return
+
+    url = "https://api.pushover.net/1/messages.json"
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            payload = urllib.parse.urlencode({
+                "token":    token,
+                "user":     user,
+                "title":    title,
+                "message":  body,
+                "sound":    "cashregister",
+                "priority": priority,
+                "device":   device,
+            }).encode()
+            req = urllib.request.Request(url, data=payload, method="POST")
+            req.add_header("Content-Type", "application/x-www-form-urlencoded")
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                resp.read()
+            log(f"[Pushover] Sent (p{priority}): {title} — {body[:80]}")
+            return
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode(errors="replace")
+            if 400 <= e.code < 500:
+                raise Exception(f"Pushover error {e.code}: {err_body}") from e
+            last_exc = Exception(f"Pushover transient {e.code}: {err_body}")
+        except Exception as e:
+            last_exc = e
+        if attempt < max_attempts:
+            time.sleep(3)
+        else:
+            raise last_exc
+
+
+def pushover_send_safe(title, body, priority=0):
+    """Send a Pushover notification, logging but not raising on failure."""
+    try:
+        pushover_send(title, body, priority)
+    except Exception as exc:
+        log(f"[Pushover] Failed (non-fatal): {exc}")
+
 
 # ---------------------------------------------------------------------------
 # Git helper
@@ -527,9 +585,9 @@ def main():
             sms_body = f"✅ BT Price Check {today_str}: No price changes."
 
         if not dry_run:
-            send_sms_safe(sms_body)
+            pushover_send_safe("Buffalo Trace Price Check", sms_body)
         else:
-            log(f"  [DRY RUN] SMS would be: {sms_body}")
+            log(f"  [DRY RUN] Pushover would be: {sms_body}")
 
         log("\n=== Monthly Price Check complete ===")
 
@@ -537,9 +595,11 @@ def main():
         import traceback
         traceback.print_exc()
         try:
-            send_sms_safe(
+            pushover_send_safe(
+                "Buffalo Trace Price Check — Failure",
                 f"❌ BT Price Check {today_str}: Task failed — "
-                f"{type(e).__name__}: {str(e)[:60]}."
+                f"{type(e).__name__}: {str(e)[:60]}.",
+                priority=1,
             )
         except Exception:
             pass
