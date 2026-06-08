@@ -80,24 +80,46 @@ def fetch_page(timeout=30):
         return None, str(e)
 
 
+def _coerce_date(month, day, year):
+    """Build a datetime.date from M/D/Y ints, or None if out of range."""
+    try:
+        if 1 <= month <= 12 and 1 <= day <= 31:
+            return datetime.date(year, month, day)
+    except (ValueError, AttributeError):
+        pass
+    return None
+
+
 def parse_date_from_page(html):
     """
-    Extract the update date from the page.
-    The page shows dates like '3.22.2026' or '3/22/2026'.
+    Extract the 'Last availability update' date from the page.
+
+    Primary (anchored): read the <div class="date">M.D.YYYY</div> that sits
+    inside the class="last_updated" block. This is the authoritative freshness
+    stamp. Anchoring matters because the page also contains unrelated
+    DD/MM/YYYY dates elsewhere (e.g. event listings) that a naive global regex
+    would happily mis-parse as the update date.
+
+    Fallback: first plausible M.D.YYYY / M/D/YYYY match anywhere in the HTML
+    (preserves old behavior if BT ever restructures the last_updated block).
+
     Returns a datetime.date object, or None if not found.
     """
-    # Pattern: M.DD.YYYY or M/DD/YYYY
-    patterns = [
-        r'\b(\d{1,2})[./](\d{1,2})[./](20\d{2})\b',
-    ]
-    for pattern in patterns:
-        for m in re.finditer(pattern, html):
-            try:
-                month, day, year = int(m.group(1)), int(m.group(2)), int(m.group(3))
-                if 1 <= month <= 12 and 1 <= day <= 31:
-                    return datetime.date(year, month, day)
-            except (ValueError, AttributeError):
-                continue
+    # Anchored: the date div within the last_updated block.
+    m = re.search(
+        r'class="last_updated".*?class="date">\s*(\d{1,2})[./](\d{1,2})[./](20\d{2})',
+        html, re.IGNORECASE | re.DOTALL
+    )
+    if m:
+        d = _coerce_date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        if d:
+            return d
+
+    # Fallback: first plausible date anywhere on the page.
+    for m in re.finditer(r'\b(\d{1,2})[./](\d{1,2})[./](20\d{2})\b', html):
+        d = _coerce_date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        if d:
+            return d
     return None
 
 
@@ -216,6 +238,30 @@ def parse_availability(html):
 # Main polling loop
 # ─────────────────────────────────────────────
 
+def _emit_provisional_capture(html, page_date, today, poll_count, stale_reason):
+    """
+    Emit a SUCCESS result captured from a page whose freshness stamp never
+    advanced to today. The pipeline records the day so we never miss one, but
+    the result is flagged stale_stamp=True so run_daily can alert for review.
+    """
+    site_time = parse_time_from_page(html)
+    availability = parse_availability(html)
+    output = {
+        "success": True,
+        "date": today.isoformat(),
+        "last_site_update": site_time,
+        "stale_stamp": True,
+        "page_date": str(page_date) if page_date else "unknown",
+        "note": (f"Provisional capture — BT freshness stamp did not advance to "
+                 f"today ({stale_reason}). Live inventory captured as-is."),
+        "polls": poll_count,
+    }
+    output.update(availability)
+    print(f"[scrape_availability] PROVISIONAL CAPTURE ({stale_reason}). "
+          f"Availability: {availability}", file=sys.stderr)
+    print(json.dumps(output))
+
+
 def run(max_poll_minutes, dry_run=False):
     """
     Poll until the page shows today's date, then return parsed availability.
@@ -238,10 +284,17 @@ def run(max_poll_minutes, dry_run=False):
             "ehtaylor_sb": 1,
             "eagle_rare": 0,
             "special_release": None,
+            "stale_stamp": False,
             "polls": 1,
             "dry_run": True
         }))
         return
+
+    # Remember the most recent successfully fetched page so that, if the
+    # freshness stamp never advances within the poll window, we can still
+    # capture live inventory provisionally instead of missing the day.
+    last_html = None
+    last_page_date = None
 
     for attempt in range(1, max_polls + 1):
         poll_count = attempt
@@ -256,6 +309,14 @@ def run(max_poll_minutes, dry_run=False):
                 time.sleep(POLL_INTERVAL_SECONDS)
                 continue
             else:
+                # Final poll and still no page. If an earlier poll DID return a
+                # page, fall back to that (stale stamp) so we don't miss the
+                # day. Only hard-fail when we never fetched a page at all.
+                if last_html is not None:
+                    _emit_provisional_capture(
+                        last_html, last_page_date, today, poll_count,
+                        stale_reason=f"fetch error on final poll: {status}")
+                    return
                 print(json.dumps({
                     "success": False,
                     "reason": f"Fetch error after {poll_count} polls: {status}",
@@ -263,7 +324,9 @@ def run(max_poll_minutes, dry_run=False):
                 }))
                 return
 
+        last_html = html
         page_date = parse_date_from_page(html)
+        last_page_date = page_date
         print(f"[scrape_availability] Page date: {page_date}", file=sys.stderr)
 
         if page_date == today:
@@ -276,6 +339,7 @@ def run(max_poll_minutes, dry_run=False):
                 "success": True,
                 "date": today.isoformat(),
                 "last_site_update": site_time,
+                "stale_stamp": False,
                 "polls": poll_count,
             }
             output.update(availability)
@@ -291,6 +355,7 @@ def run(max_poll_minutes, dry_run=False):
                 "success": True,
                 "date": today.isoformat(),
                 "last_site_update": site_time,
+                "stale_stamp": False,
                 "polls": poll_count,
                 "note": f"Page showed future date {page_date}"
             }
@@ -304,13 +369,14 @@ def run(max_poll_minutes, dry_run=False):
                 print(f"[scrape_availability] Page is stale (shows {page_date}). Waiting {POLL_INTERVAL_SECONDS//60} min...", file=sys.stderr)
                 time.sleep(POLL_INTERVAL_SECONDS)
             else:
-                print(f"[scrape_availability] Timed out after {max_poll_minutes} min. Page still shows {page_date}.", file=sys.stderr)
-                print(json.dumps({
-                    "success": False,
-                    "reason": f"Site still stale after {max_poll_minutes}min poll",
-                    "page_date": str(page_date) if page_date else "unknown",
-                    "polls": poll_count
-                }))
+                # Timed out and the stamp never advanced to today. Rather than
+                # skip the day, capture the live inventory provisionally and
+                # flag it (stale_stamp=True) so run_daily can alert for review.
+                print(f"[scrape_availability] Timed out after {max_poll_minutes} min. "
+                      f"Page still shows {page_date}. Capturing provisionally.", file=sys.stderr)
+                _emit_provisional_capture(
+                    html, page_date, today, poll_count,
+                    stale_reason=f"page still showed {page_date} after {max_poll_minutes}min poll")
                 return
 
 
