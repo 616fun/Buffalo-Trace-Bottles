@@ -322,6 +322,36 @@ def send_failure_alert(body: str) -> None:
     pushover_send_safe("Buffalo Trace — Failure", body, priority=1)
 
 
+def _last_recorded_day() -> dict | None:
+    """Return the most recent daily_log entry from tracker_data.json, or None.
+    Used to describe what changed when a provisional (stale-stamp) capture is
+    recorded, so the review alert is actionable."""
+    try:
+        with open(TRACKER_DATA_PATH) as f:
+            log_rows = json.load(f).get("daily_log", [])
+        return log_rows[-1] if log_rows else None
+    except Exception as exc:
+        log(f"  (could not read last recorded day for diff: {exc})")
+        return None
+
+
+def _availability_diff(prev: dict | None, cur: dict) -> str:
+    """Human-readable comparison of current availability vs the last recorded
+    day, for the provisional-capture review alert."""
+    if not prev:
+        return "No prior day on record to compare."
+    changes = []
+    for k in BOTTLE_KEYS:
+        pv = prev.get(k)
+        cv = int(cur.get(k) or 0)
+        if pv is not None and int(pv) != cv:
+            changes.append(f"{BOTTLE_SHORT[k]} {int(pv)}->{cv}")
+    prev_date = prev.get("date", "prev")
+    if changes:
+        return f"Changed vs {prev_date}: {', '.join(changes)}."
+    return f"Identical to {prev_date} (availability unchanged)."
+
+
 # ---------------------------------------------------------------------------
 # Reddit community intel
 # ---------------------------------------------------------------------------
@@ -802,6 +832,25 @@ def main() -> None:
     log(f"  Scrape OK — blantons={scrape_data['blantons']} weller107={scrape_data['weller107']} "
         f"ehtaylor_sb={scrape_data['ehtaylor_sb']} eagle_rare={scrape_data['eagle_rare']} "
         f"last_site_update={scrape_data.get('last_site_update')} polls={scrape_data.get('polls')}")
+
+    # Provisional capture — the scraper captured live inventory but BT's
+    # freshness stamp never advanced to today. Record the day anyway (so we
+    # never miss one), persist a note on the row, and fire a Pushover review
+    # alert. The rest of the pipeline runs normally.
+    if scrape_data.get("stale_stamp"):
+        page_date = scrape_data.get("page_date", "unknown")
+        diff_str = _availability_diff(_last_recorded_day(), scrape_data)
+        provisional_note = (f"PROVISIONAL — BT freshness stamp stale "
+                            f"(page showed {page_date}); inventory captured live.")
+        scrape_data["notes"] = provisional_note
+        log(f"  ⚠️ STALE STAMP — page stuck on {page_date}. Recording provisionally. {diff_str}")
+        if not dry_run:
+            pushover_send_safe(
+                "Buffalo Trace — Needs Review",
+                (f"⚠️ BT {mon_dd}: Provisional capture — BT stamp stuck on {page_date}. "
+                 f"Row recorded so the day isn't missed. {diff_str} "
+                 f"Please verify against the live site."),
+                priority=1)
 
     # -----------------------------------------------------------------------
     # Step 2 — Update tracker_data.json
