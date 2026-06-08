@@ -262,7 +262,17 @@ def _emit_provisional_capture(html, page_date, today, poll_count, stale_reason):
     print(json.dumps(output))
 
 
-def run(max_poll_minutes, dry_run=False):
+def _inventory_differs(avail, last_known):
+    """True if any of the 4 tracked bottles differs from the last recorded day."""
+    if not last_known:
+        return False
+    for k in ("blantons", "weller107", "ehtaylor_sb", "eagle_rare"):
+        if int(avail.get(k, 0) or 0) != int(last_known.get(k, 0) or 0):
+            return True
+    return False
+
+
+def run(max_poll_minutes, dry_run=False, last_known=None):
     """
     Poll until the page shows today's date, then return parsed availability.
     Outputs a single JSON object to stdout.
@@ -364,19 +374,41 @@ def run(max_poll_minutes, dry_run=False):
             return
 
         else:
-            # Stale — wait and retry
-            if attempt < max_polls:
-                print(f"[scrape_availability] Page is stale (shows {page_date}). Waiting {POLL_INTERVAL_SECONDS//60} min...", file=sys.stderr)
-                time.sleep(POLL_INTERVAL_SECONDS)
-            else:
-                # Timed out and the stamp never advanced to today. Rather than
-                # skip the day, capture the live inventory provisionally and
-                # flag it (stale_stamp=True) so run_daily can alert for review.
-                print(f"[scrape_availability] Timed out after {max_poll_minutes} min. "
-                      f"Page still shows {page_date}. Capturing provisionally.", file=sys.stderr)
+            # Stamp is stale (shows a prior day). Two cases:
+            #
+            #  (a) Inventory ALREADY differs from the last recorded day → the
+            #      stamp is broken but the data is genuinely new. Capture now
+            #      and exit early; no point burning the rest of the window.
+            #
+            #  (b) Inventory matches the last recorded day → we can't tell
+            #      "truly unchanged today" from "page not updated yet". Keep
+            #      polling the full window to give BT a chance to post a fresh
+            #      stamp. If it never does, default to the observed (prior-day)
+            #      inventory and record provisionally.
+            current_avail = parse_availability(html)
+            if _inventory_differs(current_avail, last_known):
+                prior_date = last_known.get("date", "prior day") if last_known else "prior day"
+                print(f"[scrape_availability] Inventory changed vs {prior_date} while stamp "
+                      f"stuck on {page_date} — stamp broken. Capturing early.", file=sys.stderr)
                 _emit_provisional_capture(
                     html, page_date, today, poll_count,
-                    stale_reason=f"page still showed {page_date} after {max_poll_minutes}min poll")
+                    stale_reason=f"inventory changed vs {prior_date} while stamp stuck on "
+                                 f"{page_date} — stamp broken, captured early")
+                return
+
+            if attempt < max_polls:
+                print(f"[scrape_availability] Page is stale (shows {page_date}) and inventory "
+                      f"unchanged vs prior day. Waiting {POLL_INTERVAL_SECONDS//60} min...", file=sys.stderr)
+                time.sleep(POLL_INTERVAL_SECONDS)
+            else:
+                # Unchanged through the entire window. Don't skip the day —
+                # default to the observed (== prior-day) inventory and flag it.
+                print(f"[scrape_availability] Timed out after {max_poll_minutes} min. Page still "
+                      f"shows {page_date}, inventory unchanged. Capturing provisionally.", file=sys.stderr)
+                _emit_provisional_capture(
+                    html, page_date, today, poll_count,
+                    stale_reason=f"page unchanged through {max_poll_minutes}min poll; "
+                                 f"stamp stuck on {page_date}")
                 return
 
 
@@ -399,8 +431,27 @@ def main():
         action="store_true",
         help="Skip actual fetch and return fake data (for testing)"
     )
+    parser.add_argument(
+        "--last-known",
+        type=str,
+        default=None,
+        help=("JSON of the last recorded day's availability "
+              '(e.g. \'{"date":"2026-06-07","blantons":1,"weller107":1,'
+              '"ehtaylor_sb":1,"eagle_rare":0}\'). When the freshness stamp is '
+              "stale but inventory already differs from this, capture early "
+              "instead of polling the full window.")
+    )
     args = parser.parse_args()
-    run(args.max_poll_minutes, dry_run=args.dry_run)
+
+    last_known = None
+    if args.last_known:
+        try:
+            last_known = json.loads(args.last_known)
+        except (json.JSONDecodeError, TypeError) as exc:
+            print(f"[scrape_availability] WARNING: could not parse --last-known "
+                  f"({exc}); proceeding without early-exit comparison.", file=sys.stderr)
+
+    run(args.max_poll_minutes, dry_run=args.dry_run, last_known=last_known)
 
 
 if __name__ == "__main__":
