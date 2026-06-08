@@ -803,10 +803,24 @@ def main() -> None:
     # Step 1 — Scrape availability
     # -----------------------------------------------------------------------
     log(f"\n=== Step 1: Scrape (max {args.max_poll_minutes} min) ===")
+    # Pass the last recorded day so the scraper can exit early if the freshness
+    # stamp is stale but inventory has already changed (stamp broken). If
+    # inventory is unchanged, the scraper polls the full window before
+    # defaulting to the prior-day result.
+    prev_day = _last_recorded_day()
+    scrape_cmd = [sys.executable, str(SCRAPER_SCRIPT),
+                  "--max-poll-minutes", str(args.max_poll_minutes)]
+    if prev_day:
+        scrape_cmd += ["--last-known", json.dumps({
+            "date": prev_day.get("date"),
+            "blantons": int(prev_day.get("blantons", 0) or 0),
+            "weller107": int(prev_day.get("weller107", 0) or 0),
+            "ehtaylor_sb": int(prev_day.get("ehtaylor_sb", 0) or 0),
+            "eagle_rare": int(prev_day.get("eagle_rare", 0) or 0),
+        })]
     try:
         result = subprocess.run(
-            [sys.executable, str(SCRAPER_SCRIPT),
-             "--max-poll-minutes", str(args.max_poll_minutes)],
+            scrape_cmd,
             capture_output=True, text=True, timeout=14400  # 4 hours
         )
         scrape_data = json.loads(result.stdout)
