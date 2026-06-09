@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-06-08",
+    "last_updated": "2026-06-09",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 88
+    "total_days_tracked": 89
   },
   "config": {
     "bayesian_priors": {
@@ -1088,6 +1088,18 @@
       "special_release": null,
       "notes": "PROVISIONAL \u2014 BT freshness stamp stale (page showed 2026-06-07); inventory captured live.",
       "last_site_update": "9:09am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-06-09",
+      "day_of_week": "Tuesday",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": null,
+      "notes": "",
+      "last_site_update": "7:25am EST",
       "is_closure": false
     }
   ],
@@ -3089,6 +3101,32 @@
         "weller107": 66.2,
         "ehtaylor_sb": 91.7,
         "eagle_rare": 26.9
+      },
+      "confidence": "High",
+      "actual_bottles": [
+        "weller107",
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-06-10",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 69.5,
+      "per_bottle_pct": {
+        "blantons": 50.0,
+        "weller107": 66.7,
+        "ehtaylor_sb": 91.8,
+        "eagle_rare": 28.7
       },
       "confidence": "High",
       "actual_bottles": null,
