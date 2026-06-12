@@ -1037,7 +1037,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "George T. Stagg",
       "notes": "",
       "last_site_update": "7:30am EST",
       "is_closure": false
@@ -1109,7 +1109,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "George T. Stagg",
       "notes": "",
       "last_site_update": "7:41am EST",
       "is_closure": false
@@ -3316,6 +3316,14 @@
     {
       "date": "2026-05-28",
       "name": "Weller C.Y.P.B."
+    },
+    {
+      "date": "2026-06-04",
+      "name": "George T. Stagg"
+    },
+    {
+      "date": "2026-06-10",
+      "name": "George T. Stagg"
     }
   ]
 }
