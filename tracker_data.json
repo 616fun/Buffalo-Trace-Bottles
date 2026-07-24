@@ -1229,7 +1229,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Weller C.Y.P.B.",
       "notes": "",
       "last_site_update": "7:55am EST",
       "is_closure": false
@@ -1601,7 +1601,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Weller C.Y.P.B.",
       "notes": "",
       "last_site_update": "7:37am EST",
       "is_closure": false
@@ -4929,11 +4929,18 @@
       "notes": "Corrected 2026-07-24: Stagg (formerly Stagg Jr.), not George T. Stagg"
     },
     {
+      "date": "2026-06-20",
+      "name": "Weller C.Y.P.B.",
+      "source": "brian_report",
+      "notes": "Father's Day weekend drop (Jun 20-21). Not announced in BT events feed; no archive coverage of that week."
+    },
+    {
       "date": "2026-07-10",
       "name": "Single Oak Rye Bourbon",
       "source": "bt_events_feed",
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
-      "price": 74.99
+      "price": 74.99,
+      "notes": "Window confirmed still dropping Jul 21 per Brian; feed announcements observed Jul 10 and Jul 17-19."
     },
     {
       "date": "2026-07-17",
@@ -4941,6 +4948,12 @@
       "source": "wayback_bt_events_feed",
       "announcement": "Sazerac Rye Full Proof is available. *Limit one bottle per person, per day. While supplies last.",
       "notes": "Second window"
+    },
+    {
+      "date": "2026-07-21",
+      "name": "Weller C.Y.P.B.",
+      "source": "brian_report",
+      "notes": "Dropped alongside Single Oak on Jul 21, per Brian."
     }
   ],
   "gift_shop_announcements_seen": [
