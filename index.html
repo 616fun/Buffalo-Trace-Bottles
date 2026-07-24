@@ -159,7 +159,7 @@
     .sp-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 5px}
     .sp-note{display:inline-block;background:var(--surface2);border-radius:14px;padding:2px 10px;font-size:.72rem;color:var(--text2);margin:0 5px 5px 0}
     .sp-fact{display:inline-block;background:#FDF6E3;border:1px solid #F0E0B0;border-radius:6px;padding:2px 10px;font-size:.7rem;color:var(--text2);margin:0 5px 5px 0}
-    .bp-card,.sp-card{scroll-margin-top:124px} /* clear the sticky header+nav when cross-links scroll here */
+    .bp-card,.sp-card,#special-profiles{scroll-margin-top:124px} /* clear the sticky header+nav when cross-links scroll here */
     [data-bottle]{cursor:pointer}
     [data-bottle]:hover{text-decoration:underline;text-decoration-color:var(--amber);text-underline-offset:3px}
     .flash-target{animation:flashTarget 1.8s ease-out}
@@ -695,11 +695,11 @@
         <div class="cal-days-grid" id="cal-days-grid"></div>
       </div>
       <div class="cal-legend">
-        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--blantons)">B</span>Blanton's</div>
-        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--weller)">W</span>Weller 107</div>
-        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--ehtaylor)">EH</span>E.H. Taylor</div>
-        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
-        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--gold);color:#1a1a1a">★</span>Special Release</div>
+        <div class="cal-leg-item" data-bottle="bp-blantons"><span class="cal-leg-chip" style="background:var(--blantons)">B</span>Blanton's</div>
+        <div class="cal-leg-item" data-bottle="bp-weller107"><span class="cal-leg-chip" style="background:var(--weller)">W</span>Weller 107</div>
+        <div class="cal-leg-item" data-bottle="bp-ehtaylor_sb"><span class="cal-leg-chip" style="background:var(--ehtaylor)">EH</span>E.H. Taylor</div>
+        <div class="cal-leg-item" data-bottle="bp-eagle_rare"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
+        <div class="cal-leg-item" data-bottle="special-profiles"><span class="cal-leg-chip" style="background:var(--gold);color:#1a1a1a">★</span>Special Release</div>
         <div class="cal-leg-item"><span class="cal-leg-chip" style="background:#1e2535;color:#64748b;border:1px solid #334155">🔒</span>Closed</div>
         <div class="cal-leg-item"><span style="font-size:.8rem">🎯</span>Drop-watch day (bourbon holiday)</div>
         <div class="cal-leg-divider"></div>
@@ -1271,9 +1271,18 @@ function buildAnalyticsCharts(data) {
     }).join('');
     return `<div class="pg-row"><div class="pg-label">${shortLabels[b.key]||b.name}</div>${cells}</div>`;
   }).join('');
-  document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows;
+  const specialRow = `<div class="pg-row"><div class="pg-label">Specials ★</div>${patternDays.map(d=>{
+    const sp = d.special_release;
+    const dotTitle = sp
+      ? `${fmtDateShort(d.date)}: ★ Special release — ${sp}`
+      : `${fmtDateShort(d.date)}: no special release sighted`;
+    const attr = sp ? ` data-bottle="${specialSlug(sp.split(',')[0])}"` : '';
+    return `<div class="pg-cell"><div class="pg-dot ${sp?'on':'off'}" style="background:#C99A2E"${attr} title="${dotTitle}"></div></div>`;
+  }).join('')}</div>`;
+  document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows + specialRow;
   document.getElementById('pattern-legend').innerHTML =
     BOTTLE_KEYS.map(k=>`<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:${BOTTLE_COLORS[k]};flex-shrink:0"></div>${shortLabels[k]}</div>`).join('') +
+    `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:#C99A2E;flex-shrink:0"></div>Special release</div>` +
     `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:#9C8B75;opacity:.2;flex-shrink:0"></div>Not available</div>`;
 
   // Smart insights — generated from the data in plain English
