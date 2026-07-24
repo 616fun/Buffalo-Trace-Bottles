@@ -269,11 +269,11 @@ def _fetch_new_rss(subreddit: str) -> list:
         with urllib.request.urlopen(req, timeout=25) as resp:
             root = _ET.fromstring(resp.read().decode("utf-8", "replace"))
     except urllib.error.HTTPError as e:
-        print(f"[scrape_reddit] RSS HTTP {e.code} r/{subreddit} '{query}'",
+        print(f"[scrape_reddit] RSS HTTP {e.code} fetching r/{subreddit}/new.rss",
               file=sys.stderr)
         return []
     except Exception as e:
-        print(f"[scrape_reddit] RSS error r/{subreddit} '{query}': {e}",
+        print(f"[scrape_reddit] RSS error fetching r/{subreddit}/new.rss: {e}",
               file=sys.stderr)
         return []
 

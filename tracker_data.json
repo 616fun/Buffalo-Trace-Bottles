@@ -1157,7 +1157,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Weller 12 Year",
       "notes": "PROVISIONAL \u2014 BT freshness stamp stale (page showed 2026-06-13); inventory captured live.",
       "last_site_update": "8:30am EST",
       "is_closure": false
@@ -4927,6 +4927,13 @@
       "date": "2026-06-10",
       "name": "Stagg",
       "notes": "Corrected 2026-07-24: Stagg (formerly Stagg Jr.), not George T. Stagg"
+    },
+    {
+      "date": "2026-06-14",
+      "name": "Weller 12 Year",
+      "source": "reddit_report",
+      "announcement": "First-hand r/bourbon trip report: visited BT on National Bourbon Day (Jun 14); \"We even lucked into some Weller 12 around 3:30 without dealing with the huge morning line.\" https://www.reddit.com/r/bourbon/comments/1uic063/",
+      "notes": "National Bourbon Day drop. Found via Reddit scraper smoke test 2026-07-24."
     },
     {
       "date": "2026-06-20",
