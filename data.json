@@ -1102,7 +1102,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Blanton's 375mL",
       "is_closure": false,
       "notes": null
     },
@@ -1508,6 +1508,12 @@
       "name": "Weller C.Y.P.B.",
       "source": "brian_report",
       "notes": "Father's Day weekend drop (Jun 20-21). Not announced in BT events feed; no archive coverage of that week."
+    },
+    {
+      "date": "2026-06-21",
+      "name": "Blanton's 375mL",
+      "source": "brian_report",
+      "notes": "Father's Day (Sun Jun 21) drop, per Brian 2026-07-24 \u2014 special drops ran the entire Father's Day weekend (see also Weller C.Y.P.B., Jun 20). Not announced in BT events feed; June archive blind spot."
     },
     {
       "date": "2026-07-09",
