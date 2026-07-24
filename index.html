@@ -131,7 +131,7 @@
     .sr-live{display:inline-block;margin-left:10px;background:linear-gradient(95deg,#F0C060,#E09040);color:#1A0F05;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;vertical-align:1px}
 
     /* ── MAIN ── */
-    main{max-width:1100px;margin:0 auto;padding:36px 28px 100px}
+    main{max-width:1100px;margin:0 auto;padding:36px 28px 100px;min-height:70vh}
     .page{display:none}
     .page.active{display:block}
 
@@ -1592,11 +1592,29 @@ function renderGuide() {
 // ─────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────
-function init(data, usedFallback) {
+function init(data) {
   appData = data;
   document.getElementById('loading-msg').style.display='none';
   document.getElementById('content').style.display='block';
+  renderToday(data);
+  renderBottles(data);
+  renderGuide();
+  // Analytics and calendar init lazily on first visit
+}
 
+function applyData(data) {
+  // Swap in fresher data and re-render whatever is already on screen.
+  appData = data;
+  renderToday(data);
+  renderBottles(data);
+  chartsInit.analytics = false;
+  chartsInit.calendar  = false;
+  const activeEl = document.querySelector('.page.active');
+  const current = activeEl ? activeEl.id.replace('page-','') : 'today';
+  if(current==='analytics' || current==='calendar') showPage(current);
+}
+
+function checkStale(data, usedFallback) {
   // Stale-data warning — fires when the live fetch failed (INLINE_DATA
   // fallback) or when the data itself is more than 2 days old.
   const ageDays = Math.floor((new Date() - new Date(data.meta.last_updated+'T12:00:00')) / 86400000);
@@ -1607,17 +1625,24 @@ function init(data, usedFallback) {
     document.getElementById('stale-banner-msg').textContent = msg;
     document.getElementById('stale-banner').classList.add('show');
   }
-
-  renderToday(data);
-  renderBottles(data);
-  renderGuide();
-  // Analytics and calendar init lazily on first visit
 }
 
+// ── Boot: paint IMMEDIATELY from the embedded snapshot (INLINE_DATA is
+// rewritten by the pipeline every run, so it is at most one run old).
+// The live fetch then swaps in fresher data only if anything changed.
+// No loading state → no layout shift (this was the page's CLS problem).
+init(INLINE_DATA);
 fetch('./data.json?_='+Date.now())
   .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
-  .then(d=>init(d, false))
-  .catch(()=>init(INLINE_DATA, true));
+  .then(d=>{
+    if(d.meta.last_updated !== appData.meta.last_updated ||
+       JSON.stringify(d.today) !== JSON.stringify(appData.today) ||
+       JSON.stringify(d.special_releases_log||[]) !== JSON.stringify(appData.special_releases_log||[])){
+      applyData(d);
+    }
+    checkStale(d, false);
+  })
+  .catch(()=>checkStale(appData, true));
 </script>
 </body>
 </html>
