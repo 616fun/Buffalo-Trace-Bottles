@@ -648,7 +648,7 @@
       <!-- Single readable chart — daily shop richness -->
       <div class="chart-card">
         <div class="chart-card-title">How Stocked Has the Shop Been?</div>
-        <div class="chart-card-sub">Bottles available each day, special releases included (gold bars) — higher is a better day to visit</div>
+        <div class="chart-card-sub">Bottles available each day — special release days glow gold with a ★ — higher is a better day to visit</div>
         <div class="chart-wrap"><canvas id="chart-daily-score"></canvas></div>
       </div>
 
@@ -1091,21 +1091,44 @@ function buildDailyScoreChart(calendar) {
   const scores = calendar.map((d,i)=>rotCounts[i]+spCounts[i]);
   const barColors = calendar.map((d,i)=>
     (d.is_closure||false)   ? 'rgba(100,116,139,0.45)' :
-    spCounts[i]>0           ? 'rgba(201,154,46,0.95)'  :   // gold — special release day
+    spCounts[i]>0           ? 'rgba(255,204,64,1)'     :   // bright gold — special release day
     scores[i]>=3            ? 'rgba(74,222,128,0.85)'  :
     scores[i]===2           ? 'rgba(192,115,40,0.85)'  :
     scores[i]===1           ? 'rgba(240,192,96,0.75)'  :
                               'rgba(239,68,68,0.55)'
   );
+  const barBorders = calendar.map((d,i)=> spCounts[i]>0 ? '#7A5C10' : 'rgba(0,0,0,0)');
+  const barBorderW = calendar.map((d,i)=> spCounts[i]>0 ? 1.5 : 0);
   const yMax = Math.max(4, ...scores);
+  // Gold ★ above each special-release bar — makes them pop at any zoom
+  const starPlugin = {
+    id: 'specialStars',
+    afterDatasetsDraw(chart){
+      const meta = chart.getDatasetMeta(0);
+      const ctx2 = chart.ctx;
+      ctx2.save();
+      ctx2.font = '700 12px sans-serif';
+      ctx2.textAlign = 'center';
+      ctx2.fillStyle = '#C99A2E';
+      meta.data.forEach((bar,i)=>{
+        if(spCounts[i]>0 && !(calendar[i].is_closure||false)){
+          ctx2.fillText('★', bar.x, bar.y - 5);
+        }
+      });
+      ctx2.restore();
+    }
+  };
   chartInstance = new Chart(ctx, {
     type:'bar',
+    plugins:[starPlugin],
     data:{
       labels,
       datasets:[{
         label:'Bottles Available',
         data:scores,
         backgroundColor:barColors,
+        borderColor:barBorders,
+        borderWidth:barBorderW,
         borderRadius:6,
         borderSkipped:false,
       }]
@@ -1127,8 +1150,8 @@ function buildDailyScoreChart(calendar) {
       },
       scales:{
         y:{
-          min:0, max:yMax,
-          ticks:{stepSize:1, callback:v=>v===0?'None':v===4?'All 4':v>4?`4 + ★`:v===1?'1 bottle':`${v} bottles`, font:{size:10}},
+          min:0, max:yMax + 0.4,   // headroom for the ★ markers
+          ticks:{stepSize:1, callback:v=>Number.isInteger(v)?(v===0?'None':v===4?'All 4':v>4?`4 + ★`:v===1?'1 bottle':`${v} bottles`):null, font:{size:10}},
           grid:{color:'rgba(0,0,0,.05)'}
         },
         x:{ticks:{font:{size:10}}, grid:{display:false}}
