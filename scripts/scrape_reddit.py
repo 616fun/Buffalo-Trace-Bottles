@@ -58,7 +58,8 @@ USER_AGENT = (
     "(gift shop availability tracker; contact: brianwulff@yahoo.com)"
 )
 
-SUBREDDITS = ["bourbon", "whiskeybuds", "whiskey", "buffalotrace"]
+# r/buffalotrace verified dead (2026-07-24): nothing since a 2021 pinned post
+SUBREDDITS = ["bourbon", "whiskeybuds", "whiskey"]
 
 # All queries run across all subreddits; results deduplicated by post ID
 SEARCH_QUERIES = [
@@ -68,17 +69,15 @@ SEARCH_QUERIES = [
     "buffalo trace distillery drop",
 ]
 
-# r/buffalotrace is entirely on-topic — its gift-shop posts rarely say
-# "buffalo trace" in the title, so search it with sub-specific terms too.
-EXTRA_QUERIES = {
-    "buffalotrace": ["gift shop", "drop", "visitor center"],
-}
+EXTRA_QUERIES = {}
 
 BASE_URL = "https://www.reddit.com"
 OAUTH_BASE_URL = "https://oauth.reddit.com"
 
-# Stay well under Reddit's rate limits (OAuth free tier: 100 QPM)
+# OAuth tier allows 100 QPM; unauthenticated RSS 429s under ~10s spacing.
+# The sleep is chosen per-mode in run().
 RATE_LIMIT_SECONDS = 1.5
+RSS_RATE_LIMIT_SECONDS = 15
 
 
 # ─────────────────────────────────────────────
@@ -191,6 +190,10 @@ def search_subreddit(subreddit: str, query: str, days: int) -> list:
     path = f"/r/{subreddit}/search.json?{params}"
 
     try:
+        if _get_oauth_token() is None:
+            # No API credentials — use Reddit's public RSS syndication feeds,
+            # which (unlike the .json endpoints) are served to datacenter IPs.
+            return search_subreddit_rss(subreddit, query)
         data = reddit_get(path)
         children = data.get("data", {}).get("children", [])
         return [c["data"] for c in children if c.get("kind") == "t3"]
@@ -206,6 +209,106 @@ def search_subreddit(subreddit: str, query: str, days: int) -> list:
             file=sys.stderr
         )
         return []
+
+
+# ─────────────────────────────────────────────
+# RSS fallback (added 2026-07-24)
+#
+# Reddit's Atom feeds (…/search.rss) are public syndication endpoints and
+# are NOT subject to the datacenter-IP 403 that blocks the .json API, so
+# they work from GitHub Actions without any credentials. They lack score /
+# comment counts (returned as 0) but carry id, title, author, link, date,
+# and body HTML — everything the pipeline actually uses. Keep request
+# volume gentle: ~1 request per 15s (429s appear under ~10s spacing).
+# ─────────────────────────────────────────────
+
+import re as _re
+import xml.etree.ElementTree as _ET
+import datetime as _dt
+
+_ATOM_NS = {"a": "http://www.w3.org/2005/Atom"}
+
+
+# Local relevance matching for RSS mode: a post must mention Buffalo Trace
+# AND something gift-shop-ish. (search.rss ignores its q parameter — verified
+# 2026-07-24 — so filtering must happen client-side.)
+_RSS_KW_BRAND = ("buffalo trace", "btd", "frankfort")
+_RSS_KW_TOPIC = ("gift shop", "giftshop", "visitor center", "distillery",
+                 "drop", "pick", "haul", "score")
+
+_rss_cache = {}   # subreddit → parsed posts (fetch each sub once per run)
+
+
+def search_subreddit_rss(subreddit: str, query: str) -> list:
+    """
+    RSS mode: fetch r/<sub>/new.rss ONCE per run (cached) and filter locally.
+    The `query` argument is ignored — Reddit's search.rss disregards q, so we
+    pull the sub's recent posts and keyword-match title+body ourselves.
+    """
+    if subreddit in _rss_cache:
+        return []          # already contributed its posts this run
+    posts = _fetch_new_rss(subreddit)
+    _rss_cache[subreddit] = True
+    matched = []
+    for p in posts:
+        text = f"{p.get('title','')} {p.get('selftext','')}".lower()
+        if any(b in text for b in _RSS_KW_BRAND) and \
+           any(t in text for t in _RSS_KW_TOPIC):
+            matched.append(p)
+    print(f"[scrape_reddit] RSS r/{subreddit}: {len(posts)} recent, "
+          f"{len(matched)} relevant", file=sys.stderr)
+    return matched
+
+
+def _fetch_new_rss(subreddit: str) -> list:
+    """Fetch and parse r/<sub>/new.rss into post dicts."""
+    url = f"{BASE_URL}/r/{subreddit}/new.rss?limit=100"
+    req = urllib.request.Request(url)
+    req.add_header("User-Agent", USER_AGENT)
+    try:
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            root = _ET.fromstring(resp.read().decode("utf-8", "replace"))
+    except urllib.error.HTTPError as e:
+        print(f"[scrape_reddit] RSS HTTP {e.code} r/{subreddit} '{query}'",
+              file=sys.stderr)
+        return []
+    except Exception as e:
+        print(f"[scrape_reddit] RSS error r/{subreddit} '{query}': {e}",
+              file=sys.stderr)
+        return []
+
+    posts = []
+    for entry in root.findall("a:entry", _ATOM_NS):
+        def _t(tag, default=""):
+            el = entry.find(f"a:{tag}", _ATOM_NS)
+            return (el.text or default) if el is not None else default
+        link_el = entry.find("a:link", _ATOM_NS)
+        link = link_el.get("href", "") if link_el is not None else ""
+        author_el = entry.find("a:author/a:name", _ATOM_NS)
+        author = (author_el.text or "").lstrip("/u/") if author_el is not None else ""
+        created = 0
+        try:
+            pub = _t("published") or _t("updated")
+            created = int(_dt.datetime.fromisoformat(
+                pub.replace("Z", "+00:00")).timestamp())
+        except Exception:
+            pass
+        body_html = _t("content")
+        body_text = _re.sub(r"<[^>]+>", " ", body_html)
+        body_text = _re.sub(r"\s+", " ", body_text).strip()
+        posts.append({
+            "id":            _t("id").split("_")[-1],
+            "title":         _t("title"),
+            "author":        author,
+            "subreddit":     subreddit,
+            "permalink":     link.replace(BASE_URL, ""),
+            "url":           link,
+            "score":         0,             # not exposed via RSS
+            "num_comments":  0,             # not exposed via RSS
+            "created_utc":   created,
+            "selftext":      body_text[:500],
+        })
+    return posts
 
 
 # ─────────────────────────────────────────────
@@ -301,7 +404,7 @@ def run(days: int = 7, max_posts: int = 10, dry_run: bool = False) -> None:
                 seen_ids.add(post_id)
                 all_posts.append(format_post(post))
 
-            time.sleep(RATE_LIMIT_SECONDS)
+            time.sleep(RATE_LIMIT_SECONDS if _get_oauth_token() else RSS_RATE_LIMIT_SECONDS)
 
     # Newest first, then cap
     all_posts.sort(key=lambda p: p["created_utc"], reverse=True)
