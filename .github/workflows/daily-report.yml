@@ -55,7 +55,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install requests
+        run: pip install requests pillow
 
       - name: Run daily report pipeline
         env:

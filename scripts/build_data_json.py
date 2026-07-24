@@ -445,6 +445,14 @@ def main() -> None:
     except Exception as exc:
         log(f"  [bottle-pages] generation failed (non-fatal): {exc}")
 
+    # --- Regenerate the daily social-share card (non-fatal; needs Pillow) ---
+    try:
+        from build_og_image import build as _build_og
+        _build_og(data, output_path.parent / "og-image.png")
+        log("  [og-image] regenerated with today's availability")
+    except Exception as exc:
+        log(f"  [og-image] generation skipped (non-fatal): {exc}")
+
     # --- Optional diff ---
     if args.diff:
         backup = output_path.with_suffix(".json.bak")

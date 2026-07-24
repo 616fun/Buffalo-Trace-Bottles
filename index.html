@@ -8,6 +8,9 @@
   <meta name="keywords" content="buffalo trace gift shop, buffalo trace availability today, blanton's buffalo trace gift shop, weller antique 107, eagle rare 10 year, e.h. taylor small batch, buffalo trace distillery frankfort ky, buffalo trace bottle drop, weller cypb, stagg, buffalo trace special release, bourbon gift shop tracker"/>
   <link rel="canonical" href="https://buffalotracebottledrops.com/"/>
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1A0F05"/>
   <meta property="og:title" content="Buffalo Trace Bottle Drops — Gift Shop Availability Tracker"/>
   <meta property="og:description" content="What's on the shelf at the Buffalo Trace gift shop today — and what's predicted for tomorrow. Updated every morning."/>
   <meta property="og:type" content="website"/>
@@ -359,6 +362,7 @@
     .cal-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;align-items:center}
     .cal-leg-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text2)}
     .cal-leg-chip{font-size:.54rem;font-weight:800;padding:2px 6px;border-radius:4px;color:#fff;line-height:1.45}
+    .cal-hd-badge{font-size:.6rem;margin-left:3px;cursor:help}
     .cal-leg-divider{width:1px;height:14px;background:var(--border-s);margin:0 4px}
     .cal-leg-heat{display:flex;align-items:center;gap:4px}
     .cal-leg-sq{width:12px;height:12px;border-radius:3px;flex-shrink:0}
@@ -561,7 +565,7 @@
     <button class="nav-link" data-page="bottles">Bottles</button>
     <button class="nav-link" data-page="guide">Plan Your Visit</button>
     <div class="nav-spacer"></div>
-    <a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="nav-venmo">💛 Tip the Tracker</a>
+    <button class="nav-venmo" id="share-btn" style="border:none;cursor:pointer;background:var(--surface2);color:var(--text2);box-shadow:none;margin-right:8px">↗ Share</button><a href="https://venmo.com/Jun16fun" target="_blank" rel="noopener" class="nav-venmo">💛 Tip the Tracker</a>
   </div>
 </nav>
 
@@ -679,6 +683,7 @@
         <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
         <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--gold);color:#1a1a1a">★</span>Special Release</div>
         <div class="cal-leg-item"><span class="cal-leg-chip" style="background:#1e2535;color:#64748b;border:1px solid #334155">🔒</span>Closed</div>
+        <div class="cal-leg-item"><span style="font-size:.8rem">🎯</span>Drop-watch day (bourbon holiday)</div>
         <div class="cal-leg-divider"></div>
         <div class="cal-leg-heat">
           <div class="cal-leg-sq" style="background:#d4edda;border:1px solid #9fcea9"></div>
@@ -1353,6 +1358,25 @@ function buildCalendar(data) {
   };
 }
 
+function bourbonHolidays(year, month) {
+  // High drop-probability days — pattern confirmed in our own data
+  // (Weller 12 on National Bourbon Day, CYPB on Father's Day weekend).
+  const nth = (wd, n) => {           // n-th weekday (0=Sun) of this month
+    const first = new Date(year, month, 1).getDay();
+    return 1 + ((7 + wd - first) % 7) + (n - 1) * 7;
+  };
+  const out = {};
+  if (month === 4) {                  // May
+    out[nth(6,1)] = "Derby Day";
+    out[nth(0,2)] = "Mother's Day";
+  }
+  if (month === 5) {                  // June
+    out[14] = "National Bourbon Day";
+    out[nth(0,3)] = "Father's Day";
+  }
+  return out;
+}
+
 function renderCalendarMonth(data, year, month) {
   const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   document.getElementById('cal-month-label').textContent = monthNames[month]+' '+year;
@@ -1428,11 +1452,14 @@ function renderCalendarMonth(data, year, month) {
     }
 
     const todayBadge = isToday ? `<span class="cal-today-badge">Today</span>` : '';
+    const hdays = bourbonHolidays(year, month);
+    const hd = hdays[day];
+    const hdBadge = hd ? `<span class="cal-hd-badge" title="${hd} — special drops historically more likely">🎯</span>` : '';
 
     html+=`<div class="cal-day ${hasData?'has-data':''} ${hasData?countClass:''} ${isToday?'today-cell':''}"${tooltipAttr}>
       <div class="cal-day-top">
         <div style="display:flex;align-items:center;gap:3px">
-          <span class="cal-day-num">${day}</span>${todayBadge}
+          <span class="cal-day-num">${day}</span>${todayBadge}${hdBadge}
         </div>
         ${scoreHTML}
       </div>
@@ -1642,6 +1669,23 @@ function checkStale(data, usedFallback) {
     document.getElementById('stale-banner').classList.add('show');
   }
 }
+
+// Share button — native share sheet on mobile, clipboard elsewhere
+document.getElementById('share-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('share-btn');
+  const payload = {
+    title: 'Buffalo Trace Bottle Drops',
+    text: "See what's on the shelf at the Buffalo Trace gift shop today:",
+    url: 'https://buffalotracebottledrops.com/'
+  };
+  try {
+    if (navigator.share) { await navigator.share(payload); return; }
+    await navigator.clipboard.writeText(payload.url);
+    const orig = btn.textContent;
+    btn.textContent = '✓ Link copied';
+    setTimeout(()=>{ btn.textContent = orig; }, 2000);
+  } catch(e) { /* user cancelled share sheet — fine */ }
+});
 
 // ── Boot: paint IMMEDIATELY from the embedded snapshot (INLINE_DATA is
 // rewritten by the pipeline every run, so it is at most one run old).
