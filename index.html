@@ -884,13 +884,23 @@ function renderToday(data) {
   } else {
     const avail = bottles.filter(b=>b.available_today===1);
     const unavail = bottles.filter(b=>b.available_today!==1);
+    // Active special release(s) — announced by the gift shop for today
+    const specials = (today.special_release||'').split(',').map(s=>s.trim()).filter(Boolean);
     const tapRows = [
+      ...specials.map(n=>`<div class="tap-bottle-avail" style="color:var(--gold)">★ ${n}&nbsp;<span style="opacity:.75;font-weight:400;font-size:.85em">special release</span></div>`),
       ...avail.map(b=>`<div class="tap-bottle-avail">${b.name}</div>`),
       ...unavail.map(b=>`<div class="tap-bottle-unavail">${b.name}</div>`)
     ].join('');
+    if(specials.length){
+      const spLabel = specials.length===1 ? 'a special release' : `${specials.length} special releases`;
+      heroHeadline = availCount>0
+        ? `<span class="hl-green">${availCount} bottle${availCount!==1?'s':''}</span> + <span style="color:var(--gold)">${spLabel}</span> available now`
+        : `<span style="color:var(--gold)">A special release</span> is available now`;
+    } else {
     heroHeadline = availCount>0
       ? `<span class="hl-green">${availCount} bottle${availCount!==1?'s':''}</span> available now`
       : `<span class="hl-red">No bottles</span> available today`;
+    }
     heroBottomPanel = `<div class="today-avail-panel">
         <div class="tap-eyebrow">🥃 &nbsp; Available Today at the Gift Shop</div>
         <div class="tap-bottles">${tapRows}</div>

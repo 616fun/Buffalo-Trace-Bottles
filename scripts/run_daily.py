@@ -1320,7 +1320,10 @@ def main() -> None:
         reverse=True
     )
     pred_labels = [BOTTLE_SHORT[k] for k in predicted_keys] if predicted_keys else ["None"]
-    sms_body = (f"✅ BT {mon_dd}: {bottles_status} | "
+    # Special release(s) active today (set by Step 2.5 from the BT feed)
+    special_today = (data.get("today") or {}).get("special_release") or ""
+    special_seg = f" | ⭐ {special_today[:45]}" if special_today else ""
+    sms_body = (f"✅ BT {mon_dd}: {bottles_status}{special_seg} | "
                 f"Tomorrow's Prediction(s): {', '.join(pred_labels)} | "
                 f"https://buffalotracebottledrops.com")
 
