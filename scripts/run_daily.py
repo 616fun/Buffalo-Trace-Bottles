@@ -401,7 +401,7 @@ def git_commit_and_push(commit_message: str, dry_run: bool = False) -> None:
             check=True, cwd=REPO_ROOT
         )
         subprocess.run(
-            ["git", "add", "tracker_data.json", "data.json"],
+            ["git", "add", "tracker_data.json", "data.json", "index.html"],
             check=True, cwd=REPO_ROOT
         )
         # Check if there are staged changes

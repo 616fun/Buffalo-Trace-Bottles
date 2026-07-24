@@ -18,7 +18,8 @@
         "ehtaylor_sb": 93.8,
         "eagle_rare": 72.3
       }
-    }
+    },
+    "prices_as_of": "2026-03-18"
   },
   "today": {
     "date": "2026-07-24",
@@ -42,7 +43,8 @@
       "prediction_tomorrow_pct": 80.3,
       "confidence": "High",
       "last_seen": "2026-07-24",
-      "prior_frequency": 0.63
+      "prior_frequency": 0.63,
+      "gift_shop_price": 74.99
     },
     {
       "name": "Weller Antique 107",
@@ -57,7 +59,8 @@
       "prediction_tomorrow_pct": 45.4,
       "confidence": "High",
       "last_seen": "2026-07-20",
-      "prior_frequency": 0.75
+      "prior_frequency": 0.75,
+      "gift_shop_price": 59.99
     },
     {
       "name": "E.H. Taylor Small Batch",
@@ -72,7 +75,8 @@
       "prediction_tomorrow_pct": 93.7,
       "confidence": "High",
       "last_seen": "2026-07-24",
-      "prior_frequency": 0.93
+      "prior_frequency": 0.93,
+      "gift_shop_price": 59.99
     },
     {
       "name": "Eagle Rare 10-Year",
@@ -87,7 +91,8 @@
       "prediction_tomorrow_pct": 26.2,
       "confidence": "High",
       "last_seen": "2026-07-22",
-      "prior_frequency": 0.17
+      "prior_frequency": 0.17,
+      "gift_shop_price": 43
     }
   ],
   "calendar": [
@@ -97,6 +102,7 @@
       "weller107": 0,
       "ehtaylor_sb": 0,
       "eagle_rare": 1,
+      "special_release": "E.H. Taylor Straight Rye",
       "is_closure": false,
       "notes": null
     },
@@ -106,6 +112,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -115,6 +122,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -124,6 +132,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -133,6 +142,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -142,6 +152,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -151,6 +162,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -160,6 +172,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -169,6 +182,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -178,6 +192,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -187,6 +202,7 @@
       "weller107": 0,
       "ehtaylor_sb": 0,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -196,6 +212,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -205,6 +222,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -214,6 +232,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -223,6 +242,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -232,6 +252,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -241,6 +262,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -250,6 +272,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -259,6 +282,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -268,6 +292,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -277,6 +302,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -286,6 +312,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -295,6 +322,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -304,6 +332,7 @@
       "weller107": 0,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": true,
       "notes": "Easter Sunday"
     },
@@ -313,6 +342,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -322,6 +352,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -331,6 +362,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -340,6 +372,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -349,6 +382,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -358,6 +392,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -367,6 +402,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -376,6 +412,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -385,6 +422,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -394,6 +432,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -403,6 +442,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -412,6 +452,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -421,6 +462,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -430,6 +472,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -439,6 +482,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -448,6 +492,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -457,6 +502,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -466,6 +512,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -475,6 +522,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -484,6 +532,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -493,6 +542,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -502,6 +552,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -511,6 +562,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -520,6 +572,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -529,6 +582,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -538,6 +592,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -547,6 +602,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -556,6 +612,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -565,6 +622,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -574,6 +632,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -583,6 +642,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -592,6 +652,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -601,6 +662,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -610,6 +672,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -619,6 +682,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -628,6 +692,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -637,6 +702,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -646,6 +712,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": "E.H. Taylor Four Grain",
       "is_closure": false,
       "notes": null
     },
@@ -655,6 +722,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -664,6 +732,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -673,6 +742,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -682,6 +752,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -691,6 +762,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -700,6 +772,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -709,6 +782,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": "E.H. Taylor Four Grain",
       "is_closure": false,
       "notes": null
     },
@@ -718,6 +792,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -727,6 +802,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -736,6 +812,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -745,6 +822,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -754,6 +832,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -763,6 +842,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -772,6 +852,7 @@
       "weller107": 0,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": "E.H. Taylor Four Grain",
       "is_closure": false,
       "notes": null
     },
@@ -781,6 +862,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": "Weller C.Y.P.B.",
       "is_closure": false,
       "notes": null
     },
@@ -790,6 +872,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -799,6 +882,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -808,6 +892,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -817,6 +902,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -826,6 +912,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -835,6 +922,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -844,6 +932,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": "George T. Stagg",
       "is_closure": false,
       "notes": null
     },
@@ -853,6 +942,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -862,6 +952,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -871,6 +962,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -880,6 +972,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -889,6 +982,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -898,6 +992,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": "George T. Stagg",
       "is_closure": false,
       "notes": null
     },
@@ -907,6 +1002,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -916,6 +1012,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -925,6 +1022,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -934,6 +1032,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -943,6 +1042,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -952,6 +1052,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -961,6 +1062,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -970,6 +1072,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -979,6 +1082,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -988,6 +1092,7 @@
       "weller107": 1,
       "ehtaylor_sb": 0,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -997,6 +1102,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1006,6 +1112,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1015,6 +1122,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1024,6 +1132,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1033,6 +1142,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1042,6 +1152,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1051,6 +1162,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1060,6 +1172,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1069,6 +1182,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1078,6 +1192,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1087,6 +1202,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1096,6 +1212,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1105,6 +1222,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1114,6 +1232,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1123,6 +1242,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1132,6 +1252,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1141,6 +1262,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1150,6 +1272,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1159,6 +1282,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1168,6 +1292,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1177,6 +1302,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1186,6 +1312,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1195,6 +1322,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1204,6 +1332,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1213,6 +1342,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1222,6 +1352,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1231,6 +1362,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1240,6 +1372,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1249,6 +1382,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1258,6 +1392,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1267,6 +1402,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1276,6 +1412,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1285,6 +1422,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
     },
@@ -1294,8 +1432,43 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
+      "special_release": null,
       "is_closure": false,
       "notes": null
+    }
+  ],
+  "special_releases_log": [
+    {
+      "date": "2026-03-13",
+      "name": "E.H. Taylor Straight Rye"
+    },
+    {
+      "date": "2026-03-17",
+      "name": "Bettinardi Golf x W.L. Weller Collection"
+    },
+    {
+      "date": "2026-05-13",
+      "name": "E.H. Taylor Four Grain"
+    },
+    {
+      "date": "2026-05-20",
+      "name": "E.H. Taylor Four Grain"
+    },
+    {
+      "date": "2026-05-27",
+      "name": "E.H. Taylor Four Grain"
+    },
+    {
+      "date": "2026-05-28",
+      "name": "Weller C.Y.P.B."
+    },
+    {
+      "date": "2026-06-04",
+      "name": "George T. Stagg"
+    },
+    {
+      "date": "2026-06-10",
+      "name": "George T. Stagg"
     }
   ]
 }

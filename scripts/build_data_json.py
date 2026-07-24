@@ -40,6 +40,30 @@ BOTTLE_META = [
     {"key": "eagle_rare",  "name": "Eagle Rare 10-Year",        "prior_frequency": 0.17},
 ]
 
+# Maps Prices-sheet column names (tracker_data.json "prices" rows) to bottle keys
+PRICE_KEY_MAP = {
+    "blantons":    "blantons_single_barrel",
+    "weller107":   "weller_antique_107",
+    "ehtaylor_sb": "eh_taylor_small_batch",
+    "eagle_rare":  "eagle_rare_10-year",
+}
+
+
+def latest_prices(price_rows: list) -> tuple[dict, str | None]:
+    """
+    Return ({bottle_key: price_or_None}, as_of_date) using the most recent
+    non-null value per bottle across price rows (rows may be sparse/null).
+    """
+    prices: dict = {k: None for k in PRICE_KEY_MAP}
+    as_of = None
+    for row in sorted(price_rows or [], key=lambda r: r.get("date", "")):
+        for bottle_key, col in PRICE_KEY_MAP.items():
+            val = row.get(col)
+            if val is not None:
+                prices[bottle_key] = val
+                as_of = row.get("date", as_of)
+    return prices, as_of
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -55,6 +79,38 @@ def emit_success() -> None:
 
 def emit_failure(error: str) -> None:
     print(json.dumps({"success": False, "error": error}), flush=True)
+
+
+def refresh_inline_data(index_path: Path, data: dict) -> bool:
+    """
+    Rewrite the `const INLINE_DATA = {...};` line in index.html with a fresh
+    snapshot of data.json. INLINE_DATA is the site's offline fallback when
+    fetch('./data.json') fails — refreshing it every run keeps the fallback
+    from going stale. Returns True if the file was updated. Non-fatal by
+    design: callers should log-and-continue on False.
+    """
+    import re
+    try:
+        src = index_path.read_text()
+    except Exception as exc:
+        log(f"  [inline-data] Could not read {index_path}: {exc}")
+        return False
+    payload = json.dumps(data, separators=(",", ": "))
+    new_line = f"const INLINE_DATA = {payload};"
+    updated, n = re.subn(
+        r"const INLINE_DATA = \{.*?\};",
+        lambda m: new_line,          # lambda avoids backslash-escape issues in payload
+        src, count=1, flags=re.DOTALL
+    )
+    if n != 1:
+        log("  [inline-data] INLINE_DATA marker not found in index.html — skipped")
+        return False
+    if updated == src:
+        log("  [inline-data] Already current")
+        return True
+    index_path.write_text(updated)
+    log(f"  [inline-data] Refreshed INLINE_DATA in {index_path}")
+    return True
 
 
 def compute_prediction_accuracy(predictions: list[dict]) -> dict:
@@ -178,12 +234,14 @@ def build_data_json(tracker: dict, today_str: str | None = None) -> dict:
 
     # --- Meta ---
     prediction_accuracy = compute_prediction_accuracy(predictions)
+    gift_prices, prices_as_of = latest_prices(tracker.get("prices", []))
     meta = {
         "last_updated":       today_str,
         "days_tracked":       len(daily_log),      # all logged days including closures
         "site_version":       "1.0",
         "data_source":        "https://www.buffalotracebottledrops.com",
         "prediction_accuracy": prediction_accuracy,
+        "prices_as_of":       prices_as_of,        # date of most recent price observation
     }
 
     # --- Today block ---
@@ -224,6 +282,7 @@ def build_data_json(tracker: dict, today_str: str | None = None) -> dict:
             "confidence":                s["confidence"],
             "last_seen":                 s["last_seen"],
             "prior_frequency":           bm["prior_frequency"],
+            "gift_shop_price":           gift_prices.get(key),   # most recent non-null price, or None
         })
 
     # --- Calendar array ---
@@ -248,15 +307,20 @@ def build_data_json(tracker: dict, today_str: str | None = None) -> dict:
             "weller107":  int(row.get("weller107",   0) or 0),
             "ehtaylor_sb": int(row.get("ehtaylor_sb", 0) or 0),
             "eagle_rare": int(row.get("eagle_rare",  0) or 0),
+            "special_release": row.get("special_release") or None,
             "is_closure": row_is_closure,
             "notes":      row_notes if row_is_closure else None,
         })
+
+    # --- Special releases log (passthrough from tracker) ---
+    special_releases_log = tracker.get("special_releases_log", []) or []
 
     return {
         "meta":     meta,
         "today":    today_block,
         "bottles":  bottles,
         "calendar": calendar,
+        "special_releases_log": special_releases_log,
     }
 
 
@@ -350,6 +414,14 @@ def main() -> None:
     except Exception as exc:
         emit_failure(f"Failed to write data.json: {exc}")
         sys.exit(1)
+
+    # --- Refresh INLINE_DATA fallback snapshot in index.html (non-fatal) ---
+    index_path = output_path.parent / "index.html"
+    if index_path.exists():
+        try:
+            refresh_inline_data(index_path, data)
+        except Exception as exc:
+            log(f"  [inline-data] Refresh failed (non-fatal): {exc}")
 
     # --- Optional diff ---
     if args.diff:
