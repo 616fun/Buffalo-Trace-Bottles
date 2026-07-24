@@ -601,12 +601,18 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                            if s.get("name", "").lower() == nm.lower()]
                 if entries:
                     latest = max(entries, key=lambda s: s.get("date", ""))
+                    seen = latest.setdefault("seen_dates", [latest.get("date")])
+                    if today_str not in seen:
+                        seen.append(today_str)
+                        seen.sort()
+                        changed = True
                     if latest.get("last_seen") != today_str:
                         latest["last_seen"] = today_str
                         changed = True
                 else:
                     sr_log.append({"date": today_str, "name": nm,
                                    "last_seen": today_str,
+                                   "seen_dates": [today_str],
                                    "source": "bt_events_feed"})
                     sr_log.sort(key=lambda s: s.get("date", ""))
                     changed = True

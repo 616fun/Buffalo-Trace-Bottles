@@ -1521,8 +1521,15 @@
       "source": "bt_events_feed",
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99,
-      "notes": "Window confirmed still dropping Jul 21 per Brian; feed announcements observed Jul 10 and Jul 17-19.",
-      "last_seen": "2026-07-24"
+      "notes": "Sighting days = dates the BT feed listed it (live obs Jul 10, Wayback Jul 17-19, live Jul 24). Days between are unobserved \u2014 availability may have been intermittent.",
+      "last_seen": "2026-07-24",
+      "seen_dates": [
+        "2026-07-10",
+        "2026-07-17",
+        "2026-07-18",
+        "2026-07-19",
+        "2026-07-24"
+      ]
     },
     {
       "date": "2026-07-17",
