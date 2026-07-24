@@ -497,9 +497,16 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
         events = scrape_data.get("gift_shop_events") or []
         seen = tracker.setdefault("gift_shop_announcements_seen", [])
         seen_texts = {s.get("text") for s in seen}
+        # Active-window detection (per Brian, 2026-07-24): a qualifying,
+        # non-sold-out announcement PRESENT in the feed means the release is
+        # being offered NOW ("while supplies last" windows span days, and the
+        # feed's date window lags) — so it must mark TODAY's row, which
+        # lights the gold Today-page banner and today's calendar star.
+        active_names = []
+
         for ev in events:
             text = (ev.get("text") or "").strip()
-            if not text or text in seen_texts:
+            if not text:
                 continue
             lower = text.lower()
             is_noise = any(n in lower for n in _ANNOUNCEMENT_NOISE)
@@ -508,6 +515,12 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                            or "while supplies last" in (ev.get("time") or "").lower()
                            or "limit one bottle" in lower
                            or ("$" in text and "available" in lower)))
+            if strong and "sold out" not in lower:
+                for nm in _extract_release_names(text):
+                    if nm.lower() not in (a.lower() for a in active_names):
+                        active_names.append(nm)
+            if text in seen_texts:
+                continue
             seen.append({"text": text, "time": ev.get("time") or "",
                          "day_date": ev.get("day_date"), "first_seen": today_str,
                          "flagged": bool(strong)})
@@ -564,11 +577,108 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                         break
                 log(f"  ⭐ SPECIAL RELEASE logged: {name} ({rel_date}) — {text[:80]}")
 
+        # Mark TODAY with any active windows → Today-page banner + calendar star
+        if active_names:
+            for row in tracker.get("daily_log", []):
+                if row.get("date") == today_str:
+                    current = row.get("special_release") or ""
+                    have = [n.strip() for n in current.split(",") if n.strip()]
+                    for nm in active_names:
+                        if nm.lower() not in (h.lower() for h in have):
+                            have.append(nm)
+                    merged = ", ".join(have)
+                    if merged != current:
+                        row["special_release"] = merged
+                        changed = True
+                        log(f"  ⭐ ACTIVE today: {merged} (banner will show)")
+                    break
+
         if changed and not dry_run:
             TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
             log("  tracker_data.json updated (prices/announcements)")
     except Exception as exc:
         log(f"  Price/announcement monitoring failed (non-fatal): {exc}")
+
+
+# Canonical special-release names → match patterns for Reddit retro-detection
+_REDDIT_BOTTLE_PATTERNS = {
+    "Weller 12 Year":           ["weller 12"],
+    "Weller Single Barrel":     ["weller single barrel", "single barrel weller", "weller sib"],
+    "Weller C.Y.P.B.":          ["cypb", "c.y.p.b"],
+    "Weller Full Proof":        ["weller full proof"],
+    "Single Oak Rye Bourbon":   ["single oak"],
+    "Stagg":                    ["stagg"],
+    "E.H. Taylor Four Grain":   ["four grain"],
+    "E.H. Taylor Straight Rye": ["taylor straight rye"],
+    "Sazerac Rye Full Proof":   ["sazerac rye full proof", "sazerac full proof"],
+    "Blanton's Gold":           ["blanton's gold", "blantons gold"],
+    "Blanton's SFTB":           ["straight from the barrel", "sftb"],
+}
+
+_REDDIT_PURCHASE_CUES = ("gift shop", "giftshop", "visitor center", "picked up",
+                         "pick up", "scored", "grabbed", "lucked into", "haul",
+                         "they had", "was available", "snagged")
+
+
+def process_reddit_specials(posts: list, today_str: str, dry_run: bool = False) -> None:
+    """
+    Retrospective auto-population (per Brian, 2026-07-24): when Reddit intel
+    identifies a gift-shop drop we missed, log it upon identification.
+    Conservative matching: review posts are excluded; a post must name a
+    known limited bottle AND carry a purchase/gift-shop cue. Date = the
+    post's date (approximate — noted on the entry). 14-day window dedupe
+    against existing log entries. Non-fatal; never blocks the pipeline.
+    """
+    if not posts:
+        return
+    try:
+        tracker = json.loads(TRACKER_DATA_PATH.read_text())
+        sr_log = tracker.setdefault("special_releases_log", [])
+        changed = False
+        for p in posts:
+            title = p.get("title", "") or ""
+            if re.search(r'\breview\b', title, re.IGNORECASE):
+                continue        # reviews list bottle names without a drop
+            text = f"{title} {p.get('snippet','')}".lower()
+            if not any(c in text for c in _REDDIT_PURCHASE_CUES):
+                continue
+            post_date = today_str
+            try:
+                post_date = datetime.date.fromtimestamp(
+                    p.get("created_utc", 0)).isoformat()
+            except Exception:
+                pass
+            for canon, pats in _REDDIT_BOTTLE_PATTERNS.items():
+                if not any(pat in text for pat in pats):
+                    continue
+                dup = False
+                for s in sr_log:
+                    if s.get("name", "").lower() != canon.lower():
+                        continue
+                    try:
+                        gap = abs((datetime.date.fromisoformat(post_date)
+                                   - datetime.date.fromisoformat(s.get("date", "1970-01-01"))).days)
+                    except ValueError:
+                        gap = 9999
+                    if gap <= 14:
+                        dup = True
+                        break
+                if dup:
+                    continue
+                sr_log.append({
+                    "date": post_date, "name": canon, "source": "reddit_report",
+                    "announcement": f"{title[:150]} — {p.get('url','')}",
+                    "notes": "Auto-identified from Reddit; date is the post date (approximate).",
+                })
+                sr_log.sort(key=lambda s: s.get("date", ""))
+                changed = True
+                log(f"  ⭐ Reddit retro-log: {canon} (~{post_date}) — {title[:70]}")
+        if changed and not dry_run:
+            TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
+            log("  tracker_data.json updated (Reddit retro specials — "
+                "publishes with next pipeline commit)")
+    except Exception as exc:
+        log(f"  Reddit retro-log failed (non-fatal): {exc}")
 
 
 # ---------------------------------------------------------------------------
@@ -1141,6 +1251,7 @@ def main() -> None:
     # -----------------------------------------------------------------------
     log("\n=== Step 4.5: Reddit community intel ===")
     reddit_posts = fetch_reddit_posts(dry_run=dry_run)
+    process_reddit_specials(reddit_posts, today_str, dry_run)
 
     # -----------------------------------------------------------------------
     # Step 5 — Send HTML email
