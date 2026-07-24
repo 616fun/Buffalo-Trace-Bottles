@@ -1604,7 +1604,7 @@ const SPECIAL_PROFILES = {
     tag: "One tree, one barrel — BT's oak experiment continues",
     desc: "A limited experimental release in the lineage of Buffalo Trace's Single Oak Project, where each barrel is coopered from a single oak tree to isolate the wood's influence. Sold in 375mL bottles with a strict one-per-person limit — announced right on BT's own visit page when it drops.",
     notes: ["Oak-forward", "Rye spice", "Vanilla", "Experimental character"],
-    facts: ["375mL bottle", "$74.99 at the gift shop", "Limit one per person"]
+    facts: ["375mL bottle", "Limit one per person"]
   },
   "sazerac rye full proof": {
     series: "Sazerac Rye",
@@ -1658,10 +1658,9 @@ function renderSpecialProfiles(data) {
     const last = g.entries[g.entries.length-1];
     const lastSeen = last.last_seen || last.date;
     const isActive = lastSeen === data.meta.last_updated;
-    const price = [...g.entries].reverse().map(e=>e.price).find(p=>p!=null);
     // every observed sighting day across all windows
     const allDays = [...new Set(g.entries.flatMap(e=>e.seen_dates && e.seen_dates.length ? e.seen_dates : [e.date]))].sort();
-    return { g, last, lastSeen, isActive, price, allDays };
+    return { g, last, lastSeen, isActive, allDays };
   }).sort((a,b)=>b.lastSeen.localeCompare(a.lastSeen));
 
   el.innerHTML = cards.map(c=>{
@@ -1684,7 +1683,6 @@ function renderSpecialProfiles(data) {
       <div class="sp-meta">
         <div><strong>${c.allDays.length}</strong>sighting day${c.allDays.length!==1?'s':''}</div>
         <div><strong>${fmtDateShort(c.lastSeen)}</strong>last seen</div>
-        ${c.price!=null?`<div><strong>$${c.price.toFixed(2)}</strong>gift shop price</div>`:''}
       </div>
       <div class="sp-dates">${chips}</div>
     </div>`;
