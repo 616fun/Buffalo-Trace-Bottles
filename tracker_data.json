@@ -1457,7 +1457,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Weller Single Barrel",
       "notes": "",
       "last_site_update": "6:40am EST",
       "is_closure": false
@@ -4940,6 +4940,12 @@
       "name": "Weller C.Y.P.B.",
       "source": "brian_report",
       "notes": "Father's Day weekend drop (Jun 20-21). Not announced in BT events feed; no archive coverage of that week."
+    },
+    {
+      "date": "2026-07-09",
+      "name": "Weller Single Barrel",
+      "source": "brian_report",
+      "notes": "Confirmed by Brian 2026-07-24. Not announced in BT events feed; no Reddit corroboration found in reachable feeds (r/bourbon + r/whiskey top-100/month had no Jul 9 gift-shop posts; r/whiskeybuds unreachable during check)."
     },
     {
       "date": "2026-07-10",
