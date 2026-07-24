@@ -235,6 +235,152 @@ def parse_availability(html):
 
 
 # ─────────────────────────────────────────────
+# Extras: prices + gift shop announcements (added 2026-07-24)
+#
+# Both piggyback on the HTML we already fetched — zero extra requests.
+# Both are strictly non-fatal: any parse error returns empty values and the
+# availability pipeline proceeds untouched.
+# ─────────────────────────────────────────────
+
+PRICE_FIELDS = [
+    "blantons_single_barrel", "weller_antique_107", "eh_taylor_small_batch",
+    "eagle_rare_10-year", "weller_special_reserve", "eh_taylor_straight_rye",
+    "sazerac_rye", "buffalo_trace_bourbon", "wheatley_vodka",
+    "buffalo_trace_bourbon_cream",
+]
+
+PRICE_NAME_MAP = {
+    "blantons_single_barrel":      ["blanton"],
+    "weller_antique_107":          ["weller antique 107"],
+    "eh_taylor_small_batch":       ["e.h. taylor small batch"],
+    "eagle_rare_10-year":          ["eagle rare"],
+    "weller_special_reserve":      ["weller special reserve"],
+    "eh_taylor_straight_rye":      ["e.h. taylor straight rye", "taylor straight rye"],
+    "sazerac_rye":                 ["sazerac rye"],
+    "buffalo_trace_bourbon":       ["buffalo trace kentucky", "buffalo trace bourbon"],
+    "wheatley_vodka":              ["wheatley vodka", "wheatley"],
+    "buffalo_trace_bourbon_cream": ["bourbon cream"],
+}
+
+
+def extract_prices(html):
+    """
+    Extract per-product prices from the availability page product blocks.
+    NOTE: as of mid-2026 BT no longer publishes prices in these blocks, so
+    this typically returns all-None. Kept so price capture resumes
+    automatically if BT restores them. Returns {field: float|None}.
+    """
+    result = {f: None for f in PRICE_FIELDS}
+    blocks = re.findall(r'<div class="product">(.*?)<a class="discover_link"',
+                        html, re.DOTALL)
+    for block in blocks:
+        h4 = re.search(r'<h4>([^<]+)</h4>', block)
+        if not h4:
+            continue
+        name_lower = h4.group(1).strip().lower()
+        price = None
+        for pat in (r'class="[^"]*price[^"]*"[^>]*>\s*\$?([\d]+\.[\d]{2})',
+                    r'data-price="([\d]+\.[\d]{0,2})"',
+                    r'\$\s*([\d]+\.[\d]{2})',
+                    r'\$\s*([\d]+)'):
+            m = re.search(pat, block, re.IGNORECASE)
+            if m:
+                try:
+                    price = round(float(m.group(1)), 2)
+                except ValueError:
+                    price = None
+                break
+        for field, aliases in PRICE_NAME_MAP.items():
+            # 'buffalo trace bourbon' must not swallow 'buffalo trace bourbon cream'
+            if field == "buffalo_trace_bourbon" and "cream" in name_lower:
+                continue
+            if any(a in name_lower for a in aliases):
+                if price is not None or result[field] is None:
+                    result[field] = price
+                break
+    return result
+
+
+def extract_gift_shop_events(html):
+    """
+    Parse the 'Today at the Trace' events feed embedded in the page's
+    Next.js flight data (self.__next_f.push payloads, key "new_events").
+    BT uses this feed to ANNOUNCE gift-shop special releases (e.g.
+    "Single Oak Rye Bourbon is available. $74.99, 375mL. While supplies
+    last.") — often the only machine-readable signal for drops that sell
+    out before the morning inventory check.
+
+    Returns a list of {"day_date": "DD/MM/YYYY", "time": ..., "location":
+    ..., "text": ...} for Gift Shop entries. Empty list on any failure.
+    The feed window is ~7 days around the page's render date and may lag
+    behind the current date — callers should dedupe on text, not date.
+    """
+    events_out = []
+    try:
+        new_events = None
+        for m in re.finditer(r'self\.__next_f\.push\((\[.*?\])\)</script>',
+                             html, re.DOTALL):
+            blob = m.group(1)
+            if 'day_date' not in blob:
+                continue
+            try:
+                arr = json.loads(blob)
+            except Exception:
+                continue
+            if len(arr) < 2 or not isinstance(arr[1], str):
+                continue
+            s = arr[1]
+            j = s.find('"new_events":')
+            if j < 0:
+                continue
+            k = s.find('[', j)
+            depth = 0
+            for idx in range(k, len(s)):
+                if s[idx] == '[':
+                    depth += 1
+                elif s[idx] == ']':
+                    depth -= 1
+                    if depth == 0:
+                        new_events = json.loads(s[k:idx + 1])
+                        break
+            if new_events is not None:
+                break
+        for day in (new_events or []):
+            for ev in day.get("events", []):
+                loc = (ev.get("location") or "")
+                if "gift shop" not in loc.lower():
+                    continue
+                text = re.sub(r'<[^>]+>', ' ', ev.get("description") or "")
+                text = re.sub(r'\s+', ' ', text).replace('&nbsp;', ' ').strip()
+                events_out.append({
+                    "day_date": day.get("day_date"),
+                    "time": ev.get("time") or "",
+                    "location": loc,
+                    "text": text,
+                })
+    except Exception as exc:
+        import sys
+        print(f"[scrape_availability] gift-shop events parse failed (non-fatal): {exc}",
+              file=sys.stderr)
+        return []
+    return events_out
+
+
+def extract_extras(html):
+    """Non-fatal bundle: prices + gift shop announcements for the pipeline."""
+    extras = {}
+    try:
+        extras["prices"] = extract_prices(html)
+    except Exception:
+        extras["prices"] = {}
+    try:
+        extras["gift_shop_events"] = extract_gift_shop_events(html)
+    except Exception:
+        extras["gift_shop_events"] = []
+    return extras
+
+
+# ─────────────────────────────────────────────
 # Main polling loop
 # ─────────────────────────────────────────────
 
@@ -257,6 +403,7 @@ def _emit_provisional_capture(html, page_date, today, poll_count, stale_reason):
         "polls": poll_count,
     }
     output.update(availability)
+    output.update(extract_extras(html))
     print(f"[scrape_availability] PROVISIONAL CAPTURE ({stale_reason}). "
           f"Availability: {availability}", file=sys.stderr)
     print(json.dumps(output))
@@ -353,6 +500,7 @@ def run(max_poll_minutes, dry_run=False, last_known=None):
                 "polls": poll_count,
             }
             output.update(availability)
+            output.update(extract_extras(html))
             print(json.dumps(output))
             return
 
@@ -370,6 +518,7 @@ def run(max_poll_minutes, dry_run=False, last_known=None):
                 "note": f"Page showed future date {page_date}"
             }
             output.update(availability)
+            output.update(extract_extras(html))
             print(json.dumps(output))
             return
 

@@ -345,6 +345,9 @@ def scrape_prices(html):
 
         # Match to price field
         for field, aliases in PRICE_NAME_MAP.items():
+            # 'buffalo trace bourbon' must not swallow 'buffalo trace bourbon cream'
+            if field == "buffalo_trace_bourbon" and "cream" in name_lower:
+                continue
             for alias in aliases:
                 if alias in name_lower:
                     result[field] = price
@@ -513,7 +516,30 @@ def main():
         scraped = scrape_prices(html)
         log(f"  Scraped: {scraped}")
 
-        # Compare
+        # ── All-null guard (added 2026-07-24) ──────────────────────────────
+        # BT removed per-product prices from the availability page in
+        # mid-2026. An all-None scrape means "prices not published", NOT
+        # "every price changed to null". Without this guard, a null row gets
+        # appended as a phantom change event and then permanently poisons
+        # the "last row" baseline (this is exactly what happened 2026-04-24).
+        if all(v is None for v in scraped.values()):
+            log("\n  ⚠️ No prices found on page — BT is not publishing product "
+                "prices. Nothing recorded; baseline unchanged.")
+            if not dry_run:
+                pushover_send_safe(
+                    "Buffalo Trace — Price Check",
+                    f"ℹ️ BT Price Check {today_str}: BT page publishes no product "
+                    f"prices — nothing recorded. Daily monitor will catch them "
+                    f"if they return.",
+                    priority=0)
+            log("\n=== Done (prices not published) ===")
+            return
+
+        # Compare against the most recent row that actually has price data,
+        # so a legacy null row can never mask a real change.
+        last_row = next((r for r in reversed(prices_log)
+                         if any(v is not None for k, v in r.items() if k != "date")),
+                        last_row)
         changes = prices_differ(scraped, last_row)
         log(f"\n  Price changes: {len(changes)}")
         for field, old_val, new_val in changes:

@@ -382,6 +382,125 @@ def fetch_reddit_posts(dry_run: bool = False) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Daily price + gift-shop announcement monitoring (added 2026-07-24)
+#
+# Both piggyback on data the availability scraper already extracted from the
+# page it fetched anyway ("prices" and "gift_shop_events" keys). Entirely
+# non-fatal: wrapped so no failure here can ever block the daily pipeline.
+# ---------------------------------------------------------------------------
+
+PRICE_FIELD_DISPLAY = {
+    "blantons_single_barrel":      "Blanton's",
+    "weller_antique_107":          "Weller 107",
+    "eh_taylor_small_batch":       "EHT Small Batch",
+    "eagle_rare_10-year":          "Eagle Rare",
+    "weller_special_reserve":      "Weller SR",
+    "eh_taylor_straight_rye":      "EHT Rye",
+    "sazerac_rye":                 "Sazerac Rye",
+    "buffalo_trace_bourbon":       "BT Bourbon",
+    "wheatley_vodka":              "Wheatley",
+    "buffalo_trace_bourbon_cream": "Bourbon Cream",
+}
+
+# Announcement noise — recurring promos that are not special releases
+_ANNOUNCEMENT_NOISE = ("free sample", "complimentary", "tasting", "no reservation")
+
+
+def process_prices_and_announcements(scrape_data: dict, today_str: str,
+                                     mon_dd: str, dry_run: bool = False) -> None:
+    """
+    Step 2.5 — runs after update_tracker_data (Step 2), before build_data_json
+    (Step 3) so any appended price row flows into data.json the same run.
+
+    Prices: compares scraped prices against the per-field most recent non-null
+    baseline in tracker prices. Appends a dated row + Pushover alert ONLY when
+    a real change is detected. An all-null scrape (BT stopped publishing
+    prices mid-2026) is treated as "not published" — never appended, so a
+    scrape outage can't poison the baseline (the 2026-04-24 bug).
+
+    Announcements: diffs Gift Shop events (from the page's "Today at the
+    Trace" feed) against tracker's gift_shop_announcements_seen; new
+    non-noise announcements fire a priority-1 Pushover "possible special
+    release" alert and are recorded as seen. INTERNAL ONLY — nothing here is
+    surfaced on the public site (per Brian, 2026-07-24).
+    """
+    try:
+        tracker = json.loads(TRACKER_DATA_PATH.read_text())
+        changed = False
+
+        # ── Prices ──────────────────────────────────────────────────────────
+        scraped = scrape_data.get("prices") or {}
+        non_null = {k: v for k, v in scraped.items() if v is not None}
+        if not non_null:
+            log("  Prices: none published on page (normal since mid-2026) — skipping")
+        else:
+            # Per-field baseline: most recent non-null value across all rows
+            baseline = {}
+            for row in sorted(tracker.get("prices", []), key=lambda r: r.get("date", "")):
+                for k, v in row.items():
+                    if k != "date" and v is not None:
+                        baseline[k] = round(float(v), 2)
+            changes = []
+            for field, val in non_null.items():
+                new_v = round(float(val), 2)
+                old_v = baseline.get(field)
+                if old_v is None or new_v != old_v:
+                    changes.append((field, old_v, new_v))
+            if changes:
+                new_row = {"date": today_str}
+                new_row.update({f: scraped.get(f) for f in scraped})
+                tracker.setdefault("prices", []).append(new_row)
+                changed = True
+                summary = ", ".join(
+                    f"{PRICE_FIELD_DISPLAY.get(f, f)}: "
+                    f"{'—' if o is None else f'${o:.2f}'}→${n:.2f}"
+                    for f, o, n in changes)
+                log(f"  Prices: CHANGE detected — {summary}")
+                if not dry_run:
+                    pushover_send_safe("Buffalo Trace — Price Change",
+                                       f"💲 BT {mon_dd}: {summary}", priority=0)
+            else:
+                log(f"  Prices: {len(non_null)} scraped, no changes vs baseline")
+
+        # ── Gift shop announcements (special release candidates) ───────────
+        events = scrape_data.get("gift_shop_events") or []
+        seen = tracker.setdefault("gift_shop_announcements_seen", [])
+        seen_texts = {s.get("text") for s in seen}
+        for ev in events:
+            text = (ev.get("text") or "").strip()
+            if not text or text in seen_texts:
+                continue
+            lower = text.lower()
+            is_noise = any(n in lower for n in _ANNOUNCEMENT_NOISE)
+            strong = ("while supplies last" in lower
+                      or "while supplies last" in (ev.get("time") or "").lower()
+                      or "limit one bottle" in lower
+                      or ("$" in text and "available" in lower and not is_noise))
+            seen.append({"text": text, "time": ev.get("time") or "",
+                         "day_date": ev.get("day_date"), "first_seen": today_str,
+                         "flagged": bool(strong and not is_noise)})
+            seen_texts.add(text)
+            changed = True
+            if strong and not is_noise:
+                log(f"  Announcement: SPECIAL CANDIDATE — {text[:100]}")
+                if not dry_run:
+                    pushover_send_safe(
+                        "Buffalo Trace — Possible Special Release",
+                        (f"⭐ BT {mon_dd}: Gift shop announcement — {text[:180]} "
+                         f"(feed date {ev.get('day_date')}). Internal only; "
+                         f"confirm before logging."),
+                        priority=1)
+            else:
+                log(f"  Announcement: new (non-special) — {text[:80]}")
+
+        if changed and not dry_run:
+            TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
+            log("  tracker_data.json updated (prices/announcements)")
+    except Exception as exc:
+        log(f"  Price/announcement monitoring failed (non-fatal): {exc}")
+
+
+# ---------------------------------------------------------------------------
 # Git operations
 # ---------------------------------------------------------------------------
 
@@ -893,6 +1012,12 @@ def main() -> None:
         sys.exit(1)
 
     log("  tracker_data.json updated OK")
+
+    # -----------------------------------------------------------------------
+    # Step 2.5 — Price + gift-shop announcement monitoring (non-fatal)
+    # -----------------------------------------------------------------------
+    log("\n=== Step 2.5: Price + announcement monitoring ===")
+    process_prices_and_announcements(scrape_data, today_str, mon_dd, dry_run)
 
     # -----------------------------------------------------------------------
     # Step 3 — Build data.json
