@@ -159,6 +159,10 @@
     .sp-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 5px}
     .sp-note{display:inline-block;background:var(--surface2);border-radius:14px;padding:2px 10px;font-size:.72rem;color:var(--text2);margin:0 5px 5px 0}
     .sp-fact{display:inline-block;background:#FDF6E3;border:1px solid #F0E0B0;border-radius:6px;padding:2px 10px;font-size:.7rem;color:var(--text2);margin:0 5px 5px 0}
+    [data-bottle]{cursor:pointer}
+    [data-bottle]:hover{text-decoration:underline;text-decoration-color:var(--amber);text-underline-offset:3px}
+    .flash-target{animation:flashTarget 1.8s ease-out}
+    @keyframes flashTarget{0%,55%{box-shadow:0 0 0 3px var(--gold),var(--shadow)}100%{box-shadow:var(--shadow)}}
     .sr-live{display:inline-block;margin-left:10px;background:linear-gradient(95deg,#F0C060,#E09040);color:#1A0F05;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;vertical-align:1px}
 
     /* ── MAIN ── */
@@ -907,9 +911,9 @@ function renderToday(data) {
     // Active special release(s) — announced by the gift shop for today
     const specials = (today.special_release||'').split(',').map(s=>s.trim()).filter(Boolean);
     const tapRows = [
-      ...specials.map(n=>`<div class="tap-bottle-avail" style="color:var(--gold)">★ ${n}&nbsp;<span style="opacity:.75;font-weight:400;font-size:.85em">special release</span></div>`),
-      ...avail.map(b=>`<div class="tap-bottle-avail">${b.name}</div>`),
-      ...unavail.map(b=>`<div class="tap-bottle-unavail">${b.name}</div>`)
+      ...specials.map(n=>`<div class="tap-bottle-avail" style="color:var(--gold)" data-bottle="${specialSlug(n)}">★ ${n}&nbsp;<span style="opacity:.75;font-weight:400;font-size:.85em">special release</span></div>`),
+      ...avail.map(b=>`<div class="tap-bottle-avail" data-bottle="bp-${b.key}">${b.name}</div>`),
+      ...unavail.map(b=>`<div class="tap-bottle-unavail" data-bottle="bp-${b.key}">${b.name}</div>`)
     ].join('');
     if(specials.length){
       const spLabel = specials.length===1 ? 'a special release' : `${specials.length} special releases`;
@@ -977,7 +981,7 @@ function renderToday(data) {
     return `
       <div class="bottle-card ${isAvail?'avail':'unavail'}">
         <div class="bc-top">
-          <div class="bc-name">${b.name}</div>
+          <div class="bc-name" data-bottle="bp-${b.key}">${b.name}</div>
           <span class="bc-badge ${isAvail?'in':'out'}">${isAvail?'In Stock':'Out'}</span>
         </div>
         <div class="bc-stats">
@@ -1015,7 +1019,7 @@ function renderToday(data) {
     return `
       <div class="bet-row">
         <div class="bet-rank ${i===0?'r1':''}">#${i+1}</div>
-        <div class="bet-name">${b.name}</div>
+        <div class="bet-name" data-bottle="bp-${b.key}">${b.name}</div>
         <div class="bet-bar-wrap">
           <div class="bet-bar-track"><div class="bet-bar-fill fill-${v.cls}" style="width:${Math.round(pred)}%"></div></div>
           <div class="bet-meta">
@@ -1059,7 +1063,7 @@ function renderToday(data) {
       }
       return `
       <div class="sr-row">
-        <div class="sr-name"><span class="sr-star">★</span>${s.name}${isActive?'<span class="sr-live">Available now</span>':''}</div>
+        <div class="sr-name" data-bottle="${specialSlug(s.name)}"><span class="sr-star">★</span>${s.name}${isActive?'<span class="sr-live">Available now</span>':''}</div>
         <div class="sr-date">${range}</div>
       </div>`;
     }).join('');
@@ -1219,7 +1223,7 @@ function buildAnalyticsCharts(data) {
     return `
       <div class="freq-card">
         <div class="freq-card-top">
-          <div class="freq-name">${frqLabels[b.key]||b.name}</div>
+          <div class="freq-name" data-bottle="bp-${b.key}">${frqLabels[b.key]||b.name}</div>
           <span class="bc-badge ${isAvail?'in':'out'}">${isAvail?'In Stock':'Out Today'}</span>
         </div>
         <div class="freq-fraction">${n} of ${total} days</div>
@@ -1475,9 +1479,9 @@ function renderCalendarMonth(data, year, month) {
         const scoreClass=['s0','s1','s2','s3','s4'][cnt]||'';
         scoreHTML=`<span class="cal-score ${scoreClass}">${cnt}/${BOTTLE_KEYS.length}</span>`;
         BOTTLE_KEYS.forEach(key=>{
-          if(entry[key]===1) chipsHTML+=`<span class="cal-chip cc-${key}" title="${key}">${CHIP_LABELS[key]}</span>`;
+          if(entry[key]===1) chipsHTML+=`<span class="cal-chip cc-${key}" data-bottle="bp-${key}" title="${key}">${CHIP_LABELS[key]}</span>`;
         });
-        if(entry.special_release) chipsHTML+=`<span class="cal-chip cc-special" title="Special release: ${entry.special_release}">★</span>`;
+        if(entry.special_release) chipsHTML+=`<span class="cal-chip cc-special" data-bottle="${specialSlug(entry.special_release.split(',')[0])}" title="Special release: ${entry.special_release}">★</span>`;
       }
     }
 
@@ -1524,7 +1528,7 @@ function renderBottles(data) {
          </div>`
       : '';
     return `
-      <div class="bp-card">
+      <div class="bp-card" id="bp-${key}">
         <div class="bp-header ${p.cssClass}">
           <div class="bp-series">${p.series}</div>
           <div class="bp-name">${p.fullName}</div>
@@ -1669,7 +1673,7 @@ function renderSpecialProfiles(data) {
       : `<span class="sp-date-chip">${fmtDateShort(c.allDays[0])}</span><span style="opacity:.6">… ${c.allDays.length-2} more …</span><span class="sp-date-chip">${fmtDateShort(c.allDays[c.allDays.length-1])}</span>`;
     const p = SPECIAL_PROFILES[c.g.name.toLowerCase()];
     return `
-    <div class="sp-card">
+    <div class="sp-card" id="${specialSlug(c.g.name)}">
       ${p?`<div class="sp-series">${p.series}</div>`:''}
       <div class="sp-name">★ ${c.g.name}${c.isActive?'<span class="sr-live">Available now</span>':''}</div>
       ${p?`
@@ -1822,6 +1826,25 @@ function checkStale(data, usedFallback) {
     document.getElementById('stale-banner').classList.add('show');
   }
 }
+
+// Bottle cross-links: any element with data-bottle jumps to that bottle's
+// profile card on the Bottles page (smooth scroll + gold flash).
+function specialSlug(name){ return 'sp-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+function goToBottle(id){
+  showPage('bottles');
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      el.classList.add('flash-target');
+      setTimeout(()=>el.classList.remove('flash-target'), 1800);
+    }
+  }, 80);
+}
+document.addEventListener('click', (e)=>{
+  const t = e.target.closest('[data-bottle]');
+  if(t) goToBottle(t.dataset.bottle);
+});
 
 // Share button — native share sheet on mobile, clipboard elsewhere
 document.getElementById('share-btn').addEventListener('click', async () => {
