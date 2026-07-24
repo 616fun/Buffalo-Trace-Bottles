@@ -1469,7 +1469,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Single Oak Rye Bourbon",
       "notes": "",
       "last_site_update": "7:20am EST",
       "is_closure": false
@@ -4901,6 +4901,29 @@
     {
       "date": "2026-06-10",
       "name": "George T. Stagg"
+    },
+    {
+      "date": "2026-07-10",
+      "name": "Single Oak Rye Bourbon",
+      "source": "bt_events_feed",
+      "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
+      "price": 74.99
+    }
+  ],
+  "gift_shop_announcements_seen": [
+    {
+      "text": "Free samples of our new Buffalo Trace Bourbon Lemonade Ready-to-Drink Cocktail are available in the gift shop.   Take home a 4-Pack today for only $14.99.",
+      "time": "9:00 a.m. - 5:00 p.m.",
+      "day_date": "13/07/2026",
+      "first_seen": "2026-07-24",
+      "flagged": false
+    },
+    {
+      "text": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
+      "time": "While Supplies Last",
+      "day_date": "10/07/2026",
+      "first_seen": "2026-07-24",
+      "flagged": true
     }
   ]
 }

@@ -27,6 +27,7 @@ Usage:
   python scripts/run_daily.py [--max-poll-minutes 180] [--dry-run] [--date YYYY-MM-DD]
 """
 
+import re
 import argparse
 import datetime
 import email.message
@@ -462,7 +463,12 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
             else:
                 log(f"  Prices: {len(non_null)} scraped, no changes vs baseline")
 
-        # ── Gift shop announcements (special release candidates) ───────────
+        # ── Gift shop announcements → special release tracking ─────────────
+        # Per Brian (2026-07-24): BT's "Today at the Trace" feed is the nod
+        # that a special has dropped. Auto-log qualifying announcements into
+        # special_releases_log (and the matching daily_log row), which flows
+        # into data.json and the public site. No Pushover — the site and the
+        # daily report email carry the news.
         events = scrape_data.get("gift_shop_events") or []
         seen = tracker.setdefault("gift_shop_announcements_seen", [])
         seen_texts = {s.get("text") for s in seen}
@@ -472,26 +478,53 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                 continue
             lower = text.lower()
             is_noise = any(n in lower for n in _ANNOUNCEMENT_NOISE)
-            strong = ("while supplies last" in lower
-                      or "while supplies last" in (ev.get("time") or "").lower()
-                      or "limit one bottle" in lower
-                      or ("$" in text and "available" in lower and not is_noise))
+            strong = (not is_noise
+                      and ("while supplies last" in lower
+                           or "while supplies last" in (ev.get("time") or "").lower()
+                           or "limit one bottle" in lower
+                           or ("$" in text and "available" in lower)))
             seen.append({"text": text, "time": ev.get("time") or "",
                          "day_date": ev.get("day_date"), "first_seen": today_str,
-                         "flagged": bool(strong and not is_noise)})
+                         "flagged": bool(strong)})
             seen_texts.add(text)
             changed = True
-            if strong and not is_noise:
-                log(f"  Announcement: SPECIAL CANDIDATE — {text[:100]}")
-                if not dry_run:
-                    pushover_send_safe(
-                        "Buffalo Trace — Possible Special Release",
-                        (f"⭐ BT {mon_dd}: Gift shop announcement — {text[:180]} "
-                         f"(feed date {ev.get('day_date')}). Internal only; "
-                         f"confirm before logging."),
-                        priority=1)
-            else:
+            if not strong:
                 log(f"  Announcement: new (non-special) — {text[:80]}")
+                continue
+
+            # Extract the release name: text up to " is available"
+            m = re.match(r'^(.*?)\s+is available\b', text, re.IGNORECASE)
+            name = (m.group(1) if m else text.split('.')[0]).strip(' *–—-')
+            # Feed dates are DD/MM/YYYY and the window can lag — use the feed
+            # date when parseable, else today.
+            rel_date = today_str
+            dm = re.match(r'^(\d{1,2})/(\d{1,2})/(\d{4})$', ev.get("day_date") or "")
+            if dm:
+                try:
+                    rel_date = datetime.date(int(dm.group(3)), int(dm.group(2)),
+                                             int(dm.group(1))).isoformat()
+                except ValueError:
+                    pass
+
+            sr_log = tracker.setdefault("special_releases_log", [])
+            dup = any(s.get("name", "").lower() == name.lower()
+                      and s.get("date") == rel_date for s in sr_log)
+            if dup:
+                log(f"  Announcement: special already logged — {name} ({rel_date})")
+                continue
+            entry = {"date": rel_date, "name": name,
+                     "source": "bt_events_feed", "announcement": text[:300]}
+            pm = re.search(r'\$([\d]+(?:\.[\d]{2})?)', text)
+            if pm:
+                entry["price"] = float(pm.group(1))
+            sr_log.append(entry)
+            sr_log.sort(key=lambda s: s.get("date", ""))
+            # Back-fill the daily_log row for that date if it has no special yet
+            for row in tracker.get("daily_log", []):
+                if row.get("date") == rel_date and not row.get("special_release"):
+                    row["special_release"] = name
+                    break
+            log(f"  ⭐ SPECIAL RELEASE logged: {name} ({rel_date}) — {text[:80]}")
 
         if changed and not dry_run:
             TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
