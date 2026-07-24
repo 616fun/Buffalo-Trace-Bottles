@@ -4953,7 +4953,8 @@
       "source": "bt_events_feed",
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99,
-      "notes": "Window confirmed still dropping Jul 21 per Brian; feed announcements observed Jul 10 and Jul 17-19."
+      "notes": "Window confirmed still dropping Jul 21 per Brian; feed announcements observed Jul 10 and Jul 17-19.",
+      "last_seen": "2026-07-24"
     },
     {
       "date": "2026-07-17",

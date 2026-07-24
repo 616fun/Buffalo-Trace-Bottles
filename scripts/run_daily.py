@@ -592,6 +592,24 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                         changed = True
                         log(f"  ⭐ ACTIVE today: {merged} (banner will show)")
                     break
+            # Stamp the matching sightings-log window with last_seen=today so
+            # the site's Sightings list shows the range + "Available now"
+            # badge (log entries are windows, not moments — per Brian).
+            sr_log = tracker.setdefault("special_releases_log", [])
+            for nm in active_names:
+                entries = [s for s in sr_log
+                           if s.get("name", "").lower() == nm.lower()]
+                if entries:
+                    latest = max(entries, key=lambda s: s.get("date", ""))
+                    if latest.get("last_seen") != today_str:
+                        latest["last_seen"] = today_str
+                        changed = True
+                else:
+                    sr_log.append({"date": today_str, "name": nm,
+                                   "last_seen": today_str,
+                                   "source": "bt_events_feed"})
+                    sr_log.sort(key=lambda s: s.get("date", ""))
+                    changed = True
 
         if changed and not dry_run:
             TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
