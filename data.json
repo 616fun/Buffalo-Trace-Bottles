@@ -362,7 +362,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
     },
@@ -382,7 +382,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Sazerac Rye Full Proof",
       "is_closure": false,
       "notes": null
     },
@@ -582,7 +582,7 @@
       "weller107": 0,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Blanton's Sazerac Barrel Select (375mL commemorative)",
       "is_closure": false,
       "notes": null
     },
@@ -692,7 +692,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 1,
-      "special_release": null,
+      "special_release": "Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
     },
@@ -932,7 +932,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": "George T. Stagg",
+      "special_release": "Stagg",
       "is_closure": false,
       "notes": null
     },
@@ -992,7 +992,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": "George T. Stagg",
+      "special_release": "Stagg",
       "is_closure": false,
       "notes": null
     },
@@ -1362,7 +1362,7 @@
       "weller107": 1,
       "ehtaylor_sb": 1,
       "eagle_rare": 0,
-      "special_release": null,
+      "special_release": "Sazerac Rye Full Proof",
       "is_closure": false,
       "notes": null
     },
@@ -1443,8 +1443,32 @@
       "name": "E.H. Taylor Straight Rye"
     },
     {
-      "date": "2026-03-17",
-      "name": "Bettinardi Golf x W.L. Weller Collection"
+      "date": "2026-04-08",
+      "name": "Single Oak Rye Bourbon",
+      "price": 74.99,
+      "source": "wayback_bt_events_feed",
+      "announcement": "New Single Oak Rye Bourbon will be available in the gift shop for $74.99. *While supplies last. Limit one bottle per person, per day.",
+      "notes": "Initial release; BT posted 'UPDATE: SOLD OUT' on 2026-04-10"
+    },
+    {
+      "date": "2026-04-10",
+      "name": "Sazerac Rye Full Proof",
+      "source": "wayback_bt_events_feed",
+      "announcement": "Sazerac Rye Full Proof is available. *While supplies last. Limit one bottle per person, per day.",
+      "notes": "Announcement window observed 2026-04-10 through 2026-04-18"
+    },
+    {
+      "date": "2026-04-30",
+      "name": "Blanton's Sazerac Barrel Select (375mL commemorative)",
+      "source": "wayback_bt_events_feed",
+      "announcement": "A commemorative 375mL Sazerac Barrel Select bottle of Blanton's is available. *While supplies last. Limit one bottle per person."
+    },
+    {
+      "date": "2026-05-11",
+      "name": "Single Oak Rye Bourbon",
+      "source": "wayback_bt_events_feed",
+      "announcement": "Single Oak Rye Bourbon is available. *While supplies last. Limit one bottle per person, per 90 days.",
+      "notes": "Second window; also observed 2026-05-19"
     },
     {
       "date": "2026-05-13",
@@ -1464,11 +1488,13 @@
     },
     {
       "date": "2026-06-04",
-      "name": "George T. Stagg"
+      "name": "Stagg",
+      "notes": "Corrected 2026-07-24: Stagg (formerly Stagg Jr.), not George T. Stagg"
     },
     {
       "date": "2026-06-10",
-      "name": "George T. Stagg"
+      "name": "Stagg",
+      "notes": "Corrected 2026-07-24: Stagg (formerly Stagg Jr.), not George T. Stagg"
     },
     {
       "date": "2026-07-10",
@@ -1476,6 +1502,13 @@
       "source": "bt_events_feed",
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99
+    },
+    {
+      "date": "2026-07-17",
+      "name": "Sazerac Rye Full Proof",
+      "source": "wayback_bt_events_feed",
+      "announcement": "Sazerac Rye Full Proof is available. *Limit one bottle per person, per day. While supplies last.",
+      "notes": "Second window"
     }
   ]
 }

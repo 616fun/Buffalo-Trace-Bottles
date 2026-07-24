@@ -403,8 +403,33 @@ PRICE_FIELD_DISPLAY = {
     "buffalo_trace_bourbon_cream": "Bourbon Cream",
 }
 
-# Announcement noise — recurring promos that are not special releases
-_ANNOUNCEMENT_NOISE = ("free sample", "complimentary", "tasting", "no reservation")
+# Announcement noise — recurring promos and non-whiskey merch, not releases
+# ("golf" added 2026-07-24 after the Bettinardi Golf x Weller collection was
+# wrongly logged as a whiskey; "engraving" is a recurring gift-shop service)
+_ANNOUNCEMENT_NOISE = ("free sample", "complimentary", "tasting",
+                       "no reservation", "engraving", "golf")
+
+
+def _extract_release_names(text: str) -> list:
+    """
+    Pull product name(s) from an announcement. Handles patterns learned from
+    the Wayback archive of BT's feed:
+      "Single Oak Rye Bourbon is available. $74.99..."
+      "New Single Oak Rye Bourbon will be available in the gift shop..."
+      "UPDATE: SOLD OUT A limited amount of the new Single Oak... is available."
+      "Sazerac Rye 100PF is available. Traveller Full Proof is available."  (two!)
+    """
+    names = []
+    for m in re.finditer(r'([A-Z][^.$*]*?)\s+(?:is|will be)\s+available',
+                         text):
+        name = m.group(1).strip(' *–—-')
+        # Strip announcement-prefix cruft
+        name = re.sub(r'^(UPDATE:?\s*)?(SOLD OUT\s*)?', '', name, flags=re.IGNORECASE)
+        name = re.sub(r'^(A\s+limited\s+amount\s+of\s+)?(the\s+)?(new\s+)?', '',
+                      name, flags=re.IGNORECASE).strip()
+        if name and len(name) <= 60 and name.lower() not in (n.lower() for n in names):
+            names.append(name)
+    return names
 
 
 def process_prices_and_announcements(scrape_data: dict, today_str: str,
@@ -492,9 +517,8 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                 log(f"  Announcement: new (non-special) — {text[:80]}")
                 continue
 
-            # Extract the release name: text up to " is available"
-            m = re.match(r'^(.*?)\s+is available\b', text, re.IGNORECASE)
-            name = (m.group(1) if m else text.split('.')[0]).strip(' *–—-')
+            # Extract release name(s) — an announcement can carry several
+            names = _extract_release_names(text) or [text.split('.')[0].strip(' *–—-')]
             # Feed dates are DD/MM/YYYY and the window can lag — use the feed
             # date when parseable, else today.
             rel_date = today_str
@@ -507,24 +531,38 @@ def process_prices_and_announcements(scrape_data: dict, today_str: str,
                     pass
 
             sr_log = tracker.setdefault("special_releases_log", [])
-            dup = any(s.get("name", "").lower() == name.lower()
-                      and s.get("date") == rel_date for s in sr_log)
-            if dup:
-                log(f"  Announcement: special already logged — {name} ({rel_date})")
-                continue
-            entry = {"date": rel_date, "name": name,
-                     "source": "bt_events_feed", "announcement": text[:300]}
             pm = re.search(r'\$([\d]+(?:\.[\d]{2})?)', text)
-            if pm:
-                entry["price"] = float(pm.group(1))
-            sr_log.append(entry)
-            sr_log.sort(key=lambda s: s.get("date", ""))
-            # Back-fill the daily_log row for that date if it has no special yet
-            for row in tracker.get("daily_log", []):
-                if row.get("date") == rel_date and not row.get("special_release"):
-                    row["special_release"] = name
-                    break
-            log(f"  ⭐ SPECIAL RELEASE logged: {name} ({rel_date}) — {text[:80]}")
+            for name in names:
+                # Skip if this release was already logged within the last 14
+                # days — consecutive feed days are one availability window,
+                # not repeated drops.
+                dup = False
+                for s in sr_log:
+                    if s.get("name", "").lower() != name.lower():
+                        continue
+                    try:
+                        gap = abs((datetime.date.fromisoformat(rel_date)
+                                   - datetime.date.fromisoformat(s.get("date", "1970-01-01"))).days)
+                    except ValueError:
+                        gap = 9999
+                    if gap <= 14:
+                        dup = True
+                        break
+                if dup:
+                    log(f"  Announcement: special already logged — {name} (~{rel_date})")
+                    continue
+                entry = {"date": rel_date, "name": name,
+                         "source": "bt_events_feed", "announcement": text[:300]}
+                if pm:
+                    entry["price"] = float(pm.group(1))
+                sr_log.append(entry)
+                sr_log.sort(key=lambda s: s.get("date", ""))
+                # Back-fill the daily_log row for that date if it has no special yet
+                for row in tracker.get("daily_log", []):
+                    if row.get("date") == rel_date and not row.get("special_release"):
+                        row["special_release"] = name
+                        break
+                log(f"  ⭐ SPECIAL RELEASE logged: {name} ({rel_date}) — {text[:80]}")
 
         if changed and not dry_run:
             TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
