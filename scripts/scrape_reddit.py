@@ -3,7 +3,9 @@
 Buffalo Trace Reddit Scraper
 =============================
 Searches r/bourbon and r/whiskeybuds for recent posts mentioning Buffalo Trace
-gift shop activity. Uses Reddit's public JSON API — no authentication required.
+gift shop activity. Uses Reddit's official OAuth API when REDDIT_CLIENT_ID /
+REDDIT_CLIENT_SECRET are set (required on datacenter IPs — unauthenticated
+requests get 403-blocked there); falls back to public JSON endpoints otherwise.
 
 Usage:
     python scrape_reddit.py [--days 7] [--max-posts 10] [--dry-run]
@@ -56,7 +58,7 @@ USER_AGENT = (
     "(gift shop availability tracker; contact: brianwulff@yahoo.com)"
 )
 
-SUBREDDITS = ["bourbon", "whiskeybuds", "whiskey"]
+SUBREDDITS = ["bourbon", "whiskeybuds", "whiskey", "buffalotrace"]
 
 # All queries run across all subreddits; results deduplicated by post ID
 SEARCH_QUERIES = [
@@ -66,23 +68,109 @@ SEARCH_QUERIES = [
     "buffalo trace distillery drop",
 ]
 
-BASE_URL = "https://www.reddit.com"
+# r/buffalotrace is entirely on-topic — its gift-shop posts rarely say
+# "buffalo trace" in the title, so search it with sub-specific terms too.
+EXTRA_QUERIES = {
+    "buffalotrace": ["gift shop", "drop", "visitor center"],
+}
 
-# Stay well under Reddit's 1 req/sec rate limit
+BASE_URL = "https://www.reddit.com"
+OAUTH_BASE_URL = "https://oauth.reddit.com"
+
+# Stay well under Reddit's rate limits (OAuth free tier: 100 QPM)
 RATE_LIMIT_SECONDS = 1.5
 
 
 # ─────────────────────────────────────────────
-# Fetch helpers
+# Fetch helpers — official OAuth API (added 2026-07-24)
+#
+# Reddit 403-blocks unauthenticated *.json requests from datacenter IPs
+# (GitHub Actions, cloud runners) — this is why the scraper kept failing.
+# The sanctioned fix is Reddit's official API: register a free "script" app
+# at https://www.reddit.com/prefs/apps, then set REDDIT_CLIENT_ID and
+# REDDIT_CLIENT_SECRET (GitHub repo secrets → workflow env). This uses the
+# application-only OAuth flow (client_credentials) for read-only public
+# data — no Reddit user password involved. Without creds, falls back to
+# the old unauthenticated endpoints (works from residential IPs only).
 # ─────────────────────────────────────────────
 
-def reddit_get(url: str, timeout: int = 15) -> dict:
-    """Fetch a Reddit JSON endpoint. Returns parsed dict. Raises on HTTP errors."""
-    req = urllib.request.Request(url)
-    req.add_header("User-Agent", USER_AGENT)
-    req.add_header("Accept", "application/json")
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+import os
+import base64
+
+_oauth_token = None  # cached for the process lifetime (expires in 1h)
+
+
+def _get_oauth_token():
+    """App-only OAuth token via client_credentials, or None if no creds."""
+    global _oauth_token
+    if _oauth_token is not None:
+        return _oauth_token
+    cid = os.environ.get("REDDIT_CLIENT_ID", "").strip()
+    secret = os.environ.get("REDDIT_CLIENT_SECRET", "").strip()
+    if not cid or not secret:
+        return None
+    try:
+        payload = urllib.parse.urlencode({"grant_type": "client_credentials"}).encode()
+        req = urllib.request.Request(
+            "https://www.reddit.com/api/v1/access_token",
+            data=payload, method="POST")
+        basic = base64.b64encode(f"{cid}:{secret}".encode()).decode()
+        req.add_header("Authorization", f"Basic {basic}")
+        req.add_header("User-Agent", USER_AGENT)
+        req.add_header("Content-Type", "application/x-www-form-urlencoded")
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            tok = json.loads(resp.read().decode()).get("access_token")
+        if tok:
+            _oauth_token = tok
+            print("[scrape_reddit] OAuth token acquired (official API mode)",
+                  file=sys.stderr)
+        return _oauth_token
+    except Exception as e:
+        print(f"[scrape_reddit] OAuth token request failed: {e} — "
+              f"falling back to unauthenticated", file=sys.stderr)
+        return None
+
+
+def reddit_get(path_and_query: str, timeout: int = 15,
+               max_attempts: int = 3) -> dict:
+    """
+    Fetch a Reddit JSON endpoint. `path_and_query` is the part after the
+    host, e.g. "/r/bourbon/search.json?q=...". Uses the OAuth API when
+    credentials are configured, else the public endpoint. Retries with
+    backoff on 429/5xx.
+    """
+    token = _get_oauth_token()
+    if token:
+        # oauth.reddit.com uses the same paths minus the .json suffix
+        url = OAUTH_BASE_URL + path_and_query.replace(".json?", "?", 1)
+    else:
+        url = BASE_URL + path_and_query
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            req = urllib.request.Request(url)
+            req.add_header("User-Agent", USER_AGENT)
+            req.add_header("Accept", "application/json")
+            if token:
+                req.add_header("Authorization", f"Bearer {token}")
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503, 504) and attempt < max_attempts:
+                wait = 5 * attempt
+                print(f"[scrape_reddit] HTTP {e.code}, retrying in {wait}s "
+                      f"(attempt {attempt}/{max_attempts})", file=sys.stderr)
+                time.sleep(wait)
+                last_exc = e
+                continue
+            raise
+        except Exception as e:
+            last_exc = e
+            if attempt < max_attempts:
+                time.sleep(5 * attempt)
+                continue
+            raise
+    raise last_exc
 
 
 def search_subreddit(subreddit: str, query: str, days: int) -> list:
@@ -100,10 +188,10 @@ def search_subreddit(subreddit: str, query: str, days: int) -> list:
         "restrict_sr": 1,         # limit to this subreddit
         "type":        "link",
     })
-    url = f"{BASE_URL}/r/{subreddit}/search.json?{params}"
+    path = f"/r/{subreddit}/search.json?{params}"
 
     try:
-        data = reddit_get(url)
+        data = reddit_get(path)
         children = data.get("data", {}).get("children", [])
         return [c["data"] for c in children if c.get("kind") == "t3"]
     except urllib.error.HTTPError as e:
@@ -195,7 +283,7 @@ def run(days: int = 7, max_posts: int = 10, dry_run: bool = False) -> None:
     query_count = 0
 
     for subreddit in SUBREDDITS:
-        for query in SEARCH_QUERIES:
+        for query in SEARCH_QUERIES + EXTRA_QUERIES.get(subreddit, []):
             query_count += 1
             print(
                 f"[scrape_reddit] Searching r/{subreddit}: '{query}'",

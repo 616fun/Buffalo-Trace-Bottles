@@ -66,6 +66,8 @@ jobs:
           PUSHOVER_TOKEN:       ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER:        ${{ secrets.PUSHOVER_USER }}
           PUSHOVER_DEVICE:      "BriansPhone"
+          REDDIT_CLIENT_ID:     ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
           DRY_RUN:              ${{ github.event.client_payload.dry_run || inputs.dry_run || 'false' }}
         run: >
           python scripts/run_daily.py
