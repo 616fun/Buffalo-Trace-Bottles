@@ -209,7 +209,8 @@ def git_commit_and_push(commit_message, dry_run=False):
             check=True, cwd=REPO_ROOT
         )
         subprocess.run(
-            ["git", "add", "tracker_data.json", "data.json", "index.html"],
+            ["git", "add", "tracker_data.json", "data.json", "index.html", "sitemap.xml",
+             "blantons", "weller-antique-107", "eh-taylor-small-batch", "eagle-rare"],
             check=True, cwd=REPO_ROOT
         )
         result = subprocess.run(

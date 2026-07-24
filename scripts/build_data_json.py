@@ -437,6 +437,14 @@ def main() -> None:
         except Exception as exc:
             log(f"  [sitemap] lastmod refresh failed (non-fatal): {exc}")
 
+    # --- Regenerate per-bottle SEO landing pages (non-fatal) ---
+    try:
+        from build_bottle_pages import build_all as _build_bottle_pages
+        written = _build_bottle_pages(data, output_path.parent)
+        log(f"  [bottle-pages] regenerated: {', '.join(written)}")
+    except Exception as exc:
+        log(f"  [bottle-pages] generation failed (non-fatal): {exc}")
+
     # --- Optional diff ---
     if args.diff:
         backup = output_path.with_suffix(".json.bak")
