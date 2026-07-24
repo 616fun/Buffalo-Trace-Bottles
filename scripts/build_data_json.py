@@ -423,6 +423,20 @@ def main() -> None:
         except Exception as exc:
             log(f"  [inline-data] Refresh failed (non-fatal): {exc}")
 
+    # --- Refresh sitemap <lastmod> so search engines see daily freshness ---
+    sitemap_path = output_path.parent / "sitemap.xml"
+    if sitemap_path.exists():
+        try:
+            import re as _re
+            sm = sitemap_path.read_text()
+            new_sm = _re.sub(r"<lastmod>\d{4}-\d{2}-\d{2}</lastmod>",
+                             f"<lastmod>{data['meta']['last_updated']}</lastmod>", sm)
+            if new_sm != sm:
+                sitemap_path.write_text(new_sm)
+                log(f"  [sitemap] lastmod -> {data['meta']['last_updated']}")
+        except Exception as exc:
+            log(f"  [sitemap] lastmod refresh failed (non-fatal): {exc}")
+
     # --- Optional diff ---
     if args.diff:
         backup = output_path.with_suffix(".json.bak")

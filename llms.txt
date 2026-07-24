@@ -1,0 +1,26 @@
+# Buffalo Trace Bottle Drops
+
+> Daily availability tracker for the Buffalo Trace Distillery gift shop in
+> Frankfort, Kentucky. Updated every morning (7am EST Mon-Sat, 8am Sun).
+> Answers: "What bottles are available at the Buffalo Trace gift shop today?"
+
+Tracked bottles: Blanton's Single Barrel, Weller Antique 107, E.H. Taylor
+Small Batch, Eagle Rare 10-Year — plus a dated log of special releases
+(Stagg, Weller 12 Year, Weller C.Y.P.B., Weller Single Barrel, E.H. Taylor
+Four Grain, Single Oak Rye Bourbon, Sazerac Rye Full Proof).
+
+Includes Bayesian predictions for tomorrow's availability, a day-by-day
+calendar since March 2026, and gift shop visit planning info (hours:
+Mon-Sat 9am-5pm, Sun 11am-5pm EST; closed Easter, Thanksgiving, Dec 24-25,
+Jan 1). Not affiliated with Buffalo Trace Distillery.
+
+## Data
+
+- [Live data, JSON](https://buffalotracebottledrops.com/data.json): today's
+  availability, per-bottle stats and predictions, full daily calendar,
+  special release log. Refreshed daily.
+
+## Pages
+
+- [Tracker](https://buffalotracebottledrops.com/): Today / Analytics /
+  Calendar / Bottles / Plan Your Visit
