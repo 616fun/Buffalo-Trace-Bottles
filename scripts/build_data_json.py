@@ -307,20 +307,21 @@ def build_data_json(tracker: dict, today_str: str | None = None) -> dict:
             "weller107":  int(row.get("weller107",   0) or 0),
             "ehtaylor_sb": int(row.get("ehtaylor_sb", 0) or 0),
             "eagle_rare": int(row.get("eagle_rare",  0) or 0),
-            "special_release": row.get("special_release") or None,
             "is_closure": row_is_closure,
             "notes":      row_notes if row_is_closure else None,
         })
 
-    # --- Special releases log (passthrough from tracker) ---
-    special_releases_log = tracker.get("special_releases_log", []) or []
+    # NOTE (2026-07-24, per Brian): special_release data stays INTERNAL for
+    # now. Detection isn't reliable enough (drops often sell out before the
+    # 7am check), so surfacing a partial log publicly reads as fractured
+    # data. Do not add special_release to calendar rows or emit
+    # special_releases_log until detection is dependable.
 
     return {
         "meta":     meta,
         "today":    today_block,
         "bottles":  bottles,
         "calendar": calendar,
-        "special_releases_log": special_releases_log,
     }
 
 
