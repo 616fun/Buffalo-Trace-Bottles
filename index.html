@@ -940,6 +940,9 @@ function buildDailyScoreChart(calendar) {
 
 function buildAnalyticsCharts(data) {
   const { meta, bottles, calendar } = data;
+  // Open days only — closure days are excluded from per-bottle rate math
+  // (must be defined here: renderToday's openCalDays is function-scoped)
+  const openCalDays = calendar.filter(d=>!(d.is_closure||false));
 
   // 3 KPIs — only the ones a normal person cares about
   const predAcc = meta.prediction_accuracy;
@@ -1055,15 +1058,16 @@ function buildAnalyticsCharts(data) {
     }).join('');
   });
 
-  // Pattern heatmap
-  document.getElementById('pattern-days').textContent = calendar.length;
+  // Pattern heatmap — last 9 tracked days only (matches the section title)
+  const patternDays = calendar.slice(-9);
+  document.getElementById('pattern-days').textContent = patternDays.length;
   const shortLabels = { blantons:"Blanton's", weller107:'Weller 107', ehtaylor_sb:'E.H. Taylor SB', eagle_rare:'Eagle Rare' };
   const headerRow = `<div class="pg-header-row">
     <div class="pg-spacer"></div>
-    ${calendar.map(d=>`<div class="pg-date">${d.date.slice(5)}</div>`).join('')}
+    ${patternDays.map(d=>`<div class="pg-date">${d.date.slice(5)}</div>`).join('')}
   </div>`;
   const bottleRows = bottles.map(b=>{
-    const cells = calendar.map(d=>{
+    const cells = patternDays.map(d=>{
       const isClos = d.is_closure||false;
       const avail = d[b.key]===1;
       const dotClass = isClos ? 'is-closure' : (avail?'on':'off');
