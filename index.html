@@ -648,7 +648,7 @@
       <!-- Single readable chart — daily shop richness -->
       <div class="chart-card">
         <div class="chart-card-title">How Stocked Has the Shop Been?</div>
-        <div class="chart-card-sub">Number of bottles available each day — higher is a better day to visit</div>
+        <div class="chart-card-sub">Bottles available each day, special releases included (gold bars) — higher is a better day to visit</div>
         <div class="chart-wrap"><canvas id="chart-daily-score"></canvas></div>
       </div>
 
@@ -1085,14 +1085,19 @@ function buildDailyScoreChart(calendar) {
     const dt = new Date(d.date+'T00:00:00');
     return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   });
-  const scores = calendar.map(d=>BOTTLE_KEYS.filter(k=>d[k]===1).length);
+  // Score = rotating bottles + special releases sighted that day
+  const rotCounts = calendar.map(d=>BOTTLE_KEYS.filter(k=>d[k]===1).length);
+  const spCounts  = calendar.map(d=>(d.special_release||'').split(',').map(s=>s.trim()).filter(Boolean).length);
+  const scores = calendar.map((d,i)=>rotCounts[i]+spCounts[i]);
   const barColors = calendar.map((d,i)=>
     (d.is_closure||false)   ? 'rgba(100,116,139,0.45)' :
+    spCounts[i]>0           ? 'rgba(201,154,46,0.95)'  :   // gold — special release day
     scores[i]>=3            ? 'rgba(74,222,128,0.85)'  :
     scores[i]===2           ? 'rgba(192,115,40,0.85)'  :
     scores[i]===1           ? 'rgba(240,192,96,0.75)'  :
                               'rgba(239,68,68,0.55)'
   );
+  const yMax = Math.max(4, ...scores);
   chartInstance = new Chart(ctx, {
     type:'bar',
     data:{
@@ -1114,15 +1119,16 @@ function buildDailyScoreChart(calendar) {
           label:item=>{
             const d = calendar[item.dataIndex];
             if(d && (d.is_closure||false)) return ` Closed — ${d.notes||'Holiday'}`;
-            const n=item.raw;
-            return ` ${n} bottle${n!==1?'s':''} available`;
+            const i=item.dataIndex, rot=rotCounts[i], sp=spCounts[i];
+            if(sp>0) return ` ${rot} bottle${rot!==1?'s':''} + ★ ${d.special_release}`;
+            return ` ${rot} bottle${rot!==1?'s':''} available`;
           }
         }}
       },
       scales:{
         y:{
-          min:0, max:4,
-          ticks:{stepSize:1, callback:v=>v===0?'None':v===4?'All 4':v===1?'1 bottle':`${v} bottles`, font:{size:10}},
+          min:0, max:yMax,
+          ticks:{stepSize:1, callback:v=>v===0?'None':v===4?'All 4':v>4?`4 + ★`:v===1?'1 bottle':`${v} bottles`, font:{size:10}},
           grid:{color:'rgba(0,0,0,.05)'}
         },
         x:{ticks:{font:{size:10}}, grid:{display:false}}
