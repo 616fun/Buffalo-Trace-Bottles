@@ -1135,17 +1135,28 @@ function buildAnalyticsCharts(data) {
     });
   }
 
-  // 5. Best combo day so far
-  const bestDay = calendar.reduce((best,d)=>{
-    const c=BOTTLE_KEYS.filter(k=>d[k]===1).length;
-    return c>(best.count||0)?{date:d.date,count:c}:best;
-  },{count:0});
-  if(bestDay.count>=3){
-    const available = BOTTLE_KEYS.filter(k=>calendar.find(d=>d.date===bestDay.date)?.[k]===1).map(k=>names[k]);
-    insights.push({ icon:'🏆',
-      head:`Best single day so far: ${fmtDateShort(bestDay.date)}`,
-      body:`${bestDay.count} bottles available: ${available.join(', ')}. Days like this are worth planning around.`
-    });
+  // 5. 30-day trend — is the shop heating up or cooling off?
+  if(openCalDays.length>=60){
+    const avgOf = arr => arr.reduce((s,d)=>s+BOTTLE_KEYS.filter(k=>d[k]===1).length,0)/arr.length;
+    const last30 = avgOf(openCalDays.slice(-30));
+    const prev30 = avgOf(openCalDays.slice(-60,-30));
+    const diff = last30-prev30;
+    if(diff>=0.15){
+      insights.push({ icon:'📈',
+        head:'The shop is heating up',
+        body:`The last 30 open days averaged ${last30.toFixed(1)} bottles/day, up from ${prev30.toFixed(1)} the 30 days before. Good stretch to make the trip.`
+      });
+    } else if(diff<=-0.15){
+      insights.push({ icon:'📉',
+        head:'The shop is cooling off',
+        body:`The last 30 open days averaged ${last30.toFixed(1)} bottles/day, down from ${prev30.toFixed(1)} the 30 days before. Check the predictions before making the drive.`
+      });
+    } else {
+      insights.push({ icon:'📊',
+        head:'Availability is holding steady',
+        body:`The last 30 open days averaged ${last30.toFixed(1)} bottles/day — about the same as the month before (${prev30.toFixed(1)}). No big shift either way.`
+      });
+    }
   }
 
   // Pad to even number (for 2-col grid)
