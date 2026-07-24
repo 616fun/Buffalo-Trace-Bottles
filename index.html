@@ -146,6 +146,13 @@
     .sr-name{font-weight:600;font-size:.88rem;color:var(--text)}
     .sr-date{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
     .sr-star{color:#C99A2E;margin-right:8px}
+    .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+    .sp-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;border-top:3px solid var(--gold)}
+    .sp-name{font-weight:700;font-size:.95rem;color:var(--text)}
+    .sp-meta{display:flex;gap:14px;margin:10px 0 8px;font-size:.72rem;color:var(--muted)}
+    .sp-meta strong{color:var(--text2);font-size:.9rem;display:block}
+    .sp-dates{font-size:.72rem;color:var(--text2);line-height:1.8}
+    .sp-date-chip{display:inline-block;background:var(--surface2);border:1px solid var(--border-s);border-radius:14px;padding:1px 9px;margin:0 4px 4px 0;font-variant-numeric:tabular-nums}
     .sr-live{display:inline-block;margin-left:10px;background:linear-gradient(95deg,#F0C060,#E09040);color:#1A0F05;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;vertical-align:1px}
 
     /* ── MAIN ── */
@@ -702,6 +709,13 @@
       </div>
       <p style="font-size:.82rem;color:var(--muted);margin-bottom:24px;line-height:1.65">Buffalo Trace's rotating gift shop bottles are some of the most sought-after bourbons in America. Here's everything you need to know before making the trip.</p>
       <div class="bottle-profiles" id="bottle-profiles"></div>
+
+      <div class="sec-head" style="margin:44px 0 8px">
+        <h2 class="sec-title">Special Releases Spotted</h2>
+        <span class="sec-sub">Beyond the rotating four</span>
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.65">Limited bottles that have appeared at the gift shop since tracking began in March 2026 — built automatically from our dated sightings log. These drop without warning, often around bourbon holidays, and usually sell out same-day.</p>
+      <div class="sp-grid" id="special-profiles"></div>
     </div>
 
     <!-- ═══ PAGE: GUIDE ═══ -->
@@ -1548,6 +1562,44 @@ function renderBottles(data) {
   }).join('');
 }
 
+function renderSpecialProfiles(data) {
+  const el = document.getElementById('special-profiles');
+  if(!el) return;
+  const log = data.special_releases_log || [];
+  if(!log.length){ el.innerHTML=''; return; }
+  const groups = {};
+  log.forEach(s=>{
+    const k = s.name.toLowerCase();
+    (groups[k] = groups[k] || {name:s.name, entries:[]}).entries.push(s);
+  });
+  const cards = Object.values(groups).map(g=>{
+    g.entries.sort((a,b)=>a.date.localeCompare(b.date));
+    const last = g.entries[g.entries.length-1];
+    const lastSeen = last.last_seen || last.date;
+    const isActive = lastSeen === data.meta.last_updated;
+    const price = [...g.entries].reverse().map(e=>e.price).find(p=>p!=null);
+    // every observed sighting day across all windows
+    const allDays = [...new Set(g.entries.flatMap(e=>e.seen_dates && e.seen_dates.length ? e.seen_dates : [e.date]))].sort();
+    return { g, last, lastSeen, isActive, price, allDays };
+  }).sort((a,b)=>b.lastSeen.localeCompare(a.lastSeen));
+
+  el.innerHTML = cards.map(c=>{
+    const chips = c.allDays.length <= 6
+      ? c.allDays.map(d=>`<span class="sp-date-chip">${fmtDateShort(d)}</span>`).join('')
+      : `<span class="sp-date-chip">${fmtDateShort(c.allDays[0])}</span><span style="opacity:.6">… ${c.allDays.length-2} more …</span><span class="sp-date-chip">${fmtDateShort(c.allDays[c.allDays.length-1])}</span>`;
+    return `
+    <div class="sp-card">
+      <div class="sp-name">★ ${c.g.name}${c.isActive?'<span class="sr-live">Available now</span>':''}</div>
+      <div class="sp-meta">
+        <div><strong>${c.allDays.length}</strong>sighting day${c.allDays.length!==1?'s':''}</div>
+        <div><strong>${fmtDateShort(c.lastSeen)}</strong>last seen</div>
+        ${c.price!=null?`<div><strong>$${c.price.toFixed(2)}</strong>gift shop price</div>`:''}
+      </div>
+      <div class="sp-dates">${chips}</div>
+    </div>`;
+  }).join('');
+}
+
 // ─────────────────────────────────────────────
 //  RENDER: GUIDE
 // ─────────────────────────────────────────────
@@ -1651,6 +1703,7 @@ function init(data) {
   document.getElementById('content').style.display='block';
   renderToday(data);
   renderBottles(data);
+  renderSpecialProfiles(data);
   renderGuide();
   // Analytics and calendar init lazily on first visit
 }
@@ -1660,6 +1713,7 @@ function applyData(data) {
   appData = data;
   renderToday(data);
   renderBottles(data);
+  renderSpecialProfiles(data);
   chartsInit.analytics = false;
   chartsInit.calendar  = false;
   const activeEl = document.querySelector('.page.active');
