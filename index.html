@@ -146,13 +146,19 @@
     .sr-name{font-weight:600;font-size:.88rem;color:var(--text)}
     .sr-date{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
     .sr-star{color:#C99A2E;margin-right:8px}
-    .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+    .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
     .sp-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;border-top:3px solid var(--gold)}
     .sp-name{font-weight:700;font-size:.95rem;color:var(--text)}
     .sp-meta{display:flex;gap:14px;margin:10px 0 8px;font-size:.72rem;color:var(--muted)}
     .sp-meta strong{color:var(--text2);font-size:.9rem;display:block}
     .sp-dates{font-size:.72rem;color:var(--text2);line-height:1.8}
     .sp-date-chip{display:inline-block;background:var(--surface2);border:1px solid var(--border-s);border-radius:14px;padding:1px 9px;margin:0 4px 4px 0;font-variant-numeric:tabular-nums}
+    .sp-series{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px}
+    .sp-tag{font-size:.76rem;font-style:italic;color:var(--text2);margin:4px 0 8px}
+    .sp-desc{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:10px}
+    .sp-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 5px}
+    .sp-note{display:inline-block;background:var(--surface2);border-radius:14px;padding:2px 10px;font-size:.72rem;color:var(--text2);margin:0 5px 5px 0}
+    .sp-fact{display:inline-block;background:#FDF6E3;border:1px solid #F0E0B0;border-radius:6px;padding:2px 10px;font-size:.7rem;color:var(--text2);margin:0 5px 5px 0}
     .sr-live{display:inline-block;margin-left:10px;background:linear-gradient(95deg,#F0C060,#E09040);color:#1A0F05;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;vertical-align:1px}
 
     /* ── MAIN ── */
@@ -1562,6 +1568,81 @@ function renderBottles(data) {
   }).join('');
 }
 
+// Editorial profiles for known special releases — keyed by lowercase log
+// name. A special without an entry still renders (data-only card).
+const SPECIAL_PROFILES = {
+  "stagg": {
+    series: "George T. Stagg family",
+    tag: "The barrel-proof bruiser (formerly Stagg Jr.)",
+    desc: "Uncut, unfiltered barrel-proof bourbon released in small numbered batches, typically landing in the 125–130+ proof range. All the dark, rich Buffalo Trace character with none of the dilution — a shelf trophy that trades well above retail everywhere but the gift shop.",
+    notes: ["Dark cherry", "Molasses", "Tobacco", "Heavy char & oak"],
+    facts: ["Barrel proof (batch varies)", "Uncut & unfiltered"]
+  },
+  "weller 12 year": {
+    series: "W.L. Weller",
+    tag: "The poor man's Pappy — same wheated DNA, 12 years in oak",
+    desc: "A 12-year age-stated wheated bourbon from the same mashbill family as Pappy Van Winkle. Soft, deep, and dangerously drinkable at 90 proof — one of the most hunted bottles in America and a Father's Day/Bourbon Day favorite at the gift shop.",
+    notes: ["Caramel & vanilla", "Stone fruit", "Soft baking spice", "Polished oak"],
+    facts: ["90 proof", "12 years age-stated", "Wheated mashbill"]
+  },
+  "weller c.y.p.b.": {
+    series: "W.L. Weller",
+    tag: "Craft Your Perfect Bourbon — designed by the fans",
+    desc: "C.Y.P.B. stands for 'Craft Your Perfect Bourbon' — the recipe (wheated, ~8 years, 95 proof) was chosen by public vote through Buffalo Trace's online experiment. A gift-shop staple among the specials, dropping several times this year alone.",
+    notes: ["Honey & vanilla", "Bright citrus", "Sweet oats", "Gentle oak"],
+    facts: ["95 proof", "Wheated mashbill", "Fan-designed recipe"]
+  },
+  "weller single barrel": {
+    series: "W.L. Weller",
+    tag: "One barrel, one bottling — every release unique",
+    desc: "A single-barrel expression of the Weller wheated line at 97 proof. Because each bottling comes from one barrel, character varies bottle to bottle — part of the chase. Drops at the gift shop are rare, unannounced, and gone fast.",
+    notes: ["Toffee", "Baked apple", "Cinnamon", "Honeyed oak"],
+    facts: ["97 proof", "Single barrel", "Wheated mashbill"]
+  },
+  "single oak rye bourbon": {
+    series: "Single Oak Project",
+    tag: "One tree, one barrel — BT's oak experiment continues",
+    desc: "A limited experimental release in the lineage of Buffalo Trace's Single Oak Project, where each barrel is coopered from a single oak tree to isolate the wood's influence. Sold in 375mL bottles with a strict one-per-person limit — announced right on BT's own visit page when it drops.",
+    notes: ["Oak-forward", "Rye spice", "Vanilla", "Experimental character"],
+    facts: ["375mL bottle", "$74.99 at the gift shop", "Limit one per person"]
+  },
+  "sazerac rye full proof": {
+    series: "Sazerac Rye",
+    tag: "The Sazerac cocktail's rye, minus the water",
+    desc: "A full-proof take on Buffalo Trace's classic Sazerac Rye — the same New Orleans-rooted rye character bottled at significantly higher strength than the standard 90-proof release. Appears at the gift shop in while-supplies-last windows.",
+    notes: ["Clove & anise", "Black pepper", "Candied citrus", "Toasted rye bread"],
+    facts: ["Full proof", "Rye whiskey", "While-supplies-last drops"]
+  },
+  "e.h. taylor four grain": {
+    series: "E.H. Taylor, Jr.",
+    tag: "Four grains, bottled in bond",
+    desc: "A bottled-in-bond Taylor release using all four classic grains — corn, rye, wheat, and malted barley — in one mashbill, a rarity for Buffalo Trace. Dropped on three consecutive Wednesdays in May, selling out before the morning site update each time.",
+    notes: ["Butterscotch", "Dark fruit", "Baking spice", "Layered grain sweetness"],
+    facts: ["100 proof (Bottled-in-Bond)", "Four-grain mashbill"]
+  },
+  "e.h. taylor straight rye": {
+    series: "E.H. Taylor, Jr.",
+    tag: "The Colonel's rye, bonded",
+    desc: "A bottled-in-bond straight rye in the E.H. Taylor line — spicier and leaner than its bourbon siblings, and one of the harder Taylors to catch at retail. Our very first logged special back in March.",
+    notes: ["Spearmint", "Cracked pepper", "Caramel", "Dry spice finish"],
+    facts: ["100 proof (Bottled-in-Bond)", "Straight rye"]
+  },
+  "blanton's 375ml": {
+    series: "Blanton's",
+    tag: "The grenade, half-sized",
+    desc: "Blanton's Single Barrel in the 375mL format — same 93-proof single-barrel bourbon, same horse-and-jockey stopper, half the bottle. A gift-shop treat that lets more visitors leave with one; dropped on Father's Day.",
+    notes: ["Citrus & honey", "Vanilla", "Baking spice"],
+    facts: ["93 proof", "375mL bottle", "Single barrel"]
+  },
+  "blanton's sazerac barrel select (375ml commemorative)": {
+    series: "Blanton's",
+    tag: "A commemorative single barrel, selected by Sazerac",
+    desc: "A special 375mL commemorative bottling of Blanton's from a barrel selected by Sazerac, announced on BT's visit page in late April with a one-bottle-per-person limit.",
+    notes: ["Classic Blanton's profile", "Barrel-select character"],
+    facts: ["375mL commemorative", "Limit one per person"]
+  }
+};
+
 function renderSpecialProfiles(data) {
   const el = document.getElementById('special-profiles');
   if(!el) return;
@@ -1587,9 +1668,19 @@ function renderSpecialProfiles(data) {
     const chips = c.allDays.length <= 6
       ? c.allDays.map(d=>`<span class="sp-date-chip">${fmtDateShort(d)}</span>`).join('')
       : `<span class="sp-date-chip">${fmtDateShort(c.allDays[0])}</span><span style="opacity:.6">… ${c.allDays.length-2} more …</span><span class="sp-date-chip">${fmtDateShort(c.allDays[c.allDays.length-1])}</span>`;
+    const p = SPECIAL_PROFILES[c.g.name.toLowerCase()];
     return `
     <div class="sp-card">
+      ${p?`<div class="sp-series">${p.series}</div>`:''}
       <div class="sp-name">★ ${c.g.name}${c.isActive?'<span class="sr-live">Available now</span>':''}</div>
+      ${p?`
+      <div class="sp-tag">${p.tag}</div>
+      <div class="sp-desc">${p.desc}</div>
+      <div class="sp-label">Tasting notes</div>
+      <div style="margin-bottom:10px">${p.notes.map(n=>`<span class="sp-note">${n}</span>`).join('')}</div>
+      <div class="sp-label">The bottle</div>
+      <div style="margin-bottom:4px">${p.facts.map(f=>`<span class="sp-fact">${f}</span>`).join('')}</div>`:''}
+      <div class="sp-label" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">Gift shop track record</div>
       <div class="sp-meta">
         <div><strong>${c.allDays.length}</strong>sighting day${c.allDays.length!==1?'s':''}</div>
         <div><strong>${fmtDateShort(c.lastSeen)}</strong>last seen</div>
