@@ -74,10 +74,16 @@ EXTRA_QUERIES = {}
 BASE_URL = "https://www.reddit.com"
 OAUTH_BASE_URL = "https://oauth.reddit.com"
 
-# OAuth tier allows 100 QPM; unauthenticated RSS 429s under ~10s spacing.
-# The sleep is chosen per-mode in run().
+# OAuth tier allows 100 QPM. RSS mode makes only ONE fetch per subreddit
+# (3 total), so a short gap suffices. (Fixed 2026-07-25: the old 15s value
+# was slept after all 12 sub×query iterations — 180s of pure sleep against
+# run_daily's 120s subprocess budget, guaranteeing a timeout every run.)
 RATE_LIMIT_SECONDS = 1.5
-RSS_RATE_LIMIT_SECONDS = 15
+RSS_RATE_LIMIT_SECONDS = 5
+
+# Fallback host tried once per subreddit if the primary RSS fetch fails
+# (e.g. datacenter-IP 403 on www) — old.reddit is served by a different edge.
+RSS_FALLBACK_BASE = "https://old.reddit.com"
 
 
 # ─────────────────────────────────────────────
@@ -96,14 +102,19 @@ RSS_RATE_LIMIT_SECONDS = 15
 import os
 import base64
 
-_oauth_token = None  # cached for the process lifetime (expires in 1h)
+_oauth_token = None   # cached for the process lifetime (expires in 1h)
+_oauth_failed = False  # cache failure too — never retry the token POST
+                       # (before 2026-07-25 a failing attempt could repeat
+                       # on every loop iteration, burning up to 20s each)
 
 
 def _get_oauth_token():
     """App-only OAuth token via client_credentials, or None if no creds."""
-    global _oauth_token
+    global _oauth_token, _oauth_failed
     if _oauth_token is not None:
         return _oauth_token
+    if _oauth_failed:
+        return None
     cid = os.environ.get("REDDIT_CLIENT_ID", "").strip()
     secret = os.environ.get("REDDIT_CLIENT_SECRET", "").strip()
     if not cid or not secret:
@@ -123,8 +134,11 @@ def _get_oauth_token():
             _oauth_token = tok
             print("[scrape_reddit] OAuth token acquired (official API mode)",
                   file=sys.stderr)
+        else:
+            _oauth_failed = True
         return _oauth_token
     except Exception as e:
+        _oauth_failed = True
         print(f"[scrape_reddit] OAuth token request failed: {e} — "
               f"falling back to unauthenticated", file=sys.stderr)
         return None
@@ -261,20 +275,28 @@ def search_subreddit_rss(subreddit: str, query: str) -> list:
 
 
 def _fetch_new_rss(subreddit: str) -> list:
-    """Fetch and parse r/<sub>/new.rss into post dicts."""
-    url = f"{BASE_URL}/r/{subreddit}/new.rss?limit=100"
-    req = urllib.request.Request(url)
-    req.add_header("User-Agent", USER_AGENT)
-    try:
-        with urllib.request.urlopen(req, timeout=25) as resp:
-            root = _ET.fromstring(resp.read().decode("utf-8", "replace"))
-    except urllib.error.HTTPError as e:
-        print(f"[scrape_reddit] RSS HTTP {e.code} fetching r/{subreddit}/new.rss",
-              file=sys.stderr)
-        return []
-    except Exception as e:
-        print(f"[scrape_reddit] RSS error fetching r/{subreddit}/new.rss: {e}",
-              file=sys.stderr)
+    """
+    Fetch and parse r/<sub>/new.rss into post dicts.
+    Tries the primary host, then RSS_FALLBACK_BASE once (different edge —
+    a datacenter-IP 403 on www does not always apply to old.reddit).
+    Every failure path returns [] quickly; total worst case ≤ ~25s.
+    """
+    root = None
+    for base in (BASE_URL, RSS_FALLBACK_BASE):
+        url = f"{base}/r/{subreddit}/new.rss?limit=100"
+        req = urllib.request.Request(url)
+        req.add_header("User-Agent", USER_AGENT)
+        try:
+            with urllib.request.urlopen(req, timeout=15 if base == BASE_URL else 10) as resp:
+                root = _ET.fromstring(resp.read().decode("utf-8", "replace"))
+            break
+        except urllib.error.HTTPError as e:
+            print(f"[scrape_reddit] RSS HTTP {e.code} fetching {url}",
+                  file=sys.stderr)
+        except Exception as e:
+            print(f"[scrape_reddit] RSS error fetching {url}: {e}",
+                  file=sys.stderr)
+    if root is None:
         return []
 
     posts = []
@@ -386,7 +408,14 @@ def run(days: int = 7, max_posts: int = 10, dry_run: bool = False) -> None:
     query_count = 0
 
     for subreddit in SUBREDDITS:
-        for query in SEARCH_QUERIES + EXTRA_QUERIES.get(subreddit, []):
+        queries = SEARCH_QUERIES + EXTRA_QUERIES.get(subreddit, [])
+        if not _get_oauth_token():
+            # RSS mode ignores the query string entirely (search.rss drops q;
+            # we keyword-filter locally) — one pass per subreddit is a full
+            # scan. Running all queries just multiplied the rate-limit sleeps
+            # 4×, which is what blew the 120s budget (fixed 2026-07-25).
+            queries = queries[:1]
+        for query in queries:
             query_count += 1
             print(
                 f"[scrape_reddit] Searching r/{subreddit}: '{query}'",
