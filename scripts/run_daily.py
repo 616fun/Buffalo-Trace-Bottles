@@ -377,6 +377,15 @@ def fetch_reddit_posts(dry_run: bool = False) -> list:
         else:
             log(f"  Reddit scrape returned success=false: {data.get('reason', 'unknown')}")
             return []
+    except subprocess.TimeoutExpired as exc:
+        # Keep the partial stderr — without it a timeout is undiagnosable
+        # (2026-07-25: a guaranteed-timeout bug hid behind this blind spot).
+        err = exc.stderr or b""
+        if isinstance(err, bytes):
+            err = err.decode(errors="replace")
+        log(f"  Reddit scrape timed out (non-fatal). Partial stderr: "
+            f"{err.strip()[-600:] or '(none)'}")
+        return []
     except Exception as exc:
         log(f"  Reddit scrape failed (non-fatal): {exc}")
         return []
