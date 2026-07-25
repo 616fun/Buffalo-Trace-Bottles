@@ -700,7 +700,7 @@ def process_reddit_specials(posts: list, today_str: str, dry_run: bool = False) 
         if changed and not dry_run:
             TRACKER_DATA_PATH.write_text(json.dumps(tracker, indent=2) + "\n")
             log("  tracker_data.json updated (Reddit retro specials — "
-                "publishes with next pipeline commit)")
+                "publishes with this run's commit)")
     except Exception as exc:
         log(f"  Reddit retro-log failed (non-fatal): {exc}")
 
@@ -1226,6 +1226,19 @@ def main() -> None:
     process_prices_and_announcements(scrape_data, today_str, mon_dd, dry_run)
 
     # -----------------------------------------------------------------------
+    # Step 2.7 — Reddit community intel (non-critical)
+    # -----------------------------------------------------------------------
+    # Must run BEFORE Step 3 (build data.json) and Step 4 (git push): the
+    # Actions runner is ephemeral, so a tracker write made after the push is
+    # discarded when the job ends. Running here lets any Reddit retro-logged
+    # special flow into data.json and publish in this run's commit.
+    # (Bug found 2026-07-25: this used to run as Step 4.5, after the push —
+    # auto-detected drops were silently lost every run.)
+    log("\n=== Step 2.7: Reddit community intel ===")
+    reddit_posts = fetch_reddit_posts(dry_run=dry_run)
+    process_reddit_specials(reddit_posts, today_str, dry_run)
+
+    # -----------------------------------------------------------------------
     # Step 3 — Build data.json
     # -----------------------------------------------------------------------
     log("\n=== Step 3: Build data.json ===")
@@ -1270,13 +1283,6 @@ def main() -> None:
         msg = f"⚠️ BT {mon_dd}: GitHub push failed. Spreadsheet+data.json OK. Site may be stale."
         send_failure_alert(msg)
         # Non-fatal — continue to email + SMS
-
-    # -----------------------------------------------------------------------
-    # Step 4.5 — Fetch Reddit community intel (non-critical)
-    # -----------------------------------------------------------------------
-    log("\n=== Step 4.5: Reddit community intel ===")
-    reddit_posts = fetch_reddit_posts(dry_run=dry_run)
-    process_reddit_specials(reddit_posts, today_str, dry_run)
 
     # -----------------------------------------------------------------------
     # Step 5 — Send HTML email
