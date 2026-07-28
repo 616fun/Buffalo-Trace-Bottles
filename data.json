@@ -1,30 +1,30 @@
 {
   "meta": {
-    "last_updated": "2026-07-27",
-    "days_tracked": 137,
+    "last_updated": "2026-07-28",
+    "days_tracked": 138,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 135,
+      "total_days": 136,
       "correct": 47,
-      "partial": 84,
+      "partial": 85,
       "incorrect": 2,
-      "binary_total": 532,
-      "binary_correct": 407,
+      "binary_total": 536,
+      "binary_correct": 410,
       "binary_accuracy_pct": 76.5,
       "per_bottle": {
-        "blantons": 75.9,
-        "weller107": 63.9,
+        "blantons": 76.1,
+        "weller107": 63.4,
         "ehtaylor_sb": 94.0,
-        "eagle_rare": 72.2
+        "eagle_rare": 72.4
       }
     },
     "prices_as_of": "2026-03-18"
   },
   "today": {
-    "date": "2026-07-27",
-    "day_of_week": "Monday",
-    "last_site_update": "8:00am EST",
+    "date": "2026-07-28",
+    "day_of_week": "Tuesday",
+    "last_site_update": "7:30am EST",
     "special_release": "Single Oak Rye Bourbon",
     "notes": "",
     "is_closure": false
@@ -34,29 +34,29 @@
       "name": "Blanton's Single Barrel",
       "key": "blantons",
       "available_today": 1,
-      "streak": 14,
+      "streak": 15,
       "streak_direction": "available",
       "overall_pct": 76.0,
       "rolling_10d_pct": 100.0,
       "rolling_30d_pct": 97.0,
       "avg_days_between_releases": 1.33,
-      "prediction_tomorrow_pct": 80.8,
+      "prediction_tomorrow_pct": 80.9,
       "confidence": "High",
-      "last_seen": "2026-07-27",
+      "last_seen": "2026-07-28",
       "prior_frequency": 0.63,
       "gift_shop_price": 74.99
     },
     {
       "name": "Weller Antique 107",
       "key": "weller107",
-      "available_today": 1,
+      "available_today": 0,
       "streak": 1,
-      "streak_direction": "available",
+      "streak_direction": "unavailable",
       "overall_pct": 65.0,
-      "rolling_10d_pct": 50.0,
-      "rolling_30d_pct": 83.0,
+      "rolling_10d_pct": 40.0,
+      "rolling_30d_pct": 80.0,
       "avg_days_between_releases": 1.53,
-      "prediction_tomorrow_pct": 77.4,
+      "prediction_tomorrow_pct": 47.2,
       "confidence": "High",
       "last_seen": "2026-07-27",
       "prior_frequency": 0.75,
@@ -66,7 +66,7 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 37,
+      "streak": 38,
       "streak_direction": "available",
       "overall_pct": 93.0,
       "rolling_10d_pct": 100.0,
@@ -74,7 +74,7 @@
       "avg_days_between_releases": 1.07,
       "prediction_tomorrow_pct": 93.8,
       "confidence": "High",
-      "last_seen": "2026-07-27",
+      "last_seen": "2026-07-28",
       "prior_frequency": 0.93,
       "gift_shop_price": 59.99
     },
@@ -82,13 +82,13 @@
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
       "available_today": 0,
-      "streak": 1,
+      "streak": 2,
       "streak_direction": "unavailable",
       "overall_pct": 28.0,
       "rolling_10d_pct": 20.0,
       "rolling_30d_pct": 23.0,
       "avg_days_between_releases": 3.65,
-      "prediction_tomorrow_pct": 26.6,
+      "prediction_tomorrow_pct": 26.4,
       "confidence": "High",
       "last_seen": "2026-07-26",
       "prior_frequency": 0.17,
@@ -1465,6 +1465,16 @@
       "special_release": "Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
+    },
+    {
+      "date": "2026-07-28",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon",
+      "is_closure": false,
+      "notes": null
     }
   ],
   "special_releases_log": [
@@ -1558,7 +1568,7 @@
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99,
       "notes": "Sighting days = dates the BT feed listed it (live obs Jul 10, Wayback Jul 17-19, live Jul 24). Days between are unobserved \u2014 availability may have been intermittent.",
-      "last_seen": "2026-07-27",
+      "last_seen": "2026-07-28",
       "seen_dates": [
         "2026-07-10",
         "2026-07-17",
@@ -1567,7 +1577,8 @@
         "2026-07-24",
         "2026-07-25",
         "2026-07-26",
-        "2026-07-27"
+        "2026-07-27",
+        "2026-07-28"
       ]
     },
     {
