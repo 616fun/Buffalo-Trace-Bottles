@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-08-22",
+    "last_updated": "2026-08-23",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 163
+    "total_days_tracked": 164
   },
   "config": {
     "bayesian_priors": {
@@ -1988,6 +1988,18 @@
       "special_release": "Single Oak Rye Bourbon",
       "notes": "PROVISIONAL \u2014 BT freshness stamp stale (page showed 2026-08-21); inventory captured live.",
       "last_site_update": "7:25am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-08-23",
+      "day_of_week": "Sunday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": "Single Oak Rye Bourbon",
+      "notes": "",
+      "last_site_update": "9:50am EST",
       "is_closure": false
     }
   ],
@@ -5929,6 +5941,33 @@
         "eagle_rare": 25.2
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "weller107",
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-08-24",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 85.3,
+      "per_bottle_pct": {
+        "blantons": 81.9,
+        "weller107": 79.3,
+        "ehtaylor_sb": 94.8,
+        "eagle_rare": 23.7
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -6056,7 +6095,7 @@
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99,
       "notes": "Sighting days = dates the BT feed listed it (live obs Jul 10, Wayback Jul 17-19, live Jul 24). Days between are unobserved \u2014 availability may have been intermittent.",
-      "last_seen": "2026-08-22",
+      "last_seen": "2026-08-23",
       "seen_dates": [
         "2026-07-10",
         "2026-07-17",
@@ -6091,7 +6130,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-22"
+        "2026-08-22",
+        "2026-08-23"
       ]
     },
     {
