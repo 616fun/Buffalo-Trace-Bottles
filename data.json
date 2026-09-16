@@ -1,30 +1,30 @@
 {
   "meta": {
-    "last_updated": "2026-09-15",
-    "days_tracked": 187,
+    "last_updated": "2026-09-16",
+    "days_tracked": 188,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 185,
+      "total_days": 186,
       "correct": 75,
-      "partial": 106,
+      "partial": 107,
       "incorrect": 2,
-      "binary_total": 732,
-      "binary_correct": 579,
-      "binary_accuracy_pct": 79.1,
+      "binary_total": 736,
+      "binary_correct": 581,
+      "binary_accuracy_pct": 78.9,
       "per_bottle": {
-        "blantons": 78.7,
-        "weller107": 68.3,
-        "ehtaylor_sb": 95.6,
-        "eagle_rare": 73.8
+        "blantons": 78.3,
+        "weller107": 68.5,
+        "ehtaylor_sb": 95.7,
+        "eagle_rare": 73.4
       }
     },
     "prices_as_of": "2026-03-18"
   },
   "today": {
-    "date": "2026-09-15",
-    "day_of_week": "Tuesday",
-    "last_site_update": "6:55am EST",
+    "date": "2026-09-16",
+    "day_of_week": "Wednesday",
+    "last_site_update": "7:01am EST",
     "special_release": "Single Oak Rye Bourbon",
     "notes": "",
     "is_closure": false
@@ -33,14 +33,14 @@
     {
       "name": "Blanton's Single Barrel",
       "key": "blantons",
-      "available_today": 1,
-      "streak": 12,
-      "streak_direction": "available",
+      "available_today": 0,
+      "streak": 1,
+      "streak_direction": "unavailable",
       "overall_pct": 78.0,
-      "rolling_10d_pct": 100.0,
-      "rolling_30d_pct": 83.0,
+      "rolling_10d_pct": 90.0,
+      "rolling_30d_pct": 80.0,
       "avg_days_between_releases": 1.28,
-      "prediction_tomorrow_pct": 82.2,
+      "prediction_tomorrow_pct": 57.3,
       "confidence": "High",
       "last_seen": "2026-09-15",
       "prior_frequency": 0.63,
@@ -49,16 +49,16 @@
     {
       "name": "Weller Antique 107",
       "key": "weller107",
-      "available_today": 0,
+      "available_today": 1,
       "streak": 1,
-      "streak_direction": "unavailable",
+      "streak_direction": "available",
       "overall_pct": 72.0,
       "rolling_10d_pct": 80.0,
       "rolling_30d_pct": 90.0,
-      "avg_days_between_releases": 1.39,
-      "prediction_tomorrow_pct": 51.1,
+      "avg_days_between_releases": 1.4,
+      "prediction_tomorrow_pct": 80.2,
       "confidence": "High",
-      "last_seen": "2026-09-14",
+      "last_seen": "2026-09-16",
       "prior_frequency": 0.75,
       "gift_shop_price": 59.99
     },
@@ -66,7 +66,7 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 87,
+      "streak": 88,
       "streak_direction": "available",
       "overall_pct": 95.0,
       "rolling_10d_pct": 100.0,
@@ -74,23 +74,23 @@
       "avg_days_between_releases": 1.05,
       "prediction_tomorrow_pct": 95.4,
       "confidence": "High",
-      "last_seen": "2026-09-15",
+      "last_seen": "2026-09-16",
       "prior_frequency": 0.93,
       "gift_shop_price": 59.99
     },
     {
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
-      "available_today": 0,
-      "streak": 2,
-      "streak_direction": "unavailable",
-      "overall_pct": 26.0,
+      "available_today": 1,
+      "streak": 1,
+      "streak_direction": "available",
+      "overall_pct": 27.0,
       "rolling_10d_pct": 30.0,
-      "rolling_30d_pct": 27.0,
-      "avg_days_between_releases": 3.83,
-      "prediction_tomorrow_pct": 27.0,
+      "rolling_30d_pct": 30.0,
+      "avg_days_between_releases": 3.82,
+      "prediction_tomorrow_pct": 21.1,
       "confidence": "High",
-      "last_seen": "2026-09-13",
+      "last_seen": "2026-09-16",
       "prior_frequency": 0.17,
       "gift_shop_price": 43
     }
@@ -1965,6 +1965,16 @@
       "special_release": "Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
+    },
+    {
+      "date": "2026-09-16",
+      "blantons": 0,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": "Single Oak Rye Bourbon",
+      "is_closure": false,
+      "notes": null
     }
   ],
   "special_releases_log": [
@@ -2058,7 +2068,7 @@
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99,
       "notes": "Sighting days = dates the BT feed listed it (live obs Jul 10, Wayback Jul 17-19, live Jul 24). Days between are unobserved \u2014 availability may have been intermittent.",
-      "last_seen": "2026-09-15",
+      "last_seen": "2026-09-16",
       "seen_dates": [
         "2026-07-10",
         "2026-07-17",
@@ -2117,7 +2127,8 @@
         "2026-09-12",
         "2026-09-13",
         "2026-09-14",
-        "2026-09-15"
+        "2026-09-15",
+        "2026-09-16"
       ]
     },
     {
