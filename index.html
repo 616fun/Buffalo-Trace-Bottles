@@ -615,7 +615,6 @@
 
     <!-- ═══ PAGE: TODAY ═══ -->
     <div id="page-today" class="page active">
-      <div id="today-hero-wrap"></div>
       <!-- ═══ SMS WAITLIST ═══ -->
       <a href="/sms.html" class="sms-cta">
         <span class="sms-cta-icon">📲</span>
@@ -626,6 +625,7 @@
         </span>
         <span class="sms-cta-arrow">→</span>
       </a>
+      <div id="today-hero-wrap"></div>
       <div class="quick-stats" id="quick-stats"></div>
 
 
@@ -647,14 +647,6 @@
         <p style="font-size:.74rem;color:var(--muted);margin-top:14px;font-style:italic;padding-left:12px;border-left:2px solid var(--border-s);line-height:1.6">Early-data territory — model uses Bayesian priors from historical patterns. Confidence grows with each day tracked.</p>
       </div>
 
-      <div id="sr-log-wrap" class="sr-log" style="display:none">
-        <div class="sec-head" style="margin-bottom:14px">
-          <h2 class="sec-title" style="font-size:1.05rem">Special Release Sightings</h2>
-          <span class="sec-sub">Beyond the rotating four</span>
-        </div>
-        <div class="sr-log-rows" id="sr-log-rows"></div>
-        <p style="font-size:.72rem;color:var(--muted);margin-top:12px;font-style:italic;line-height:1.6">Limited releases spotted at the gift shop on the morning check. These often sell out within hours — some drops sell out before the morning check and may not appear here.</p>
-      </div>
 
 
       <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
@@ -679,7 +671,7 @@
       <!-- Single readable chart — daily shop richness -->
       <div class="chart-card">
         <div class="chart-card-title">How Stocked Has the Shop Been?</div>
-        <div class="chart-card-sub">Bottles available each day — special release days glow gold with a ★ — higher is a better day to visit</div>
+        <div class="chart-card-sub">Bottles available each day — higher is a better day to visit</div>
         <div class="chart-wrap"><canvas id="chart-daily-score"></canvas></div>
       </div>
 
@@ -730,7 +722,6 @@
         <div class="cal-leg-item" data-bottle="bp-weller107"><span class="cal-leg-chip" style="background:var(--weller)">W</span>Weller 107</div>
         <div class="cal-leg-item" data-bottle="bp-ehtaylor_sb"><span class="cal-leg-chip" style="background:var(--ehtaylor)">EH</span>E.H. Taylor</div>
         <div class="cal-leg-item" data-bottle="bp-eagle_rare"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
-        <div class="cal-leg-item" data-bottle="special-profiles"><span class="cal-leg-chip" style="background:var(--gold);color:#1a1a1a">★</span>Special Release</div>
         <div class="cal-leg-item"><span class="cal-leg-chip" style="background:#1e2535;color:#64748b;border:1px solid #334155">🔒</span>Closed</div>
         <div class="cal-leg-item"><span style="font-size:.8rem">🎯</span>Drop-watch day (bourbon holiday)</div>
         <div class="cal-leg-divider"></div>
@@ -940,33 +931,25 @@ function renderToday(data) {
   } else {
     const avail = bottles.filter(b=>b.available_today===1);
     const unavail = bottles.filter(b=>b.available_today!==1);
-    // Active special release(s) — announced by the gift shop for today
-    const specials = (today.special_release||'').split(',').map(s=>s.trim()).filter(Boolean);
     const tapRows = [
-      ...specials.map(n=>`<div class="tap-bottle-avail" style="color:var(--gold)" data-bottle="${specialSlug(n)}">★ ${n}&nbsp;<span style="opacity:.75;font-weight:400;font-size:.85em">special release</span></div>`),
       ...avail.map(b=>`<div class="tap-bottle-avail" data-bottle="bp-${b.key}">${b.name}</div>`),
       ...unavail.map(b=>`<div class="tap-bottle-unavail" data-bottle="bp-${b.key}">${b.name}</div>`)
     ].join('');
-    if(specials.length){
-      const spLabel = specials.length===1 ? 'a special release' : `${specials.length} special releases`;
-      heroHeadline = availCount>0
-        ? `<span class="hl-green">${availCount} bottle${availCount!==1?'s':''}</span> + <span style="color:var(--gold)">${spLabel}</span> available now`
-        : `<span style="color:var(--gold)">A special release</span> is available now`;
-    } else {
     heroHeadline = availCount>0
       ? `<span class="hl-green">${availCount} bottle${availCount!==1?'s':''}</span> available now`
       : `<span class="hl-red">No bottles</span> available today`;
-    }
     heroBottomPanel = `<div class="today-avail-panel">
         <div class="tap-eyebrow">🥃 &nbsp; Available Today at the Gift Shop</div>
         <div class="tap-bottles">${tapRows}</div>
       </div>`;
   }
 
-  // Special release alert — gold banner above the hero when one is spotted today
-  const specialAlertHTML = (!isClosure && today.special_release)
-    ? `<div class="special-alert"><span class="sa-icon">⭐</span><span><strong>Special release spotted today:</strong> ${today.special_release} — limited quantities, these typically sell out fast.</span></div>`
-    : '';
+  // Special-release surfacing removed from the Today page 2026-09-22, per Brian.
+  // BT leaves "while supplies last" notices up for months, so Step 2.5 marked every
+  // single day as a special release — 61 consecutive days of Single Oak Rye by the
+  // time this was pulled. A thing that happens daily is not special. The data keeps
+  // accumulating in tracker_data.json and still renders on the Bottles page.
+  const specialAlertHTML = '';
 
   document.getElementById('today-hero-wrap').innerHTML = specialAlertHTML + `
     <div class="today-hero" style="margin-bottom:24px">
@@ -1062,47 +1045,6 @@ function renderToday(data) {
       </div>`;
   }).join('');
 
-  // Special release sightings log — newest first, hidden if none yet
-  // Entries are availability WINDOWS: date = first seen, last_seen = most
-  // recent day the gift shop still listed it. Active windows float to top.
-  const srLog = (data.special_releases_log || []).slice()
-    .sort((a,b)=>((b.last_seen||b.date).localeCompare(a.last_seen||a.date)));
-  const srWrap = document.getElementById('sr-log-wrap');
-  if(srLog.length){
-    document.getElementById('sr-log-rows').innerHTML = srLog.slice(0,15).map(s=>{
-      const isActive = (s.last_seen||s.date) === data.meta.last_updated;
-      // Show the days we actually OBSERVED it listed — consecutive days
-      // collapse into segments; never imply a continuous run we didn't see.
-      let range;
-      const seen = (s.seen_dates && s.seen_dates.length) ? s.seen_dates : [s.date];
-      if(seen.length === 1){
-        range = fmtDate(seen[0]);
-      } else {
-        const segs = [];
-        let start = seen[0], prev = seen[0];
-        for(let i=1;i<=seen.length;i++){
-          const cur = seen[i];
-          const isNext = cur && ((new Date(cur+'T12:00:00') - new Date(prev+'T12:00:00'))/86400000 === 1);
-          if(!isNext){
-            segs.push(start===prev ? fmtDateShort(start) : `${fmtDateShort(start)}–${fmtDateShort(prev)}`);
-            start = cur;
-          }
-          prev = cur;
-        }
-        range = segs.length <= 3
-          ? segs.join(', ') + `, ${seen[0].slice(0,4)}`
-          : `${fmtDateShort(seen[0])} → ${fmtDateShort(seen[seen.length-1])} · seen ${seen.length} days`;
-      }
-      return `
-      <div class="sr-row">
-        <div class="sr-name" data-bottle="${specialSlug(s.name)}"><span class="sr-star">★</span>${s.name}${isActive?'<span class="sr-live">Available now</span>':''}</div>
-        <div class="sr-date">${range}</div>
-      </div>`;
-    }).join('');
-    srWrap.style.display='block';
-  } else {
-    srWrap.style.display='none';
-  }
 }
 
 // ─────────────────────────────────────────────
@@ -1116,20 +1058,21 @@ function buildDailyScoreChart(calendar) {
     const dt = new Date(d.date+'T00:00:00');
     return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   });
-  // Score = rotating bottles + special releases sighted that day
+  // Score = rotating bottles only. Special releases were folded in here until
+  // 2026-09-22; because BT leaves "while supplies last" notices up for months,
+  // that inflated every recent day by one and painted them all gold.
   const rotCounts = calendar.map(d=>BOTTLE_KEYS.filter(k=>d[k]===1).length);
-  const spCounts  = calendar.map(d=>(d.special_release||'').split(',').map(s=>s.trim()).filter(Boolean).length);
-  const scores = calendar.map((d,i)=>rotCounts[i]+spCounts[i]);
+  const spCounts  = calendar.map(()=>0);
+  const scores = rotCounts.slice();
   const barColors = calendar.map((d,i)=>
     (d.is_closure||false)   ? 'rgba(100,116,139,0.45)' :
-    spCounts[i]>0           ? 'rgba(255,204,64,1)'     :   // bright gold — special release day
     scores[i]>=3            ? 'rgba(74,222,128,0.85)'  :
     scores[i]===2           ? 'rgba(192,115,40,0.85)'  :
     scores[i]===1           ? 'rgba(240,192,96,0.75)'  :
                               'rgba(239,68,68,0.55)'
   );
-  const barBorders = calendar.map((d,i)=> spCounts[i]>0 ? '#7A5C10' : 'rgba(0,0,0,0)');
-  const barBorderW = calendar.map((d,i)=> spCounts[i]>0 ? 1.5 : 0);
+  const barBorders = calendar.map(()=> 'rgba(0,0,0,0)');
+  const barBorderW = calendar.map(()=> 0);
   const yMax = Math.max(4, ...scores);
   // Gold ★ above each special-release bar — makes them pop at any zoom
   const starPlugin = {
@@ -1142,9 +1085,8 @@ function buildDailyScoreChart(calendar) {
       ctx2.textAlign = 'center';
       ctx2.fillStyle = '#C99A2E';
       meta.data.forEach((bar,i)=>{
-        if(spCounts[i]>0 && !(calendar[i].is_closure||false)){
-          ctx2.fillText('★', bar.x, bar.y - 5);
-        }
+        // ★ markers removed 2026-09-22 — see note in renderToday()
+        void bar; void i;
       });
       ctx2.restore();
     }
@@ -1173,8 +1115,7 @@ function buildDailyScoreChart(calendar) {
           label:item=>{
             const d = calendar[item.dataIndex];
             if(d && (d.is_closure||false)) return ` Closed — ${d.notes||'Holiday'}`;
-            const i=item.dataIndex, rot=rotCounts[i], sp=spCounts[i];
-            if(sp>0) return ` ${rot} bottle${rot!==1?'s':''} + ★ ${d.special_release}`;
+            const rot = rotCounts[item.dataIndex];
             return ` ${rot} bottle${rot!==1?'s':''} available`;
           }
         }}
@@ -1182,7 +1123,7 @@ function buildDailyScoreChart(calendar) {
       scales:{
         y:{
           min:0, max:yMax + 0.4,   // headroom for the ★ markers
-          ticks:{stepSize:1, callback:v=>Number.isInteger(v)?(v===0?'None':v===4?'All 4':v>4?`4 + ★`:v===1?'1 bottle':`${v} bottles`):null, font:{size:10}},
+          ticks:{stepSize:1, callback:v=>Number.isInteger(v)?(v===0?'None':v>=4?'All 4':v===1?'1 bottle':`${v} bottles`):null, font:{size:10}},
           grid:{color:'rgba(0,0,0,.05)'}
         },
         x:{ticks:{font:{size:10}}, grid:{display:false}}
@@ -1331,14 +1272,7 @@ function buildAnalyticsCharts(data) {
     }).join('');
     return `<div class="pg-row"><div class="pg-label">${shortLabels[b.key]||b.name}</div>${cells}</div>`;
   }).join('');
-  const specialRow = `<div class="pg-row"><div class="pg-label">Specials ★</div>${patternDays.map(d=>{
-    const sp = d.special_release;
-    const dotTitle = sp
-      ? `${fmtDateShort(d.date)}: ★ Special release — ${sp}`
-      : `${fmtDateShort(d.date)}: no special release sighted`;
-    const attr = sp ? ` data-bottle="${specialSlug(sp.split(',')[0])}"` : '';
-    return `<div class="pg-cell"><div class="pg-dot ${sp?'on':'off'}" style="background:#C99A2E"${attr} title="${dotTitle}"></div></div>`;
-  }).join('')}</div>`;
+  const specialRow = '';   // Specials row removed 2026-09-22 — see note in renderToday()
   document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows + specialRow;
   document.getElementById('pattern-legend').innerHTML =
     BOTTLE_KEYS.map(k=>`<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:${BOTTLE_COLORS[k]};flex-shrink:0"></div>${shortLabels[k]}</div>`).join('') +
@@ -1551,7 +1485,6 @@ function renderCalendarMonth(data, year, month) {
         BOTTLE_KEYS.forEach(key=>{
           if(entry[key]===1) chipsHTML+=`<span class="cal-chip cc-${key}" data-bottle="bp-${key}" title="${key}">${CHIP_LABELS[key]}</span>`;
         });
-        if(entry.special_release) chipsHTML+=`<span class="cal-chip cc-special" data-bottle="${specialSlug(entry.special_release.split(',')[0])}" title="Special release: ${entry.special_release}">★</span>`;
       }
     }
 
