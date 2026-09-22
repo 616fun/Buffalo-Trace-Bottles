@@ -569,6 +569,21 @@
       .how-grid { grid-template-columns: 1fr; }
       .details-grid { grid-template-columns: 1fr 1fr; }
     }
+  
+    /* ── added: DOB age gate + validation states ── */
+    .dob-row{display:flex;gap:10px;align-items:flex-end}
+    .dob-row .field{flex:1;min-width:0}
+    .dob-row .field.yr{flex:1.35}
+    .form-input.err,.dob-row .form-input.err{border-color:#B5312A;background:#FFF6F5}
+    .field-err{display:none;color:#B5312A;font-size:.76rem;font-weight:600;margin-top:5px}
+    .field-err.show{display:block}
+    .consent-block.err{border-color:#B5312A!important;background:#FFF6F5!important}
+    .form-error{display:none;background:#FFF1F0;border:1px solid #E5B4B0;color:#8E2019;
+      border-radius:8px;padding:11px 14px;font-size:.84rem;margin-bottom:14px;line-height:1.45}
+    .form-error.show{display:block}
+    .btn-submit[disabled]{opacity:.55;cursor:not-allowed}
+    .req-badge{position:absolute;top:-10px;right:8px;background:#C07328;color:#fff;font-size:.65rem;
+      font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.04em}
   </style>
 </head>
 <body>
@@ -662,7 +677,7 @@
     <div class="form-header">
       <h2>Buffalo Trace Bottle Drop SMS Alerts</h2>
       <p>Daily availability updates for Blanton's, Weller 107, E.H. Taylor Small Batch, and Eagle Rare.</p>
-      <p style="margin-top:10px;font-size:.78rem;color:rgba(255,255,255,.9);font-weight:600;background:rgba(0,0,0,.2);display:inline-block;padding:4px 10px;border-radius:6px;">🔞 Available to adults 21 years of age and older only</p>
+      <p style="margin-top:10px;font-size:.78rem;color:rgba(255,255,255,.9);font-weight:600;background:rgba(0,0,0,.2);display:inline-block;padding:4px 10px;border-radius:6px;">🔞 US mobile numbers · adults 21 years of age and older only</p>
     </div>
     <div class="form-body">
 
@@ -673,6 +688,15 @@
 
       <form id="smsOptInForm" novalidate>
         <div class="field-stack">
+
+          <div class="form-error" id="formError" role="alert" aria-live="polite"></div>
+
+
+          <!-- honeypot: hidden from humans, bots fill it -->
+          <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
+            <label for="company">Company</label>
+            <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+          </div>
 
           <!-- Name row -->
           <div class="field-row">
@@ -692,28 +716,55 @@
           <div class="field">
             <label class="form-label" for="phone">Mobile Phone Number <span class="req">*</span></label>
             <input class="form-input" type="tel" id="phone" name="phone"
-                   placeholder="(317) 555-0100" autocomplete="tel" required>
+                   placeholder="(317) 555-0100" autocomplete="tel" inputmode="tel"
+                   maxlength="14" required>
+            <p class="field-err" id="phoneErr"></p>
+            <p class="consent-note" style="margin-top:6px;">
+              🇺🇸 <strong>US mobile numbers only.</strong> We can't deliver alerts to Canadian,
+              Caribbean, or international numbers at this time. Landlines can't receive texts.
+            </p>
           </div>
 
-          <!-- Age verification — required, must not be pre-checked -->
-          <div class="consent-block" style="border-color:#C07328;background:#FFF8F0;">
-            <label class="consent-label" for="ageCheck">
-              <input class="consent-check" type="checkbox" id="ageCheck" name="ageVerify" required>
-              <span class="consent-text">
-                <strong>I confirm that I am 21 years of age or older.</strong> This SMS alert service
-                provides information about alcohol product availability at a licensed distillery gift shop.
-                You must be of legal drinking age (21+) in the United States to subscribe.
-              </span>
-            </label>
+          <!-- Age verification — manual date-of-birth entry (checkbox alone is not
+               sufficient for alcohol-related A2P campaigns; carriers require manual DOB) -->
+          <div class="consent-block" id="dobBlock" style="border-color:#C07328;background:#FFF8F0;position:relative;">
+            <span class="req-badge">REQUIRED</span>
+            <span class="consent-text" style="display:block;margin-bottom:10px;">
+              <strong>Confirm your date of birth.</strong> This SMS alert service provides information
+              about alcohol product availability at a licensed distillery gift shop. You must be of
+              legal drinking age (21+) in the United States to subscribe.
+            </span>
+            <div class="dob-row">
+              <div class="field">
+                <label class="form-label" for="dobMonth">Month <span class="req">*</span></label>
+                <input class="form-input" type="text" id="dobMonth" name="dobMonth" inputmode="numeric"
+                       maxlength="2" placeholder="MM" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="form-label" for="dobDay">Day <span class="req">*</span></label>
+                <input class="form-input" type="text" id="dobDay" name="dobDay" inputmode="numeric"
+                       maxlength="2" placeholder="DD" autocomplete="off">
+              </div>
+              <div class="field yr">
+                <label class="form-label" for="dobYear">Year <span class="req">*</span></label>
+                <input class="form-input" type="text" id="dobYear" name="dobYear" inputmode="numeric"
+                       maxlength="4" placeholder="YYYY" autocomplete="off">
+              </div>
+            </div>
+            <p class="field-err" id="dobErr"></p>
+            <p class="consent-note" style="margin-top:9px;">
+              Your date of birth is used once to verify you are 21 or older and is stored only as
+              proof of that age check. It is never used for marketing and is never shared.
+            </p>
           </div>
 
-          <!-- Consent checkbox — must NOT be pre-checked per Twilio requirements -->
-          <div class="consent-block" style="position:relative;">
-            <span style="position:absolute;top:-10px;right:8px;background:#4CAF50;color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.04em;">OPTIONAL</span>
+          <!-- Consent checkbox — REQUIRED to join, and must NOT be pre-checked per CTIA/Twilio -->
+          <div class="consent-block" id="consentBlock" style="position:relative;">
+            <span class="req-badge">REQUIRED</span>
             <label class="consent-label" for="consentCheck">
-              <input class="consent-check" type="checkbox" id="consentCheck" name="consent">
+              <input class="consent-check" type="checkbox" id="consentCheck" name="consent" required>
               <span class="consent-text">
-                By checking this box, I confirm I am 21 years of age or older, and I give <strong>buffalotracebottledrops.com</strong> express
+                By checking this box, I give <strong>buffalotracebottledrops.com</strong> express
                 written consent to send me automated SMS text message alerts about Buffalo Trace bottle
                 availability at the Frankfort, KY gift shop. I understand I will receive approximately
                 <strong>1 message per day, 7 days per week</strong>. Message &amp; data rates may apply.
@@ -721,7 +772,7 @@
               </span>
             </label>
             <p class="consent-note">
-              This checkbox must be selected by you — it cannot be pre-checked on your behalf.
+              This box is required to join the alert list and must be selected by you — it cannot be pre-checked on your behalf. It is not a condition of using the tracker website, which is free and open to everyone.
               To stop receiving messages at any time, reply <strong>STOP</strong> to any alert.
               For help, reply <strong>HELP</strong> or email
               <a href="mailto:alerts@buffalotracebottledrops.com">alerts@buffalotracebottledrops.com</a>.
@@ -848,10 +899,15 @@
     <h3>Data We Collect</h3>
     <p>
       When you subscribe to Buffalo Trace Bottle Drop SMS Alerts, we collect your mobile phone
-      number and, optionally, your name. We use this information solely to deliver bottle
-      availability alerts.
+      number, your date of birth, and, optionally, your name. We use this information solely to
+      deliver bottle availability alerts and to demonstrate that you opted in.
     </p>
     <ul>
+      <li><strong>Date of birth</strong> is collected only to verify that you are 21 years of age
+          or older, as required for alcohol-related text message programs. It is retained as the
+          record of that verification and is never used for marketing or shared with anyone.</li>
+      <li>We also record the date and time of your sign-up, your IP address, and the exact consent
+          wording shown to you at that moment, as proof that you gave consent.</li>
       <li>Your phone number is used only to send the alerts you consented to receive.</li>
       <li>We do not sell, rent, or share your phone number with third parties for marketing purposes.</li>
       <li>We do not use your number for any purpose other than this SMS alert program.</li>
@@ -946,42 +1002,270 @@
       <a href="/">Tracker</a>
       <a href="#privacy-policy">Privacy</a>
       <a href="#terms">Terms</a>
-      <a href="mailto:alerts@buffalotracebottledrops.com">Contact</a>
+      <a href="mailto:alerts@buffalotracebottledrops.com">alerts@buffalotracebottledrops.com</a>
     </div>
   </div>
 </footer>
 
 <script>
-  document.getElementById('smsOptInForm').addEventListener('submit', function(e) {
+(function () {
+  'use strict';
+
+  // Where sign-ups are stored. Deploy the Worker (see sms-signup/DEPLOY.md), then
+  // put its route here. Must be HTTPS and same-site or CORS-allowed.
+  var ENDPOINT = 'https://buffalotracebottledrops.com/api/sms-signup';
+
+  // Bump this whenever the consent wording below changes. Stored with every record
+  // so you can always prove exactly what a given subscriber agreed to.
+  var CONSENT_VERSION = '2026-09-22';
+
+  var form    = document.getElementById('smsOptInForm');
+  var banner  = document.getElementById('formError');
+  var success = document.getElementById('successMsg');
+  var stack   = document.querySelector('.field-stack');
+  var button  = form.querySelector('.btn-submit');
+
+  function showBanner(msg) {
+    banner.textContent = msg;
+    banner.classList.add('show');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function clearErrors() {
+    banner.classList.remove('show');
+    Array.prototype.forEach.call(form.querySelectorAll('.err'), function (el) {
+      el.classList.remove('err');
+    });
+    Array.prototype.forEach.call(form.querySelectorAll('.field-err'), function (el) {
+      el.classList.remove('show');
+      el.textContent = '';
+    });
+  }
+  function markField(el, msg, errId) {
+    el.classList.add('err');
+    if (errId) {
+      var e = document.getElementById(errId);
+      if (e) { e.textContent = msg; e.classList.add('show'); }
+    }
+  }
+
+  // The +1 country code covers the whole North American Numbering Plan, so a
+  // Canadian or Caribbean number passes a naive "10 digits" check. This program
+  // is US-only (A2P 10DLC is a US framework; Canada falls under CASL and needs
+  // separate registration), so those area codes are rejected explicitly.
+  var CA_AREA = ('204,226,236,249,250,257,263,289,306,343,354,365,367,368,382,403,416,418,'
+    + '428,431,437,438,450,468,474,506,514,519,548,579,581,584,587,600,604,613,622,639,647,'
+    + '672,683,705,709,742,753,778,780,782,807,819,825,867,873,879,902,905').split(',');
+  var INTL_AREA = ('242,246,264,268,284,340,345,441,473,649,658,664,721,758,767,784,809,829,'
+    + '849,868,869,876').split(',');
+
+  function digitsOf(raw) { return String(raw || '').replace(/\D/g, ''); }
+
+  // Live input mask -> (555) 555-5555
+  function formatPhone(raw) {
+    var d = digitsOf(raw);
+    if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1);
+    d = d.slice(0, 10);
+    if (d.length === 0) return '';
+    if (d.length < 4) return '(' + d;
+    if (d.length < 7) return '(' + d.slice(0, 3) + ') ' + d.slice(3);
+    return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+  }
+
+  // Returns { e164: '+1XXXXXXXXXX' } or { error: 'message' }
+  function validatePhone(raw) {
+    var d = digitsOf(raw);
+    if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1);
+    if (d.length !== 10) {
+      return { error: 'Please enter a 10-digit US mobile number, area code first.' };
+    }
+    var area = d.slice(0, 3);
+    if ('01'.indexOf(d.charAt(0)) !== -1 || '01'.indexOf(d.charAt(3)) !== -1) {
+      return { error: "That doesn't look like a valid US number." };
+    }
+    if (CA_AREA.indexOf(area) !== -1) {
+      return { error: 'That looks like a Canadian number. This alert program is currently '
+        + 'available to US mobile numbers only.' };
+    }
+    if (INTL_AREA.indexOf(area) !== -1) {
+      return { error: 'This alert program is currently available to US mobile numbers only.' };
+    }
+    return { e164: '+1' + d };
+  }
+
+  // Exact-calendar age. Uses UTC throughout so a user's timezone can never
+  // shift someone across the 21 boundary.
+  function ageOn(y, m, d, now) {
+    var born = new Date(Date.UTC(y, m - 1, d));
+    if (born.getUTCFullYear() !== y || born.getUTCMonth() !== m - 1 || born.getUTCDate() !== d) {
+      return null; // not a real calendar date (e.g. Feb 30)
+    }
+    if (born.getTime() > now.getTime()) return null; // future
+    var age = now.getUTCFullYear() - y;
+    var mDiff = now.getUTCMonth() - (m - 1);
+    if (mDiff < 0 || (mDiff === 0 && now.getUTCDate() < d)) age--;
+    return age;
+  }
+
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
+    clearErrors();
 
-    const first   = document.getElementById('firstName').value.trim();
-    const phone   = document.getElementById('phone').value.trim();
-    const ageOk  = document.getElementById('ageCheck').checked;
-    const consent = document.getElementById('consentCheck').checked;
+    var firstEl = document.getElementById('firstName');
+    var lastEl  = document.getElementById('lastName');
+    var phoneEl = document.getElementById('phone');
+    var mEl = document.getElementById('dobMonth');
+    var dEl = document.getElementById('dobDay');
+    var yEl = document.getElementById('dobYear');
+    var consentEl = document.getElementById('consentCheck');
+    var consentBlock = document.getElementById('consentBlock');
+    var dobBlock = document.getElementById('dobBlock');
 
+    var first = firstEl.value.trim();
     if (!first) {
-      alert('Please enter your first name.');
-      document.getElementById('firstName').focus();
-      return;
+      markField(firstEl); showBanner('Please enter your first name.'); firstEl.focus(); return;
     }
-    if (!phone) {
-      alert('Please enter your mobile phone number.');
-      document.getElementById('phone').focus();
-      return;
-    }
-    if (!ageOk) {
-      alert('You must confirm that you are 21 years of age or older to subscribe.');
-      document.getElementById('ageCheck').focus();
-      return;
-    }
-    // SMS consent checkbox is optional per CTIA guidelines —
-    // the website tracker is freely accessible without signing up for alerts.
 
-    // Show success, hide form
-    document.getElementById('successMsg').classList.add('show');
-    document.querySelector('.field-stack').style.display = 'none';
+    var phoneCheck = validatePhone(phoneEl.value);
+    if (phoneCheck.error) {
+      markField(phoneEl, phoneCheck.error, 'phoneErr');
+      showBanner(phoneCheck.error);
+      phoneEl.focus(); return;
+    }
+    var phone = phoneCheck.e164;
+
+    // --- age gate: manual DOB, no pre-filled values, exact calendar maths ---
+    var mm = parseInt(mEl.value, 10), dd = parseInt(dEl.value, 10), yy = parseInt(yEl.value, 10);
+    if (!mEl.value.trim() || !dEl.value.trim() || !yEl.value.trim() ||
+        isNaN(mm) || isNaN(dd) || isNaN(yy)) {
+      [mEl, dEl, yEl].forEach(function (el) { if (!el.value.trim()) el.classList.add('err'); });
+      markField(dobBlock, 'Enter your full date of birth.', 'dobErr');
+      showBanner('Please enter your complete date of birth.');
+      mEl.focus(); return;
+    }
+    var age = ageOn(yy, mm, dd, new Date());
+    if (age === null) {
+      [mEl, dEl, yEl].forEach(function (el) { el.classList.add('err'); });
+      markField(dobBlock, "That isn't a valid date.", 'dobErr');
+      showBanner("That date of birth isn't valid. Please check it and try again.");
+      mEl.focus(); return;
+    }
+    if (age < 21) {
+      [mEl, dEl, yEl].forEach(function (el) { el.classList.add('err'); });
+      markField(dobBlock,
+        'You must be 21 or older to subscribe to this service.', 'dobErr');
+      showBanner('You must be 21 years of age or older to receive these alerts. ' +
+                 'The bottle tracker itself remains free and open to everyone.');
+      return;
+    }
+
+    // --- express written consent: required to join the list ---
+    if (!consentEl.checked) {
+      consentBlock.classList.add('err');
+      showBanner('Please check the consent box. We cannot text you without your express ' +
+                 'written consent — this is a legal requirement, not a preference.');
+      consentEl.focus(); return;
+    }
+
+    // Snapshot of the exact wording the user agreed to, stored with the record.
+    var consentText = consentBlock.querySelector('.consent-text').innerText
+                        .replace(/\s+/g, ' ').trim();
+
+    var payload = {
+      first_name: first,
+      last_name: lastEl.value.trim(),
+      phone: phone,
+      dob: yy + '-' + String(mm).padStart(2, '0') + '-' + String(dd).padStart(2, '0'),
+      age_at_signup: age,
+      age_verified: true,
+      consent: true,
+      consent_version: CONSENT_VERSION,
+      consent_text: consentText,
+      page_url: location.href,
+      client_ts: new Date().toISOString(),
+      tz: (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || '',
+      company: (document.getElementById('company') || {}).value || '' // honeypot
+    };
+
+    button.disabled = true;
+    var original = button.textContent;
+    button.textContent = 'Submitting…';
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (b) {
+          return { ok: r.ok, status: r.status, body: b };
+        });
+      })
+      .then(function (res) {
+        if (res.ok && res.body.ok) {
+          success.classList.add('show');
+          stack.style.display = 'none';
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        button.disabled = false;
+        button.textContent = original;
+        if (res.status === 409) {
+          showBanner('That number is already on the waitlist — you’re all set.');
+        } else if (res.status === 429) {
+          showBanner('Too many sign-ups from this connection. Please try again in a few minutes.');
+        } else {
+          showBanner(res.body.error ||
+            'Something went wrong saving your sign-up. Please try again, or email ' +
+            'alerts@buffalotracebottledrops.com.');
+        }
+      })
+      .catch(function () {
+        button.disabled = false;
+        button.textContent = original;
+        showBanner('We couldn’t reach the sign-up service. Please check your connection and ' +
+                   'try again, or email alerts@buffalotracebottledrops.com.');
+      });
   });
+
+  // DOB boxes accept digits only, and advance automatically when full
+  ['dobMonth', 'dobDay', 'dobYear'].forEach(function (id, i, all) {
+    var el = document.getElementById(id);
+    el.addEventListener('input', function () {
+      var clean = el.value.replace(/\D/g, '').slice(0, el.maxLength);
+      if (clean !== el.value) el.value = clean;
+      if (clean.length === el.maxLength && i < all.length - 1) {
+        document.getElementById(all[i + 1]).focus();
+      }
+    });
+  });
+
+  // live phone mask — reformat on input, keeping the caret at the end while typing
+  (function () {
+    var el = document.getElementById('phone');
+    el.addEventListener('input', function () {
+      var atEnd = el.selectionStart === el.value.length;
+      var formatted = formatPhone(el.value);
+      if (formatted !== el.value) {
+        el.value = formatted;
+        if (atEnd) { try { el.setSelectionRange(formatted.length, formatted.length); } catch (e) {} }
+      }
+    });
+    el.addEventListener('blur', function () { el.value = formatPhone(el.value); });
+  })();
+
+  // clear a field's error state as soon as the user edits it
+  Array.prototype.forEach.call(form.querySelectorAll('input'), function (el) {
+    el.addEventListener('input', function () {
+      el.classList.remove('err');
+      var b = el.closest('.consent-block');
+      if (b) b.classList.remove('err');
+    });
+    el.addEventListener('change', function () {
+      var b = el.closest('.consent-block');
+      if (b) b.classList.remove('err');
+    });
+  });
+})();
 </script>
 
 </body>

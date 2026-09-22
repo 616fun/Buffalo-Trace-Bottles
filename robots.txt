@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /sms.html
 
 Sitemap: https://buffalotracebottledrops.com/sitemap.xml

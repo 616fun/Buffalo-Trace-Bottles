@@ -551,6 +551,23 @@
       .ak-card{padding:16px}
       .quick-stats{grid-template-columns:1fr}
     }
+  
+    /* ── SMS waitlist call-to-action ── */
+    .sms-cta{display:flex;align-items:center;gap:14px;text-decoration:none;
+      background:linear-gradient(135deg,rgba(192,115,40,.10),rgba(192,115,40,.04));
+      border:1px solid rgba(192,115,40,.34);border-radius:12px;padding:16px 18px;
+      margin:0 0 28px;transition:border-color .15s,background .15s,transform .15s}
+    .sms-cta:hover{border-color:rgba(192,115,40,.6);
+      background:linear-gradient(135deg,rgba(192,115,40,.16),rgba(192,115,40,.07));
+      transform:translateY(-1px)}
+    .sms-cta-icon{font-size:1.5rem;line-height:1;flex-shrink:0}
+    .sms-cta-body{flex:1;min-width:0}
+    .sms-cta-title{font-family:var(--ui);font-size:.92rem;font-weight:650;color:var(--text);
+      margin-bottom:3px;letter-spacing:-.01em}
+    .sms-cta-sub{font-size:.76rem;color:var(--muted);line-height:1.55}
+    .sms-cta-arrow{font-size:1.1rem;color:var(--amber);flex-shrink:0;font-weight:600}
+    @media(max-width:520px){.sms-cta{padding:14px 15px;gap:11px}
+      .sms-cta-title{font-size:.87rem}.sms-cta-sub{font-size:.73rem}}
   </style>
 </head>
 <body>
@@ -625,6 +642,16 @@
         <div class="sr-log-rows" id="sr-log-rows"></div>
         <p style="font-size:.72rem;color:var(--muted);margin-top:12px;font-style:italic;line-height:1.6">Limited releases spotted at the gift shop on the morning check. These often sell out within hours — some drops sell out before the morning check and may not appear here.</p>
       </div>
+
+      <!-- ═══ SMS WAITLIST ═══ -->
+      <a href="/sms.html" class="sms-cta">
+        <div class="sms-cta-icon">📲</div>
+        <div class="sms-cta-body">
+          <div class="sms-cta-title">Get this as a text each morning</div>
+          <div class="sms-cta-sub">One message a day with what's on the shelf — before you make the drive. Joining the waitlist now; US mobile numbers, 21+.</div>
+        </div>
+        <div class="sms-cta-arrow">→</div>
+      </a>
 
       <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
         <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
@@ -757,7 +784,7 @@
 </nav>
 
 <footer>
-  <p>Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a></p>
+  <p><a href="/sms.html">SMS Alerts</a> &nbsp;·&nbsp; Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a></p>
   <p>Auto-updated Mon–Sat at 7am EST · Sun at 8am EST &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
   <p style="margin-top:10px"><a href="/blantons/" style="color:inherit">Blanton's today</a> &nbsp;·&nbsp; <a href="/weller-antique-107/" style="color:inherit">Weller 107 today</a> &nbsp;·&nbsp; <a href="/eh-taylor-small-batch/" style="color:inherit">E.H. Taylor today</a> &nbsp;·&nbsp; <a href="/eagle-rare/" style="color:inherit">Eagle Rare today</a></p>
   <p style="max-width:760px;margin:14px auto 0;font-size:.7rem;line-height:1.7;opacity:.75">Daily bottle availability tracker for the Buffalo Trace Distillery gift shop in Frankfort, Kentucky — see what's on the shelf today (Blanton's Single Barrel, Weller Antique 107, E.H. Taylor Small Batch, Eagle Rare 10-Year), get Bayesian predictions for tomorrow's drop, browse the availability calendar, and follow the special release log for bottles like Stagg, Weller 12 Year, Weller C.Y.P.B., and Single Oak Rye Bourbon.</p>
