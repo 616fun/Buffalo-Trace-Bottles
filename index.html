@@ -1266,11 +1266,10 @@ function buildAnalyticsCharts(data) {
     }).join('');
     return `<div class="pg-row"><div class="pg-label">${shortLabels[b.key]||b.name}</div>${cells}</div>`;
   }).join('');
-  const specialRow = '';   // Specials row removed 2026-09-22 — see note in renderToday()
-  document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows + specialRow;
+  // Specials row + legend entry removed 2026-09-22 — see note in renderToday()
+  document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows;
   document.getElementById('pattern-legend').innerHTML =
     BOTTLE_KEYS.map(k=>`<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:${BOTTLE_COLORS[k]};flex-shrink:0"></div>${shortLabels[k]}</div>`).join('') +
-    `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:#C99A2E;flex-shrink:0"></div>Special release</div>` +
     `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:#9C8B75;opacity:.2;flex-shrink:0"></div>Not available</div>`;
 
   // Smart insights — generated from the data in plain English
