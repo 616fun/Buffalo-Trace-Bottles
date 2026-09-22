@@ -1323,8 +1323,13 @@ def main() -> None:
     # Step 6 — Send SMS
     # -----------------------------------------------------------------------
     log("\n=== Step 6: Send SMS ===")
+    # Plain ASCII only — no emoji, no check marks. Emoji force UCS-2 encoding,
+    # which drops the SMS segment limit from 160 characters to 70. The previous
+    # template billed as THREE segments per recipient (measured 2026-09-22,
+    # $0.0249/message); this one fits in one. Same information, a third of the
+    # cost, and it matters far more once subscribers are paying.
     bottles_status = " ".join(
-        f"{BOTTLE_SHORT[k]}:{'✓' if int(scrape_data.get(k) or 0) else '✗'}"
+        f"{BOTTLE_SHORT[k]}:{'Y' if int(scrape_data.get(k) or 0) else 'N'}"
         for k in BOTTLE_KEYS
     )
     # Tomorrow's predictions
@@ -1335,12 +1340,14 @@ def main() -> None:
         reverse=True
     )
     pred_labels = [BOTTLE_SHORT[k] for k in predicted_keys] if predicted_keys else ["None"]
-    # Special release(s) active today (set by Step 2.5 from the BT feed)
-    special_today = (data.get("today") or {}).get("special_release") or ""
-    special_seg = f" | ⭐ {special_today[:45]}" if special_today else ""
-    sms_body = (f"✅ BT {mon_dd}: {bottles_status}{special_seg} | "
-                f"Tomorrow's Prediction(s): {', '.join(pred_labels)} | "
-                f"https://buffalotracebottledrops.com")
+    # The special-release segment is deliberately omitted (2026-09-22). BT leaves
+    # "while supplies last" notices posted for months, so it fired every single
+    # day — 61 consecutive days of "Single Oak Rye Bourbon" — while adding ~45
+    # characters and pushing the message into extra segments. Same reasoning as
+    # removing specials from the public pages.
+    sms_body = (f"BT {mon_dd}: {bottles_status} | "
+                f"Tomorrow: {', '.join(pred_labels)} | "
+                f"buffalotracebottledrops.com")
 
     if not dry_run:
         send_sms_safe(sms_body, sms_creds)
@@ -1461,9 +1468,9 @@ def _run_closure_day(today: datetime.date, today_str: str, mon_dd: str,
         reverse=True
     )
     pred_labels = [BOTTLE_SHORT[k] for k in predicted_keys] if predicted_keys else ["None"]
-    sms_body = (f"ℹ️ BT {mon_dd}: Closed ({holiday_name}). "
-                f"Tomorrow's Prediction(s): {', '.join(pred_labels)} | "
-                f"https://buffalotracebottledrops.com")
+    sms_body = (f"BT {mon_dd}: Gift shop CLOSED ({holiday_name}). "
+                f"Tomorrow: {', '.join(pred_labels)} | "
+                f"buffalotracebottledrops.com")
 
     if not dry_run:
         send_sms_safe(sms_body, sms_creds)
