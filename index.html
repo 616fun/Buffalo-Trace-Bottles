@@ -149,10 +149,6 @@
     .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
     .sp-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;border-top:3px solid var(--gold)}
     .sp-name{font-weight:700;font-size:.95rem;color:var(--text)}
-    .sp-meta{display:flex;gap:14px;margin:10px 0 8px;font-size:.72rem;color:var(--muted)}
-    .sp-meta strong{color:var(--text2);font-size:.9rem;display:block}
-    .sp-dates{font-size:.72rem;color:var(--text2);line-height:1.8}
-    .sp-date-chip{display:inline-block;background:var(--surface2);border:1px solid var(--border-s);border-radius:14px;padding:1px 9px;margin:0 4px 4px 0;font-variant-numeric:tabular-nums}
     .sp-series{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px}
     .sp-tag{font-size:.76rem;font-style:italic;color:var(--text2);margin:4px 0 8px}
     .sp-desc{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:10px}
@@ -745,7 +741,7 @@
         <h2 class="sec-title">Special Releases Spotted</h2>
         <span class="sec-sub">Beyond the rotating four</span>
       </div>
-      <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.65">Limited bottles that have appeared at the gift shop since tracking began in March 2026 — built automatically from our dated sightings log. These drop without warning, often around bourbon holidays, and usually sell out same-day.</p>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.65">Limited bottles that have appeared at the gift shop since tracking began in March 2026 — These drop without warning, often around bourbon holidays, and usually sell out same-day.</p>
       <div class="sp-grid" id="special-profiles"></div>
     </div>
 
@@ -1662,18 +1658,15 @@ function renderSpecialProfiles(data) {
     g.entries.sort((a,b)=>a.date.localeCompare(b.date));
     const last = g.entries[g.entries.length-1];
     const lastSeen = last.last_seen || last.date;
-    // 'Available now' badge removed 2026-09-22: BT leaves "while supplies last"
-    // notices up for months, so lastSeen is today for anything still posted and
-    // the badge showed permanently. See the note in renderToday().
-    // every observed sighting day across all windows
-    const allDays = [...new Set(g.entries.flatMap(e=>e.seen_dates && e.seen_dates.length ? e.seen_dates : [e.date]))].sort();
-    return { g, last, lastSeen, allDays };
+    // Removed 2026-09-22: the 'Available now' badge and the whole "gift shop
+    // track record" block (sighting-day count, last seen, date chips). BT leaves
+    // "while supplies last" notices posted for months and Step 2.5 tags every day
+    // one is live, so Single Oak Rye read "67 sighting days" for what was really
+    // one long standing window. lastSeen is kept only to order the cards.
+    return { g, last, lastSeen };
   }).sort((a,b)=>b.lastSeen.localeCompare(a.lastSeen));
 
   el.innerHTML = cards.map(c=>{
-    const chips = c.allDays.length <= 6
-      ? c.allDays.map(d=>`<span class="sp-date-chip">${fmtDateShort(d)}</span>`).join('')
-      : `<span class="sp-date-chip">${fmtDateShort(c.allDays[0])}</span><span style="opacity:.6">… ${c.allDays.length-2} more …</span><span class="sp-date-chip">${fmtDateShort(c.allDays[c.allDays.length-1])}</span>`;
     const p = SPECIAL_PROFILES[c.g.name.toLowerCase()];
     return `
     <div class="sp-card" id="${specialSlug(c.g.name)}">
@@ -1686,12 +1679,6 @@ function renderSpecialProfiles(data) {
       <div style="margin-bottom:10px">${p.notes.map(n=>`<span class="sp-note">${n}</span>`).join('')}</div>
       <div class="sp-label">The bottle</div>
       <div style="margin-bottom:4px">${p.facts.map(f=>`<span class="sp-fact">${f}</span>`).join('')}</div>`:''}
-      <div class="sp-label" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">Gift shop track record</div>
-      <div class="sp-meta">
-        <div><strong>${c.allDays.length}</strong>sighting day${c.allDays.length!==1?'s':''}</div>
-        <div><strong>${fmtDateShort(c.lastSeen)}</strong>last seen</div>
-      </div>
-      <div class="sp-dates">${chips}</div>
     </div>`;
   }).join('');
 }
