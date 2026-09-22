@@ -164,7 +164,6 @@
     [data-bottle]:hover{text-decoration:underline;text-decoration-color:var(--amber);text-underline-offset:3px}
     .flash-target{animation:flashTarget 1.8s ease-out}
     @keyframes flashTarget{0%,55%{box-shadow:0 0 0 3px var(--gold),var(--shadow)}100%{box-shadow:var(--shadow)}}
-    .sr-live{display:inline-block;margin-left:10px;background:linear-gradient(95deg,#F0C060,#E09040);color:#1A0F05;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;vertical-align:1px}
 
     /* ── MAIN ── */
     main{max-width:1100px;margin:0 auto;padding:36px 28px 100px;min-height:70vh}
@@ -376,7 +375,6 @@
     .cal-chip.cc-weller107{background:var(--weller)}
     .cal-chip.cc-ehtaylor_sb{background:var(--ehtaylor)}
     .cal-chip.cc-eagle_rare{background:var(--eagle)}
-    .cal-chip.cc-special{background:var(--gold);color:#1a1a1a}
     .cal-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;align-items:center}
     .cal-leg-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text2)}
     .cal-leg-chip{font-size:.54rem;font-weight:800;padding:2px 6px;border-radius:4px;color:#fff;line-height:1.45}
@@ -1664,10 +1662,12 @@ function renderSpecialProfiles(data) {
     g.entries.sort((a,b)=>a.date.localeCompare(b.date));
     const last = g.entries[g.entries.length-1];
     const lastSeen = last.last_seen || last.date;
-    const isActive = lastSeen === data.meta.last_updated;
+    // 'Available now' badge removed 2026-09-22: BT leaves "while supplies last"
+    // notices up for months, so lastSeen is today for anything still posted and
+    // the badge showed permanently. See the note in renderToday().
     // every observed sighting day across all windows
     const allDays = [...new Set(g.entries.flatMap(e=>e.seen_dates && e.seen_dates.length ? e.seen_dates : [e.date]))].sort();
-    return { g, last, lastSeen, isActive, allDays };
+    return { g, last, lastSeen, allDays };
   }).sort((a,b)=>b.lastSeen.localeCompare(a.lastSeen));
 
   el.innerHTML = cards.map(c=>{
@@ -1678,7 +1678,7 @@ function renderSpecialProfiles(data) {
     return `
     <div class="sp-card" id="${specialSlug(c.g.name)}">
       ${p?`<div class="sp-series">${p.series}</div>`:''}
-      <div class="sp-name">★ ${c.g.name}${c.isActive?'<span class="sr-live">Available now</span>':''}</div>
+      <div class="sp-name">★ ${c.g.name}</div>
       ${p?`
       <div class="sp-tag">${p.tag}</div>
       <div class="sp-desc">${p.desc}</div>
