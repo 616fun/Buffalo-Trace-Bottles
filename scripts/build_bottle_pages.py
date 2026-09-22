@@ -207,6 +207,7 @@ footer a{{color:var(--text2)}}
     <p style="margin-top:8px">Buffalo Trace Bottle Drops · availability data collected daily from
     <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" rel="noopener">buffalotracedistillery.com</a>
     · Not affiliated with Buffalo Trace Distillery</p>
+    <p style="margin-top:8px"><a href="/sms.html">SMS Alerts</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
   </footer>
 </main>
 </body>
