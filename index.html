@@ -552,22 +552,24 @@
       .quick-stats{grid-template-columns:1fr}
     }
   
-    /* ── SMS waitlist call-to-action ── */
-    .sms-cta{display:flex;align-items:center;gap:14px;text-decoration:none;
-      background:linear-gradient(135deg,rgba(192,115,40,.10),rgba(192,115,40,.04));
-      border:1px solid rgba(192,115,40,.34);border-radius:12px;padding:16px 18px;
-      margin:0 0 28px;transition:border-color .15s,background .15s,transform .15s}
-    .sms-cta:hover{border-color:rgba(192,115,40,.6);
-      background:linear-gradient(135deg,rgba(192,115,40,.16),rgba(192,115,40,.07));
-      transform:translateY(-1px)}
-    .sms-cta-icon{font-size:1.5rem;line-height:1;flex-shrink:0}
-    .sms-cta-body{flex:1;min-width:0}
-    .sms-cta-title{font-family:var(--ui);font-size:.92rem;font-weight:650;color:var(--text);
-      margin-bottom:3px;letter-spacing:-.01em}
-    .sms-cta-sub{font-size:.76rem;color:var(--muted);line-height:1.55}
-    .sms-cta-arrow{font-size:1.1rem;color:var(--amber);flex-shrink:0;font-weight:600}
-    @media(max-width:520px){.sms-cta{padding:14px 15px;gap:11px}
-      .sms-cta-title{font-size:.87rem}.sms-cta-sub{font-size:.73rem}}
+    /* ── SMS waitlist banner ── */
+    .sms-cta{display:flex;align-items:center;gap:11px;text-decoration:none;
+      background:linear-gradient(135deg,rgba(192,115,40,.11),rgba(192,115,40,.045));
+      border:1px solid rgba(192,115,40,.32);border-radius:10px;padding:11px 14px;
+      margin:0 0 30px;transition:border-color .15s,background .15s}
+    .sms-cta:hover{border-color:rgba(192,115,40,.58);
+      background:linear-gradient(135deg,rgba(192,115,40,.17),rgba(192,115,40,.075))}
+    .sms-cta-icon{font-size:1.15rem;line-height:1;flex-shrink:0}
+    .sms-cta-body{flex:1;min-width:0;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+    .sms-cta-title{font-family:var(--ui);font-size:.85rem;font-weight:650;color:var(--text);
+      letter-spacing:-.01em}
+    .sms-cta-sub{font-size:.73rem;color:var(--muted)}
+    .sms-cta-badge{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+      color:#fff;background:var(--amber);padding:2px 7px;border-radius:20px;white-space:nowrap}
+    .sms-cta-arrow{font-size:1rem;color:var(--amber);flex-shrink:0;font-weight:600}
+    @media(max-width:560px){.sms-cta{padding:10px 12px;gap:9px;margin-bottom:24px}
+      .sms-cta-body{flex-direction:column;gap:1px}
+      .sms-cta-title{font-size:.82rem}.sms-cta-sub{font-size:.7rem}}
   </style>
 </head>
 <body>
@@ -616,6 +618,17 @@
       <div id="today-hero-wrap"></div>
       <div class="quick-stats" id="quick-stats"></div>
 
+      <!-- ═══ SMS WAITLIST ═══ -->
+      <a href="/sms.html" class="sms-cta">
+        <span class="sms-cta-icon">📲</span>
+        <span class="sms-cta-body">
+          <span class="sms-cta-badge">Coming soon</span>
+          <span class="sms-cta-title">Daily bottle alerts by text</span>
+          <span class="sms-cta-sub">Not sending yet — join the waitlist and we'll tell you when it launches. US numbers, 21+.</span>
+        </span>
+        <span class="sms-cta-arrow">→</span>
+      </a>
+
       <div style="margin-bottom:52px">
         <div class="sec-head">
           <h2 class="sec-title">Rotating Bottles</h2>
@@ -643,15 +656,6 @@
         <p style="font-size:.72rem;color:var(--muted);margin-top:12px;font-style:italic;line-height:1.6">Limited releases spotted at the gift shop on the morning check. These often sell out within hours — some drops sell out before the morning check and may not appear here.</p>
       </div>
 
-      <!-- ═══ SMS WAITLIST ═══ -->
-      <a href="/sms.html" class="sms-cta">
-        <div class="sms-cta-icon">📲</div>
-        <div class="sms-cta-body">
-          <div class="sms-cta-title">Get this as a text each morning</div>
-          <div class="sms-cta-sub">One message a day with what's on the shelf — before you make the drive. Joining the waitlist now; US mobile numbers, 21+.</div>
-        </div>
-        <div class="sms-cta-arrow">→</div>
-      </a>
 
       <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
         <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
