@@ -10,7 +10,10 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
   <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#1A0F05"/>
+  <!-- Paired to the theme. One fixed value left the address bar showing the
+       light-mode header colour after the page itself had gone dark. -->
+  <meta name="theme-color" content="#1A0F05" media="(prefers-color-scheme: light)"/>
+  <meta name="theme-color" content="#0D0906" media="(prefers-color-scheme: dark)"/>
   <meta property="og:title" content="Buffalo Trace Bottle Drops — Gift Shop Availability Tracker"/>
   <meta property="og:description" content="What's on the shelf at the Buffalo Trace gift shop today — and what's predicted for tomorrow. Updated every morning."/>
   <meta property="og:type" content="website"/>
@@ -636,7 +639,9 @@
     .sms-cta-body{flex:1;min-width:0;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
     .sms-cta-title{font-family:var(--ui);font-size:.85rem;font-weight:650;color:var(--text);
       letter-spacing:-.01em}
-    .sms-cta-sub{font-size:.73rem;color:var(--muted)}
+    /* --muted read 4.24:1 against the strong end of the card's amber gradient.
+       The gradient is the real background here, not --bg. */
+    .sms-cta-sub{font-size:.73rem;color:var(--text2)}
     .sms-cta-badge{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
       color:var(--on-dark);background:var(--amber);padding:2px 7px;border-radius:20px;white-space:nowrap}
     .sms-cta-arrow{font-size:1rem;color:var(--amber-text);flex-shrink:0;font-weight:600}
@@ -1151,6 +1156,20 @@ function showPage(pageId, opts) {
   }
 }
 
+/* The chart's colours are baked into the canvas at build time, so a theme flip
+   while the page is open would leave the old ones painted. Rebuild on change.
+   Guarded: a failed rebuild must not take the page down. */
+if (window.matchMedia) {
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  const onThemeChange = () => {
+    if (!chartsInit.analytics || !appData) return;
+    try { buildAnalyticsCharts(appData); }
+    catch (e) { console.warn('[analytics] theme rebuild deferred:', e && e.message); }
+  };
+  if (mq.addEventListener) mq.addEventListener('change', onThemeChange);
+  else if (mq.addListener) mq.addListener(onThemeChange);
+}
+
 // ── Routing ─────────────────────────────────────────────────────────
 // The visible view is reflected in location.hash so views can be linked,
 // bookmarked, refreshed and reached with the browser Back button. Before
@@ -1334,6 +1353,33 @@ function renderToday(data) {
 //  RENDER: ANALYTICS
 // ─────────────────────────────────────────────
 let chartInstance = null;
+/* Chart.js paints to a canvas, and a canvas cannot resolve var(--token) — the
+   strings are handed to the 2D context verbatim. Everything here was therefore
+   hard-coded, which meant the chart ignored the theme entirely: axis labels sat
+   at #666 on the dark card and the grid was black-on-black. Read the resolved
+   values off the root element instead. */
+function chartTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = n => cs.getPropertyValue(n).trim();
+  return {
+    tick:   v('--muted'),        // AA on the card surface in both themes
+    grid:   v('--border'),       // already an rgba that flips with the theme
+    good:   v('--green-on-dark'),
+    mid:    v('--amber2'),       // not --amber: a bar wants the brighter tone
+    low:    v('--gold'),
+    none:   v('--red2'),
+    closed: v('--muted'),
+  };
+}
+
+/* The tokens are hex; the bars were tuned with alpha. Keep the alpha. */
+function chartRgba(hex, a) {
+  const h = String(hex).trim().replace('#', '');
+  if (h.length !== 6) return hex;           // already rgba(), or a keyword
+  const n = parseInt(h, 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
 function buildDailyScoreChart(calendar) {
   if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
   const ctx = document.getElementById('chart-daily-score').getContext('2d');
@@ -1347,12 +1393,13 @@ function buildDailyScoreChart(calendar) {
   const rotCounts = calendar.map(d=>BOTTLE_KEYS.filter(k=>d[k]===1).length);
   const spCounts  = calendar.map(()=>0);
   const scores = rotCounts.slice();
+  const T = chartTheme();
   const barColors = calendar.map((d,i)=>
-    (d.is_closure||false)   ? 'rgba(100,116,139,0.45)' :
-    scores[i]>=3            ? 'rgba(74,222,128,0.85)'  :
-    scores[i]===2           ? 'rgba(192,115,40,0.85)'  :
-    scores[i]===1           ? 'rgba(240,192,96,0.75)'  :
-                              'rgba(239,68,68,0.55)'
+    (d.is_closure||false)   ? chartRgba(T.closed, 0.45) :
+    scores[i]>=3            ? chartRgba(T.good,   0.85) :
+    scores[i]===2           ? chartRgba(T.mid,    0.85) :
+    scores[i]===1           ? chartRgba(T.low,    0.75) :
+                              chartRgba(T.none,   0.55)
   );
   const barBorders = calendar.map(()=> 'rgba(0,0,0,0)');
   const barBorderW = calendar.map(()=> 0);
@@ -1429,10 +1476,10 @@ function buildDailyScoreChart(calendar) {
       scales:{
         y:{
           min:0, max:yMax + 0.4,   // headroom for the ★ markers
-          ticks:{stepSize:1, callback:v=>Number.isInteger(v)?(v===0?'None':v>=4?'All 4':v===1?'1 bottle':`${v} bottles`):null, font:{size:10}},
-          grid:{color:'rgba(0,0,0,.05)'}
+          ticks:{stepSize:1, callback:v=>Number.isInteger(v)?(v===0?'None':v>=4?'All 4':v===1?'1 bottle':`${v} bottles`):null, font:{size:10}, color:T.tick},
+          grid:{color:T.grid}
         },
-        x:{ticks:{font:{size:10}}, grid:{display:false}}
+        x:{ticks:{font:{size:10}, color:T.tick}, grid:{display:false}}
       }
     }
   });
