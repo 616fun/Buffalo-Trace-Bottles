@@ -611,9 +611,60 @@
     .btn-submit[disabled]{opacity:.55;cursor:not-allowed}
     .req-badge{position:absolute;top:-10px;right:8px;background:#C07328;color:#fff;font-size:.65rem;
       font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.04em}
+  /* ── Age gate ──────────────────────────────────────────────────────────
+     Shown only on this page. The tracker at / stays free and open to
+     everyone — gating it would tax the 7am check for no compliance gain.
+
+     This is attestation, not verification: a click proves nothing. Its real
+     job is to make the 21+ claim VISIBLE on the page a carrier reviewer
+     lands on, matching the age-gated flag on the A2P campaign. The check
+     that actually has teeth is the date of birth in the form below, which
+     the Worker recomputes server-side and will not take the client's word on.
+
+     Rendered hidden and revealed by JS, so a visitor without JS gets the
+     page rather than a gate they cannot dismiss. */
+  .agegate{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;
+    justify-content:center;padding:20px;background:rgba(26,15,5,.72);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .agegate[hidden]{display:none}
+  .agegate-card{background:var(--surface);border-radius:var(--radius);
+    box-shadow:var(--shadow-md);max-width:400px;width:100%;padding:28px 26px;text-align:center}
+  .agegate-mark{font-size:2rem;line-height:1;margin-bottom:10px}
+  .agegate-card h2{font-family:var(--display);font-size:1.4rem;color:var(--text);
+    margin:0 0 10px;line-height:1.25}
+  .agegate-card p{font-size:.9rem;line-height:1.55;color:var(--text2);margin:0 0 18px}
+  .agegate-actions{display:flex;flex-direction:column;gap:9px}
+  .agegate-actions button{font-family:var(--ui);font-size:.95rem;font-weight:650;
+    padding:13px 18px;border-radius:9px;cursor:pointer;border:1.5px solid transparent;
+    min-height:44px}
+  .agegate-yes{background:var(--amber);color:#fff}
+  .agegate-yes:hover{background:var(--amber2)}
+  .agegate-no{background:transparent;color:var(--text2);border-color:var(--border-s)}
+  .agegate-no:hover{background:var(--surface2)}
+  .agegate-fine{font-size:.76rem!important;color:var(--muted)!important;margin:14px 0 0!important}
+  .agegate :focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:3px}
+  .agegate-card a{color:var(--amber);font-weight:600}
   </style>
 </head>
 <body>
+
+<!-- Age gate. Markup first in the body so assistive tech meets it before the
+     page content; `hidden` until JS decides whether it is needed. -->
+<div class="agegate" id="ageGate" role="dialog" aria-modal="true"
+     aria-labelledby="ageGateTitle" aria-describedby="ageGateBody" hidden>
+  <div class="agegate-card" id="ageGateCard">
+    <div class="agegate-mark" aria-hidden="true">&#129347;</div>
+    <h2 id="ageGateTitle">Are you 21 or older?</h2>
+    <p id="ageGateBody">These text alerts cover alcohol availability at a licensed
+      distillery gift shop, so you have to be of legal drinking age in the US to sign up.
+      <strong>The tracker itself is free and open to everyone.</strong></p>
+    <div class="agegate-actions">
+      <button type="button" class="agegate-yes" id="ageGateYes">Yes, I&rsquo;m 21 or older</button>
+      <button type="button" class="agegate-no" id="ageGateNo">No, I&rsquo;m not</button>
+    </div>
+    <p class="agegate-fine">You&rsquo;ll confirm your date of birth when you sign up.</p>
+  </div>
+</div>
 
 <!-- ── HEADER ── -->
 <header>
@@ -1330,6 +1381,85 @@
       if (b) b.classList.remove('err');
     });
   });
+})();
+</script>
+
+<script>
+/* Age gate behaviour. Deliberately small and dependency-free. */
+(function () {
+  var KEY = 'btbd_age_ok';
+  var MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;   // re-ask monthly
+  var gate = document.getElementById('ageGate');
+  if (!gate) return;
+
+  /* Storage can throw in private mode and can come back empty. Neither is an
+     error worth surfacing — we just ask again. */
+  function remembered() {
+    try {
+      var t = parseInt(window.localStorage.getItem(KEY), 10);
+      return !!t && (Date.now() - t) < MAX_AGE_MS;
+    } catch (e) { return false; }
+  }
+  function remember() {
+    try { window.localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+  }
+
+  if (remembered()) return;
+
+  var lastFocus = document.activeElement;
+  var scrollY = window.scrollY;
+  gate.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  function focusables() {
+    return [].slice.call(gate.querySelectorAll('button, a[href]'))
+             .filter(function (el) { return el.offsetParent !== null; });
+  }
+  /* Keep Tab inside the dialog. Escape is NOT a dismissal here: this is a
+     gate, and letting Escape past it would make the gate decorative. */
+  function onKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); return; }
+    if (e.key !== 'Tab') return;
+    var f = focusables();
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  document.addEventListener('keydown', onKey, true);
+
+  function close() {
+    document.removeEventListener('keydown', onKey, true);
+    gate.hidden = true;
+    document.body.style.overflow = '';
+    window.scrollTo(0, scrollY);
+    var target = document.getElementById('main-content') || document.querySelector('main') || document.body;
+    if (target) {
+      if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+      try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
+    } else if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+  }
+
+  document.getElementById('ageGateYes').addEventListener('click', function () {
+    remember(); close();
+  });
+
+  document.getElementById('ageGateNo').addEventListener('click', function () {
+    var card = document.getElementById('ageGateCard');
+    card.innerHTML =
+      '<div class="agegate-mark" aria-hidden="true">&#128220;</div>' +
+      '<h2 id="ageGateTitle">The alerts are 21+</h2>' +
+      '<p id="ageGateBody">Text alerts about alcohol availability are limited to people of ' +
+      'legal drinking age. <strong>The availability tracker is free and open to everyone</strong> — ' +
+      'no sign-up, no age requirement.</p>' +
+      '<div class="agegate-actions"><a class="agegate-yes" style="display:block;text-decoration:none" ' +
+      'href="/">Back to the free tracker</a></div>';
+    var link = card.querySelector('a');
+    if (link) link.focus();
+  });
+
+  var yes = document.getElementById('ageGateYes');
+  if (yes) yes.focus();
 })();
 </script>
 
