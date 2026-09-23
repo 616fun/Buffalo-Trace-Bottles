@@ -35,7 +35,7 @@ REPO_ROOT         = SCRIPTS_DIR.parent
 TRACKER_DATA_PATH = REPO_ROOT / "tracker_data.json"
 
 REPORT_FROM = "Buffalo Trace Daily <drops@buffalotracebottledrops.com>"
-REPORT_TO   = "brianwulff@yahoo.com"
+REPORT_TO   = os.environ.get("REPORT_TO_EMAIL") or "alerts@buffalotracebottledrops.com"
 
 BOTTLE_KEYS    = ["blantons", "weller107", "ehtaylor_sb", "eagle_rare"]
 BOTTLE_DISPLAY = {
@@ -49,6 +49,24 @@ BOTTLE_DISPLAY = {
 def log(msg):
     print(msg, flush=True)
 
+
+# ── Contact masking for logs ────────────────────────────────────────────────
+# This repo is public, and on a public repo the Actions logs are public too.
+# The recipient numbers ARE stored as a secret (TWILIO_TO_NUMBERS), but GitHub
+# masks that secret as the single joined string it was given; splitting it and
+# logging one number at a time walks straight past the masker. Twenty runs
+# published both mobile numbers in clear before this was noticed. Mask at the
+# point of logging so the masker is never the only thing standing in the way.
+def mask_phone(v):
+    s = "".join(ch for ch in str(v) if ch.isdigit())
+    return f"...{s[-4:]}" if len(s) >= 4 else "..."
+
+def mask_email(v):
+    s = str(v)
+    if "@" not in s:
+        return "..."
+    name, _, domain = s.partition("@")
+    return f"{name[:1]}...@{domain}"
 
 # ---------------------------------------------------------------------------
 # SMTP retry helper
@@ -485,7 +503,7 @@ def main():
             msg.set_content("This email requires an HTML-capable client.")
             msg.add_alternative(html_body, subtype="html")
             smtp_send_with_retry(msg, resend_api_key)
-            log(f"  Email sent to {REPORT_TO}")
+            log(f"  Email sent to {mask_email(REPORT_TO)}")
         else:
             log("  [DRY RUN or no API key] Email skipped")
 

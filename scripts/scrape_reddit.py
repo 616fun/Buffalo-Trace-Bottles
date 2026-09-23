@@ -55,7 +55,7 @@ import urllib.error
 # Reddit blocks requests without a meaningful User-Agent
 USER_AGENT = (
     "BuffaloTraceMonitor/1.0 "
-    "(gift shop availability tracker; contact: brianwulff@yahoo.com)"
+    "(gift shop availability tracker; contact: alerts@buffalotracebottledrops.com)"
 )
 
 # r/buffalotrace verified dead (2026-07-24): nothing since a 2021 pinned post
