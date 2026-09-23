@@ -1297,7 +1297,7 @@ function buildAnalyticsCharts(data) {
   document.getElementById('pattern-grid').innerHTML = headerRow + bottleRows;
   document.getElementById('pattern-legend').innerHTML =
     BOTTLE_KEYS.map(k=>`<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:${BOTTLE_COLORS[k]};flex-shrink:0"></div>${shortLabels[k]}</div>`).join('') +
-    `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:#9C8B75;opacity:.2;flex-shrink:0"></div>Not available</div>`;
+    `<div class="pg-leg-item"><div style="width:14px;height:14px;border-radius:50%;background:var(--muted);opacity:.2;flex-shrink:0"></div>Not available</div>`;
 
   // Smart insights — generated from the data in plain English
   const names = shortN;
