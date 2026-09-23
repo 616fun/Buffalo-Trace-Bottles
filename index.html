@@ -593,17 +593,15 @@
       .bp-header{padding:18px 20px 16px}
       .bp-body{padding:16px 20px 20px}
       .cal-dow{font-size:.64rem}
-      /* At 375px the card gave each column 37px, leaving a 26px content box
-         for a day number plus the score - 29.8px of content, so "20" and
-         "4/4" collided into "204/4" on full-haul days. Reclaim 14px across
-         the row from card padding, grid gaps and cell padding, which takes the
-         content box to 33px and restores a real gap. Type is untouched: it is
-         already at the 9.9px floor. */
-      .cal-grid-outer{padding:16px 12px}
-      .cal-days-grid{gap:4px}
-      .cal-week{gap:4px}
-      .cal-dow-row{gap:4px}
-      .cal-day{padding-left:2px;padding-right:2px}
+      /* At 375px a column is ~37px, leaving a 26px content box. "23" plus
+         "4/4" measures 31.7px, so they collided into "234/4". No amount of
+         padding fixes that - clearing a real gap would need a card with ~2px
+         of side padding. main only appeared to fit because its grid overflowed
+         the card by 29px. So the content gives instead: the denominator is
+         constant and the legend already states the scale, so hide it on phones.
+         Desktop is untouched, and the cell's aria-label still says
+         "4 of 4 bottles available" either way. */
+      .cal-score-d{display:none}
       .cal-day{min-height:44px}
       .analytics-kpis{grid-template-columns:1fr}
       .ak-card{padding:16px}
@@ -1628,7 +1626,7 @@ function renderCalendarMonth(data, year, month) {
         cnt=BOTTLE_KEYS.reduce((s,k)=>s+(entry[k]===1?1:0),0);
         countClass=`count-${cnt}`;
         const scoreClass=['s0','s1','s2','s3','s4'][cnt]||'';
-        scoreHTML=`<span class="cal-score ${scoreClass}">${cnt}/${BOTTLE_KEYS.length}</span>`;
+        scoreHTML=`<span class="cal-score ${scoreClass}">${cnt}<span class="cal-score-d">/${BOTTLE_KEYS.length}</span></span>`;
         BOTTLE_KEYS.forEach(key=>{
           if(entry[key]===1){
             const nm = (BOTTLE_PROFILES_DATA[key]||{}).fullName || key;
