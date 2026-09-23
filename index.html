@@ -94,7 +94,7 @@
       --bg:#F7F3ED; --surface:#FFFFFF; --surface2:#F2EDE4;
       --border:rgba(0,0,0,0.08); --border-s:#E8DDD0;
       --text:#1A0F05; --panel:#1A0F05; --on-dark:#FFFFFF; --text2:#5C4A32; --muted:#776A59;
-      --amber:#C07328; --amber-text:#9C5D21; --amber2:#E09040; --gold:#F0C060;
+      --amber:#9F5F21; --amber-text:#9C5D21; --amber2:#E09040; --gold:#F0C060;
       --green:#166534; --green2:#4CAF50; --green-bg:#F0FDF4; --green-bd:#BBF7D0;
       --red:#991B1B; --red2:#EF5350; --red-bg:#FEF2F2; --red-bd:#FECACA;
       --blantons:#9F5F21; --weller:#347B5C; --ehtaylor:#4167D6; --eagle:#D03030;
@@ -139,11 +139,11 @@
     .brand-mark{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--amber),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.1rem}
     .brand-text h1{font-family:var(--display);font-size:1.2rem;color:var(--on-dark);font-weight:700;line-height:1.1}
     .brand-text h1 span{color:var(--gold)}
-    .brand-text p{font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px;letter-spacing:.02em}
+    .brand-text p{font-size:0.68rem;color:rgba(255,255,255,0.62);margin-top:2px;letter-spacing:.02em}
     .hdr-right{display:flex;align-items:center;gap:20px}
     .hdr-meta{text-align:right}
     .hdr-update{font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.6)}
-    .hdr-days{font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:2px}
+    .hdr-days{font-size:0.65rem;color:rgba(255,255,255,0.62);margin-top:2px}
 
     /* ── DESKTOP NAV ── */
     .top-nav{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);position:sticky;top:64px;z-index:199}
@@ -232,7 +232,7 @@
     .tap-bottles{display:flex;flex-wrap:wrap;gap:10px 24px}
     .tap-bottle-avail{font-size:.95rem;font-weight:600;color:var(--green-on-dark);display:flex;align-items:center;gap:6px}
     .tap-bottle-avail::before{content:'✓';font-size:.8rem;opacity:.8}
-    .tap-bottle-unavail{font-size:.85rem;font-weight:500;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:6px}
+    .tap-bottle-unavail{font-size:.85rem;font-weight:500;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:6px}
     .tap-bottle-unavail::before{content:'✗';font-size:.75rem}
     .today-sr-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:var(--hl-bg);border-top:1px solid var(--hl-bd);font-size:.8rem;color:var(--text2)}
     .today-sr-strip.show{display:flex}
@@ -303,7 +303,7 @@
     .hunt-outlook{background:var(--panel);border-radius:20px;overflow:hidden;margin-bottom:28px;box-shadow:var(--shadow-md);position:relative}
     .hunt-outlook::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.32) 0%,transparent 60%);pointer-events:none}
     .ho-inner{padding:32px 36px;position:relative;z-index:1}
-    .ho-eyebrow{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.35);margin-bottom:10px}
+    .ho-eyebrow{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.62);margin-bottom:10px}
     .ho-verdict{font-family:var(--display);font-size:2rem;font-weight:700;color:var(--on-dark);line-height:1.15;margin-bottom:8px}
     .ho-verdict .vg{color:var(--green-on-dark)}.ho-verdict .vm{color:var(--gold)}.ho-verdict .vs{color:var(--red-on-dark)}
     .ho-sub{font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:24px;line-height:1.5}
@@ -515,7 +515,7 @@
     .sh-meta{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:3px}
     .sh-count{flex-shrink:0;text-align:right;position:relative;z-index:1}
     .sh-count-num{font-size:2.2rem;font-weight:700;color:var(--gold);line-height:1}
-    .sh-count-lbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.35);margin-top:2px}
+    .sh-count-lbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.62);margin-top:2px}
     .sr-cards{display:flex;flex-direction:column;gap:10px}
     .sr-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;display:flex;box-shadow:var(--shadow);transition:box-shadow .2s}
     .sr-card:hover{box-shadow:var(--shadow-md)}
@@ -950,13 +950,13 @@
         <div class="cal-leg-item" data-bottle="bp-weller107"><span class="cal-leg-chip" style="background:var(--weller)">W</span>Weller 107</div>
         <div class="cal-leg-item" data-bottle="bp-ehtaylor_sb"><span class="cal-leg-chip" style="background:var(--ehtaylor)">EH</span>E.H. Taylor</div>
         <div class="cal-leg-item" data-bottle="bp-eagle_rare"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
-        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:#1e2535;color:#64748b;border:1px solid #334155">🔒</span>Closed</div>
+        <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--cal-closed-bg);color:var(--closure-fg);border:1px solid var(--cal-closed-bd)">🔒</span>Closed</div>
         <div class="cal-leg-item"><span style="font-size:.8rem">🎯</span>Drop-watch day (bourbon holiday)</div>
         <div class="cal-leg-divider"></div>
         <div class="cal-leg-heat">
-          <div class="cal-leg-sq" style="background:#d4edda;border:1px solid #9fcea9"></div>
-          <div class="cal-leg-sq" style="background:#fef9e7;border:1px solid #f9e4a0"></div>
-          <div class="cal-leg-sq" style="background:#fdecea;border:1px solid #f5bdb8"></div>
+          <div class="cal-leg-sq" style="background:var(--cal-4-bg);border:1px solid var(--cal-4-bd)"></div>
+          <div class="cal-leg-sq" style="background:var(--cal-2-bg);border:1px solid var(--cal-2-bd)"></div>
+          <div class="cal-leg-sq" style="background:var(--cal-0-bg);border:1px solid var(--cal-0-bd)"></div>
         </div>
         <span style="font-size:.72rem;color:var(--muted)">More → fewer bottles</span>
       </div>
