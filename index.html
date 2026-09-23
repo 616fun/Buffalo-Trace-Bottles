@@ -920,8 +920,8 @@ document.querySelectorAll('.nav-link,.bn-item').forEach(btn => {
 
 // Honour a hash present on first load (deep link, refresh, bookmark).
 // No hash stays clean at "/", renders Today, and adds no history entry.
-// Charts are built later by applyData(), which re-renders whichever view
-// is active once the data has landed.
+// The view is drawn by init(), which re-asserts whichever view is active
+// once appData exists. (Do not move this to applyData() — see init().)
 if(location.hash) showPage(location.hash.replace(/^#/,''));
 
 // ─────────────────────────────────────────────
@@ -1814,7 +1814,19 @@ function init(data) {
   renderBottles(data);
   renderSpecialProfiles(data);
   renderGuide();
-  // Analytics and calendar init lazily on first visit
+  // Analytics and calendar init lazily on first visit.
+  //
+  // ...but a hash in the URL (e.g. /#calendar) makes one of them active BEFORE
+  // appData exists, so showPage() skipped its build and the view renders empty.
+  // Re-assert the active view now that data is in.
+  //
+  // This must live here, not in applyData(): applyData() only runs when the
+  // fetched data DIFFERS from INLINE_DATA, and the pipeline rewrites
+  // INLINE_DATA every run, so it normally never fires. Relying on it left
+  // every direct link to #calendar / #analytics permanently blank.
+  const activeEl = document.querySelector('.page.active');
+  const current = activeEl ? activeEl.id.replace('page-','') : 'today';
+  if(current==='analytics' || current==='calendar') showPage(current);
 }
 
 function applyData(data) {
