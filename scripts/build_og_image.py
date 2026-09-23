@@ -93,7 +93,7 @@ def build(data, out_path: Path):
     else:
         y_foot = 520
 
-    d.text((70, y_foot), "buffalotracebottledrops.com — updated every morning, 7am EST",
+    d.text((70, y_foot), "buffalotracebottledrops.com — updated every morning, from 7am EST",
            font=sans_b(26), fill="#9C8B75")
 
     img.save(out_path, optimize=True)

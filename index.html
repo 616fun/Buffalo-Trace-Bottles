@@ -59,7 +59,7 @@
           {
             "@type": "Question",
             "name": "Is the availability tracker accurate?",
-            "acceptedAnswer": {"@type": "Answer", "text": "We check the Buffalo Trace website each morning at 7am EST (8am on Sundays). The gift shop opens at 9am, so the data is as fresh as possible. Availability can occasionally change after we check, but it is reliable for planning purposes."}
+            "acceptedAnswer": {"@type": "Answer", "text": "We start checking the Buffalo Trace website at 7am EST each morning (8am on Sundays) and log the list as soon as they post it. Availability can occasionally change after we check, but it is reliable for planning purposes."}
           },
           {
             "@type": "Question",
@@ -615,7 +615,7 @@
         <span class="sms-cta-body">
           <span class="sms-cta-badge">Coming soon</span>
           <span class="sms-cta-title">Daily bottle alerts by text</span>
-          <span class="sms-cta-sub">Not sending yet. The tracker stays free — a pass just delivers it to your phone at 7am. $8 for 30 days or $24 a year when it launches. Join the waitlist. US numbers, 21+.</span>
+          <span class="sms-cta-sub">Not sending yet. The tracker stays free — always. A pass pays only for the text, sent each morning as soon as the list posts. $8 for 30 days or $24 a year at launch. Join the waitlist. US numbers, 21+.</span>
         </span>
         <span class="sms-cta-arrow">→</span>
       </a>
@@ -774,7 +774,7 @@
 
 <footer>
   <p><a href="/sms.html">SMS Alerts</a> &nbsp;·&nbsp; <a href="/privacy/">Privacy</a> &nbsp;·&nbsp; <a href="/terms/">Terms</a> &nbsp;·&nbsp; Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a></p>
-  <p>Auto-updated Mon–Sat at 7am EST · Sun at 8am EST &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
+  <p>Updated as soon as the data is available — as early as 7am EST (8am Sun) &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery</p>
   <p style="margin-top:10px"><a href="/blantons/" style="color:inherit">Blanton's today</a> &nbsp;·&nbsp; <a href="/weller-antique-107/" style="color:inherit">Weller 107 today</a> &nbsp;·&nbsp; <a href="/eh-taylor-small-batch/" style="color:inherit">E.H. Taylor today</a> &nbsp;·&nbsp; <a href="/eagle-rare/" style="color:inherit">Eagle Rare today</a></p>
   <p style="max-width:760px;margin:14px auto 0;font-size:.7rem;line-height:1.7;opacity:.75">Daily bottle availability tracker for the Buffalo Trace Distillery gift shop in Frankfort, Kentucky — see what's on the shelf today (Blanton's Single Barrel, Weller Antique 107, E.H. Taylor Small Batch, Eagle Rare 10-Year), get Bayesian predictions for tomorrow's drop, browse the availability calendar, and follow the special release log for bottles like Stagg, Weller 12 Year, Weller C.Y.P.B., and Single Oak Rye Bourbon.</p>
 </footer>
@@ -1355,7 +1355,7 @@ function buildAnalyticsCharts(data) {
   });
   if(insights.length%2!==0) insights.push({ icon:'📅',
     head:'Tracking 4 bottles daily',
-    body:`Every morning Mon–Sat at 7am EST, we check the Buffalo Trace gift shop site and log what\'s available. Sunday checks run at 8am.`
+    body:`Checks start at 7am EST Mon–Sat and 8am on Sunday. We watch the Buffalo Trace gift shop site and log what\'s available as soon as they post it.`
   });
 
   document.getElementById('insights-grid').innerHTML = insights.slice(0,4).map(ins=>`
@@ -1690,7 +1690,7 @@ function renderGuide() {
     {
       icon:'🗓',
       title:'When to Go',
-      body:`<p>The gift shop at Buffalo Trace is open <strong>Monday–Saturday 9am–5pm</strong> and <strong>Sunday 11am–5pm</strong> (EST). Bottle availability is posted on their website each morning — this tracker checks it at 7am EST Mon–Sat and 8am EST on Sunday.</p>
+      body:`<p>The gift shop at Buffalo Trace is open <strong>Monday–Saturday 9am–5pm</strong> and <strong>Sunday 11am–5pm</strong> (EST). Bottle availability is posted on their website each morning — this tracker starts checking at 7am EST Mon–Sat and 8am EST on Sunday, and logs the list as soon as it appears.</p>
       <p>Bottles can sell out quickly on high-demand days. Your best strategy is to check this tracker first thing in the morning and arrive near opening time.</p>`,
       tips:[
         {icon:'⏰', text:'<strong>Arrive early.</strong> Lines can form before the gift shop opens, especially on weekends and days when multiple bottles are available.'},
@@ -1736,7 +1736,7 @@ function renderGuide() {
       title:'FAQ',
       faq: true,
       faqs:[
-        {q:'Is the availability tracker always accurate?', a:'We check the Buffalo Trace website each morning at 7am EST (8am on Sundays). The gift shop opens at 9am, so the data is as fresh as possible. Availability can occasionally change after we check, but we\'ve found it to be reliable for planning purposes.'},
+        {q:'Is the availability tracker always accurate?', a:'We start checking the Buffalo Trace website at 7am EST each morning (8am on Sundays) and log the list as soon as they post it. Availability can occasionally change after we check, but we\'ve found it to be reliable for planning purposes.'},
         {q:'Can I buy these bottles online?', a:'No. These are in-person-only purchases at the gift shop. That\'s part of what makes visiting special — you have to be there.'},
         {q:'What if the bottle I want isn\'t available today?', a:'Come back tomorrow — or check the forecast. Our Bayesian model predicts tomorrow\'s likelihood for each bottle. Most bottles appear multiple times per week based on historical patterns.'},
         {q:'Why are these bottles so hard to find at regular retailers?', a:'Buffalo Trace\'s production capacity is limited relative to demand. Allocated bottles are distributed in small quantities to retailers, where they\'re often snapped up immediately or sold at a markup. The distillery gift shop is one of the few places to reliably find them at MSRP.'},
