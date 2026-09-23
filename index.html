@@ -2251,9 +2251,17 @@ fetch('./data.json?_='+Date.now())
       var placement = a.closest('.bottom-nav') ? 'bottom-nav'
                     : a.closest('header')      ? 'nav'
                     : 'footer';
+      /* Coarse device hint. CF-Device-Type is an Enterprise header and is
+         absent on this plan, so the server had nothing to record. A pointer
+         and width test is one bit, needs no user-agent sniffing, and the
+         Worker whitelists it to exactly 'mobile' or 'desktop'. It matters
+         because stage 4 of the plan turns on how much of this is desktop,
+         where Venmo's web flow is poor. */
+      var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      var device = (coarse || window.innerWidth < 768) ? 'mobile' : 'desktop';
       if (navigator.sendBeacon) {
         navigator.sendBeacon('/api/tip-click',
-          new Blob([JSON.stringify({ placement: placement })],
+          new Blob([JSON.stringify({ placement: placement, device: device })],
                    { type: 'application/json' }));
       }
     } catch (_) { /* never interfere with the click */ }
