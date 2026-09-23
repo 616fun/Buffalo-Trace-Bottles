@@ -93,7 +93,7 @@
     :root {
       --bg:#F7F3ED; --surface:#FFFFFF; --surface2:#F2EDE4;
       --border:rgba(0,0,0,0.08); --border-s:#E8DDD0;
-      --text:#1A0F05; --text2:#5C4A32; --muted:#9C8B75;
+      --text:#1A0F05; --text2:#5C4A32; --muted:#776A59;
       --amber:#C07328; --amber2:#E09040; --gold:#F0C060;
       --green:#166534; --green2:#4CAF50; --green-bg:#F0FDF4; --green-bd:#BBF7D0;
       --red:#991B1B; --red2:#EF5350; --red-bg:#FEF2F2; --red-bd:#FECACA;
@@ -188,9 +188,9 @@
     .kpi-num.green{color:#4ADE80}
     .kpi-num.red{color:#FCA5A5}
     .kpi-num.gold{color:var(--gold)}
-    .kpi-lbl{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.35);margin-top:4px}
+    .kpi-lbl{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.62);margin-top:4px}
     .today-avail-panel{background:#1C3829;border-top:1px solid #2D6A4F;padding:20px 36px}
-    .tap-eyebrow{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:14px}
+    .tap-eyebrow{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:14px}
     .tap-bottles{display:flex;flex-wrap:wrap;gap:10px 24px}
     .tap-bottle-avail{font-size:.95rem;font-weight:600;color:#4ADE80;display:flex;align-items:center;gap:6px}
     .tap-bottle-avail::before{content:'✓';font-size:.8rem;opacity:.8}
@@ -571,7 +571,7 @@
 <!-- HEADER -->
 <header>
   <div class="header-bar">
-    <div class="brand" onclick="showPage('today')">
+    <div class="brand" onclick="navigateTo('today')">
       <div class="brand-mark">🥃</div>
       <div class="brand-text">
         <h1>Buffalo Trace <span>Bottle Drops</span></h1>
@@ -893,9 +893,36 @@ function showPage(pageId) {
   }
 }
 
-document.querySelectorAll('.nav-link,.bn-item').forEach(btn => {
-  btn.addEventListener('click', () => showPage(btn.dataset.page));
+// ── Routing ─────────────────────────────────────────────────────────
+// The visible view is reflected in location.hash so views can be linked,
+// bookmarked, refreshed and reached with the browser Back button. Before
+// this, five views shared one URL: Back left the site entirely and Share
+// could only ever send the homepage.
+//
+// Division of labour: showPage() RENDERS, navigateTo() records intent in
+// the URL and lets the hashchange handler do the render. That keeps one
+// render path, so Back/Forward and a click behave identically.
+function navigateTo(pageId){
+  if(!PAGES.includes(pageId)) pageId = 'today';
+  const target = '#' + pageId;
+  // Already there (incl. first click on Today with a clean URL) — just render.
+  if((location.hash || '#today') === target){ showPage(pageId); return; }
+  location.hash = pageId;          // fires hashchange -> showPage
+}
+
+window.addEventListener('hashchange', () => {
+  showPage((location.hash || '#today').replace(/^#/,''));
 });
+
+document.querySelectorAll('.nav-link,.bn-item').forEach(btn => {
+  btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+});
+
+// Honour a hash present on first load (deep link, refresh, bookmark).
+// No hash stays clean at "/", renders Today, and adds no history entry.
+// Charts are built later by applyData(), which re-renders whichever view
+// is active once the data has landed.
+if(location.hash) showPage(location.hash.replace(/^#/,''));
 
 // ─────────────────────────────────────────────
 //  RENDER: TODAY
@@ -1820,7 +1847,7 @@ function checkStale(data, usedFallback) {
 // profile card on the Bottles page (smooth scroll + gold flash).
 function specialSlug(name){ return 'sp-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
 function goToBottle(id){
-  showPage('bottles');
+  navigateTo('bottles');
   setTimeout(()=>{
     const el = document.getElementById(id);
     if(el){
@@ -1841,7 +1868,7 @@ document.getElementById('share-btn').addEventListener('click', async () => {
   const payload = {
     title: 'Buffalo Trace Bottle Drops',
     text: "See what's on the shelf at the Buffalo Trace gift shop today:",
-    url: 'https://buffalotracebottledrops.com/'
+    url: location.href
   };
   try {
     if (navigator.share) { await navigator.share(payload); return; }
