@@ -888,8 +888,18 @@ function showPage(pageId) {
   });
   window.scrollTo(0,0);
   if(appData) {
-    if(pageId==='analytics' && !chartsInit.analytics) { buildAnalyticsCharts(appData); chartsInit.analytics=true; }
-    if(pageId==='calendar' && !chartsInit.calendar) { buildCalendar(appData); chartsInit.calendar=true; }
+    // try/catch matters: these run from init(), and an exception there is
+    // uncaught at top level — it would abort the rest of the boot script,
+    // taking the live data fetch and the stale-data banner with it.
+    // The flag is only set on success, so a later click retries cleanly.
+    if(pageId==='analytics' && !chartsInit.analytics) {
+      try { buildAnalyticsCharts(appData); chartsInit.analytics=true; }
+      catch(e){ console.warn('[analytics] build deferred:', e && e.message); }
+    }
+    if(pageId==='calendar' && !chartsInit.calendar) {
+      try { buildCalendar(appData); chartsInit.calendar=true; }
+      catch(e){ console.warn('[calendar] build deferred:', e && e.message); }
+    }
   }
 }
 
@@ -1824,9 +1834,20 @@ function init(data) {
   // fetched data DIFFERS from INLINE_DATA, and the pipeline rewrites
   // INLINE_DATA every run, so it normally never fires. Relying on it left
   // every direct link to #calendar / #analytics permanently blank.
-  const activeEl = document.querySelector('.page.active');
-  const current = activeEl ? activeEl.id.replace('page-','') : 'today';
-  if(current==='analytics' || current==='calendar') showPage(current);
+  // Chart.js is loaded with `defer`, so it does NOT exist while this inline
+  // script is running. Re-asserting the view synchronously here threw
+  // "Chart is not defined" on every cold #analytics load. Deferred scripts
+  // finish before DOMContentLoaded, so wait for that.
+  const reassert = () => {
+    const activeEl = document.querySelector('.page.active');
+    const current = activeEl ? activeEl.id.replace('page-','') : 'today';
+    if(current==='analytics' || current==='calendar') showPage(current);
+  };
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', reassert, {once:true});
+  } else {
+    reassert();
+  }
 }
 
 function applyData(data) {
