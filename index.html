@@ -374,7 +374,11 @@
     .cal-grid-outer{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 18px;box-shadow:var(--shadow)}
     .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
     .cal-dow{text-align:center;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0}
-    .cal-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+    .cal-days-grid{display:flex;flex-direction:column;gap:5px}
+    /* Each week is its own 7-column grid so it can carry role="row".
+       Same 1fr columns and same 5px gaps as the single grid it replaces,
+       so column widths and cell geometry are unchanged. */
+    .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
     .cal-day{min-height:82px;background:var(--surface2);border-radius:10px;padding:7px 6px 5px;display:flex;flex-direction:column;border:1.5px solid transparent;transition:all .15s;cursor:default}
     .cal-day.has-data{background:var(--surface);border-color:var(--border-s)}
     .cal-day.count-4{background:var(--cal-4-bg)!important;border-color:var(--cal-4-bd)!important}
@@ -754,12 +758,16 @@
         <button class="cal-nav-btn" id="cal-next">›</button>
       </div>
       <div class="cal-month-summary" id="cal-month-summary"></div>
-      <div class="cal-grid-outer">
-        <div class="cal-dow-row">
-          <div class="cal-dow">Sun</div><div class="cal-dow">Mon</div><div class="cal-dow">Tue</div>
-          <div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div>
+      <!-- role="table" rather than a real <table>: the layout is CSS grid, and an
+           explicit ARIA role survives that where a native table's implicit
+           semantics would not. role="grid" was rejected on purpose - it obliges
+           us to implement arrow-key navigation, and these cells are not
+           interactive. -->
+      <div class="cal-grid-outer" id="cal-table" role="table" aria-label="Bottle availability calendar">
+        <div class="cal-dow-row" role="row">
+          <div class="cal-dow" role="columnheader" aria-label="Sunday">Sun</div><div class="cal-dow" role="columnheader" aria-label="Monday">Mon</div><div class="cal-dow" role="columnheader" aria-label="Tuesday">Tue</div><div class="cal-dow" role="columnheader" aria-label="Wednesday">Wed</div><div class="cal-dow" role="columnheader" aria-label="Thursday">Thu</div><div class="cal-dow" role="columnheader" aria-label="Friday">Fri</div><div class="cal-dow" role="columnheader" aria-label="Saturday">Sat</div>
         </div>
-        <div class="cal-days-grid" id="cal-days-grid"></div>
+        <div class="cal-days-grid" id="cal-days-grid" role="rowgroup"></div>
       </div>
       <div class="cal-legend">
         <div class="cal-leg-item" data-bottle="bp-blantons"><span class="cal-leg-chip" style="background:var(--blantons)">B</span>Blanton's</div>
@@ -1580,7 +1588,10 @@ function renderCalendarMonth(data, year, month) {
     summaryEl.style.display='none';
   }
 
-  for(let i=0;i<firstDay;i++) html += `<div class="cal-day empty"></div>`;
+  const DOW_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const esc = t => String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const cells = [];
+  for(let i=0;i<firstDay;i++) cells.push(`<div class="cal-day empty" role="cell"></div>`);
 
   for(let day=1;day<=daysInMonth;day++){
     const mm=String(month+1).padStart(2,'0'), dd=String(day).padStart(2,'0');
@@ -1590,21 +1601,26 @@ function renderCalendarMonth(data, year, month) {
     const hasData=!!entry;
 
     let countClass='', scoreHTML='', chipsHTML='', tooltipAttr='';
+    let isClos=false, closureLabel='', cnt=0, availNames=[];
     if(hasData){
-      const isClos = entry.is_closure || false;
+      isClos = entry.is_closure || false;
       if(isClos){
-        const closureLabel = entry.notes || 'Holiday';
+        closureLabel = entry.notes || 'Holiday';
         countClass = 'is-closure';
         scoreHTML = `<span class="cal-score">🔒</span>`;
         chipsHTML = '';
         tooltipAttr = ` title="Closed — ${closureLabel}"`;
       } else {
-        const cnt=BOTTLE_KEYS.reduce((s,k)=>s+(entry[k]===1?1:0),0);
+        cnt=BOTTLE_KEYS.reduce((s,k)=>s+(entry[k]===1?1:0),0);
         countClass=`count-${cnt}`;
         const scoreClass=['s0','s1','s2','s3','s4'][cnt]||'';
         scoreHTML=`<span class="cal-score ${scoreClass}">${cnt}/${BOTTLE_KEYS.length}</span>`;
         BOTTLE_KEYS.forEach(key=>{
-          if(entry[key]===1) chipsHTML+=`<span class="cal-chip cc-${key}" data-bottle="bp-${key}" title="${key}">${CHIP_LABELS[key]}</span>`;
+          if(entry[key]===1){
+            const nm = (BOTTLE_PROFILES_DATA[key]||{}).fullName || key;
+            availNames.push(nm);
+            chipsHTML+=`<span class="cal-chip cc-${key}" data-bottle="bp-${key}" title="${nm}">${CHIP_LABELS[key]}</span>`;
+          }
         });
       }
     }
@@ -1614,17 +1630,39 @@ function renderCalendarMonth(data, year, month) {
     const hd = hdays[day];
     const hdBadge = hd ? `<span class="cal-hd-badge" title="${hd} — special drops historically more likely">🎯</span>` : '';
 
-    html+=`<div class="cal-day ${hasData?'has-data':''} ${hasData?countClass:''} ${isToday?'today-cell':''}"${tooltipAttr}>
-      <div class="cal-day-top">
+    // One sentence per cell, so a screen reader gets the whole day at once
+    // instead of "23", "3/4", "B", "W", "EH" as five unrelated fragments.
+    let label = `${DOW_FULL[new Date(year,month,day).getDay()]}, ${monthNames[month]} ${day}`;
+    if(isToday) label += ', today';
+    if(!hasData) label += '. No data recorded';
+    else if(isClos) label += `. Gift shop closed — ${closureLabel}`;
+    else {
+      label += `. ${cnt} of ${BOTTLE_KEYS.length} bottles available`;
+      if(availNames.length) label += `: ${availNames.join(', ')}`;
+    }
+    if(hd) label += `. Drop-watch day: ${hd}`;
+    label += '.';
+
+    cells.push(`<div class="cal-day ${hasData?'has-data':''} ${hasData?countClass:''} ${isToday?'today-cell':''}" role="cell" aria-label="${esc(label)}"${tooltipAttr}>
+      <div class="cal-day-top" aria-hidden="true">
         <div style="display:flex;align-items:center;gap:3px">
           <span class="cal-day-num">${day}</span>${todayBadge}${hdBadge}
         </div>
         ${scoreHTML}
       </div>
-      <div class="cal-chips">${chipsHTML}</div>
-    </div>`;
+      <div class="cal-chips" aria-hidden="true">${chipsHTML}</div>
+    </div>`);
+  }
+
+  // Pad the final week so every row has seven cells and column position stays
+  // meaningful when navigating by column.
+  while(cells.length % 7 !== 0) cells.push(`<div class="cal-day empty" role="cell"></div>`);
+  for(let w=0; w<cells.length; w+=7){
+    html += `<div class="cal-week" role="row">${cells.slice(w,w+7).join('')}</div>`;
   }
   grid.innerHTML = html;
+  const tbl = document.getElementById('cal-table');
+  if(tbl) tbl.setAttribute('aria-label', `Bottle availability calendar, ${monthNames[month]} ${year}`);
 }
 
 // ─────────────────────────────────────────────
