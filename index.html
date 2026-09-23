@@ -126,7 +126,7 @@
       --unavail-bd:#E5E7EB;--badge-out-bg:#F9FAFB;
       /* available panel */
       --avail-panel-bg:#1C3829;
-      color-scheme:light;
+      color-scheme:light dark;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{font-size:16px;scroll-behavior:smooth}
@@ -643,6 +643,92 @@
     @media(max-width:560px){.sms-cta{padding:10px 12px;gap:9px;margin-bottom:24px}
       .sms-cta-body{flex-direction:column;gap:1px}
       .sms-cta-title{font-size:.82rem}.sms-cta-sub{font-size:.7rem}}
+  
+    /* ═══ DARK MODE ═══════════════════════════════════════════════════════
+       Follows the operating system. No toggle: the people this serves are
+       checking a phone at 7am and have already set their OS to dark, and the
+       mobile nav has no room for a seventh control.
+
+       Only the tokens below change. The four bottle colours, --gold, --amber
+       as a background, and every white-on-dark value are deliberately absent:
+       they were chosen to work in both themes, so overriding them here would
+       be two sources of truth for one colour.
+
+       Every foreground/background pair in this block was contrast-checked
+       programmatically against its real partner, not eyeballed. */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        /* surfaces and ink — the page inverts, but --panel stays the dark block it
+         already is, so the hero and footer keep reading as distinct */
+        --bg:#15100B;
+        --surface:#1F1811;
+        --surface2:#2A2019;
+        --panel:#0D0906;
+        --border:rgba(255,255,255,0.10);
+        --border-s:#3A2E22;
+        --text:#F4DCC6;
+        --text2:#BFA98A;
+        --muted:#978874;
+
+        /* amber as text needs to go lighter here, not darker */
+        --amber-text:#C8772A;
+
+        /* status families: tint the surface down, lift the ink */
+        --green:#28B75E;
+        --green-bg:#083F19;
+        --green-bd:#11923E;
+        --red:#E25959;
+        --red-bg:#420505;
+        --red-bd:#A00303;
+        --hl-bg:#4C3D00;
+        --hl-bd:#A08103;
+        --hl-fg:#F0955E;
+        --stale-bg:#493A03;
+        --stale-bd:#9A780A;
+        --stale-fg:#CFA03D;
+
+        /* calendar heat ramp */
+        --cal-0-bg:#440D06;
+        --cal-0-bd:#861C13;
+        --cal-0-fg:#DA665A;
+        --cal-1-bg:#4A2700;
+        --cal-1-bd:#8A5A0F;
+        --cal-1-fg:#DE8236;
+        --cal-2-bg:#473803;
+        --cal-2-bd:#907009;
+        --cal-2-fg:#D89900;
+        --cal-3-bg:#163419;
+        --cal-3-bd:#306935;
+        --cal-3-fg:#47A962;
+        --cal-4-bg:#16341D;
+        --cal-4-bd:#34653E;
+        --cal-4-fg:#3DAA62;
+        --cal-today-bg:#524100;
+
+        /* closed days — already dark in light mode, so they are lifted to stay
+         distinguishable from the page rather than darkened further */
+        --closure-bg:#1A253C;
+        --closure-bd:#41536C;
+        --closure-fg:#94A3B8;
+        --cal-closed-bg:#1F2737;
+        --cal-closed-bd:#41536C;
+        --cal-closed-fg:#7F90A8;
+
+        /* everything else that names a light surface */
+        --sp-fact-bg:#433205;
+        --sp-fact-bd:#896D1A;
+        --sr-star:#C99A2E;
+        --v-good-fg:#20C45E;
+        --avail-panel-bg:#1B3628;
+        --badge-out-bg:#212931;
+        --unavail-bd:#434956;
+
+        /* Shadows are invisible against a dark page; lean on the borders. */
+        --shadow-sm:0 1px 2px rgba(0,0,0,0.5);
+        --shadow:0 1px 4px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.05);
+        --shadow-md:0 4px 16px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.06);
+      }
+    }
   </style>
 </head>
 <body>
