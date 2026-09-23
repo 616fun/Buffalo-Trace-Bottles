@@ -593,8 +593,17 @@
       .bp-header{padding:18px 20px 16px}
       .bp-body{padding:16px 20px 20px}
       .cal-dow{font-size:.64rem}
+      /* At 375px the card gave each column 37px, leaving a 26px content box
+         for a day number plus the score - 29.8px of content, so "20" and
+         "4/4" collided into "204/4" on full-haul days. Reclaim 14px across
+         the row from card padding, grid gaps and cell padding, which takes the
+         content box to 33px and restores a real gap. Type is untouched: it is
+         already at the 9.9px floor. */
+      .cal-grid-outer{padding:16px 12px}
+      .cal-days-grid{gap:4px}
+      .cal-week{gap:4px}
+      .cal-dow-row{gap:4px}
       .cal-day{padding-left:2px;padding-right:2px}
-      .cal-day-top{gap:4px}
       .cal-day{min-height:44px}
       .analytics-kpis{grid-template-columns:1fr}
       .ak-card{padding:16px}
