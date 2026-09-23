@@ -372,13 +372,16 @@
     .cal-sum-item{font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:5px}
     .cal-sum-val{font-weight:700;color:var(--text)}
     .cal-grid-outer{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 18px;box-shadow:var(--shadow)}
-    .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
+    .cal-dow-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:6px}
     .cal-dow{text-align:center;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0}
     .cal-days-grid{display:flex;flex-direction:column;gap:5px}
     /* Each week is its own 7-column grid so it can carry role="row".
-       Same 1fr columns and same 5px gaps as the single grid it replaces,
-       so column widths and cell geometry are unchanged. */
-    .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+       minmax(0,1fr), not 1fr: a bare 1fr keeps an auto min-content floor, so
+       columns would size per week and Monday would stop lining up with Monday.
+       Pinning the floor to 0 makes every column exactly one seventh in every
+       week, and incidentally ends the ~29px horizontal overflow the single
+       grid had at phone widths, where cells spilled past the card padding. */
+    .cal-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
     .cal-day{min-height:82px;background:var(--surface2);border-radius:10px;padding:7px 6px 5px;display:flex;flex-direction:column;border:1.5px solid transparent;transition:all .15s;cursor:default}
     .cal-day.has-data{background:var(--surface);border-color:var(--border-s)}
     .cal-day.count-4{background:var(--cal-4-bg)!important;border-color:var(--cal-4-bd)!important}
