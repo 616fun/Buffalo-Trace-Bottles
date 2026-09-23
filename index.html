@@ -112,7 +112,7 @@
     /* ── HEADER ── */
     header{background:var(--text);position:sticky;top:0;z-index:200}
     .header-bar{max-width:1100px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;cursor:pointer}
     .brand-mark{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--amber),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.1rem}
     .brand-text h1{font-family:var(--display);font-size:1.2rem;color:#fff;font-weight:700;line-height:1.1}
     .brand-text h1 span{color:var(--gold)}
@@ -126,7 +126,7 @@
     .top-nav{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);position:sticky;top:64px;z-index:199}
     .top-nav-inner{max-width:1100px;margin:0 auto;padding:0 16px 0 28px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
     .top-nav-inner::-webkit-scrollbar{display:none}
-    .nav-link{text-decoration:none;font-size:0.78rem;font-weight:500;color:var(--muted);padding:13px 16px;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--ui)}
+    .nav-link{text-decoration:none;font-size:0.78rem;font-weight:500;color:var(--muted);padding:14px 16px;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--ui)}
     .nav-link:hover{color:var(--text2)}
     .nav-link.active{color:var(--amber);border-bottom-color:var(--amber)}
     .nav-spacer{flex:1}
@@ -163,6 +163,16 @@
 
     /* ── MAIN ── */
     main{max-width:1100px;margin:0 auto;padding:36px 28px 100px;min-height:70vh}
+    /* Visually hidden but available to screen readers (skip link target,
+       live-region announcer). Not display:none — that would hide it from AT. */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+             clip:rect(0 0 0 0);white-space:nowrap;border:0}
+    .skip-link{position:absolute;left:8px;top:-48px;z-index:200;background:var(--amber);
+               color:#fff;padding:10px 16px;border-radius:0 0 8px 8px;font-family:var(--ui);
+               font-size:.82rem;font-weight:600;text-decoration:none;transition:top .15s}
+    .skip-link:focus{top:0}
+    /* Panels take focus on view change so screen readers land in the new view. */
+    .page:focus{outline:none}
     .page{display:none}
     .page.active{display:block}
 
@@ -567,17 +577,21 @@
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<!-- Announces view changes to screen readers. The nav swaps the whole page
+     without a document load, so without this nothing is spoken. -->
+<div id="view-announcer" class="sr-only" role="status" aria-live="polite"></div>
 
 <!-- HEADER -->
 <header>
   <div class="header-bar">
-    <div class="brand" onclick="navigateTo('today')">
+    <a class="brand" href="/" onclick="if(!event.metaKey&&!event.ctrlKey&&!event.shiftKey){event.preventDefault();navigateTo('today');}">
       <div class="brand-mark">🥃</div>
       <div class="brand-text">
         <h1>Buffalo Trace <span>Bottle Drops</span></h1>
         <p>Gift Shop Availability Tracker · Frankfort, KY</p>
       </div>
-    </div>
+    </a>
     <div class="hdr-right">
       <div class="hdr-meta">
         <div class="hdr-update" id="hdr-update">Loading…</div>
@@ -601,7 +615,7 @@
 </nav>
 
 <!-- MAIN -->
-<main>
+<main id="main-content" tabindex="-1">
   <div id="loading-msg" style="text-align:center;padding:80px 24px;color:var(--muted);font-style:italic">Loading tracker data…</div>
   <div id="content" style="display:none">
 
@@ -877,16 +891,30 @@ const PAGES = ['today','analytics','calendar','bottles','guide','specials'];
 let chartsInit = {};
 let appData = null;
 
-function showPage(pageId) {
+function showPage(pageId, opts) {
+  opts = opts || {};
   if (!PAGES.includes(pageId)) pageId = 'today';
   PAGES.forEach(id => {
     const el = document.getElementById('page-'+id);
-    if(el) el.classList.toggle('active', id===pageId);
+    if(el) { el.classList.toggle('active', id===pageId); if(id===pageId) el.tabIndex = -1; }
   });
   document.querySelectorAll('.nav-link,.bn-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.page===pageId);
+    const on = el.dataset.page === pageId;
+    el.classList.toggle('active', on);
+    // Sighted users get the highlight; this is the same fact for everyone else.
+    if(on) el.setAttribute('aria-current','page'); else el.removeAttribute('aria-current');
   });
   window.scrollTo(0,0);
+  // Only for user-initiated navigation — not the first paint, and not the
+  // re-render applyData() does when fresh data lands.
+  if(opts.announce){
+    const btn = document.querySelector('.nav-link[data-page="'+pageId+'"]');
+    const label = btn ? btn.textContent.trim() : pageId;
+    const ann = document.getElementById('view-announcer');
+    if(ann) ann.textContent = label + ' view';
+    const panel = document.getElementById('page-'+pageId);
+    if(panel) { try { panel.focus({preventScroll:true}); } catch(e) { panel.focus(); } }
+  }
   if(appData) {
     // try/catch matters: these run from init(), and an exception there is
     // uncaught at top level — it would abort the rest of the boot script,
@@ -916,12 +944,16 @@ function navigateTo(pageId){
   if(!PAGES.includes(pageId)) pageId = 'today';
   const target = '#' + pageId;
   // Already there (incl. first click on Today with a clean URL) — just render.
-  if((location.hash || '#today') === target){ showPage(pageId); return; }
+  if((location.hash || '#today') === target){ showPage(pageId, {announce:true}); return; }
   location.hash = pageId;          // fires hashchange -> showPage
 }
 
 window.addEventListener('hashchange', () => {
-  showPage((location.hash || '#today').replace(/^#/,''));
+  const h = (location.hash || '').replace(/^#/,'');
+  if(!h){ showPage('today', {announce:true}); return; }
+  // Only act on hashes that name a view. Anything else — the skip link's
+  // #main-content, or a hand-typed hash — must leave the current view alone.
+  if(PAGES.includes(h)) showPage(h, {announce:true});
 });
 
 document.querySelectorAll('.nav-link,.bn-item').forEach(btn => {
