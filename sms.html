@@ -656,8 +656,7 @@
     <div class="agegate-mark" aria-hidden="true">&#129347;</div>
     <h2 id="ageGateTitle">Are you 21 or older?</h2>
     <p id="ageGateBody">These text alerts cover alcohol availability at a licensed
-      distillery gift shop, so you have to be of legal drinking age in the US to sign up.
-      <strong>The tracker itself is free and open to everyone.</strong></p>
+      distillery gift shop, so you have to be of legal drinking age in the US to sign up.</p>
     <div class="agegate-actions">
       <button type="button" class="agegate-yes" id="ageGateYes">Yes, I&rsquo;m 21 or older</button>
       <button type="button" class="agegate-no" id="ageGateNo">No, I&rsquo;m not</button>
@@ -882,7 +881,7 @@
               </span>
             </label>
             <p class="consent-note">
-              This box is required to join the alert list and must be selected by you — it cannot be pre-checked on your behalf. It is not a condition of using the tracker website, which is free and open to everyone.
+              This box is required to join the alert list and must be selected by you — it cannot be pre-checked on your behalf. It is not a condition of using the tracker website.
               To stop receiving messages at any time, reply <strong>STOP</strong> to any alert.
               For help, reply <strong>HELP</strong> or email
               <a href="mailto:alerts@buffalotracebottledrops.com">alerts@buffalotracebottledrops.com</a>.
@@ -1269,8 +1268,7 @@
       [mEl, dEl, yEl].forEach(function (el) { el.classList.add('err'); });
       markField(dobBlock,
         'You must be 21 or older to subscribe to this service.', 'dobErr');
-      showBanner('You must be 21 years of age or older to receive these alerts. ' +
-                 'The bottle tracker itself remains free and open to everyone.');
+      showBanner('You must be 21 years of age or older to receive these alerts.');
       return;
     }
 
@@ -1450,10 +1448,9 @@
       '<div class="agegate-mark" aria-hidden="true">&#128220;</div>' +
       '<h2 id="ageGateTitle">The alerts are 21+</h2>' +
       '<p id="ageGateBody">Text alerts about alcohol availability are limited to people of ' +
-      'legal drinking age. <strong>The availability tracker is free and open to everyone</strong> — ' +
-      'no sign-up, no age requirement.</p>' +
+      'legal drinking age.</p>' +
       '<div class="agegate-actions"><a class="agegate-yes" style="display:block;text-decoration:none" ' +
-      'href="/">Back to the free tracker</a></div>';
+      'href="/">Back to the tracker</a></div>';
     var link = card.querySelector('a');
     if (link) link.focus();
   });
