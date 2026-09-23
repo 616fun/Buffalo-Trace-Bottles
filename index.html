@@ -2234,5 +2234,32 @@ fetch('./data.json?_='+Date.now())
   })
   .catch(()=>checkStale(appData, true));
 </script>
+<script>
+/* Tip-jar click counter — Stage 0 of review/TIP-JAR-PLAN.md.
+   We cannot tell "nobody clicks" from "people click and bail at Venmo", and
+   those call for opposite fixes. Cloudflare Web Analytics has no custom
+   events, so this posts a bare count to our own Worker.
+
+   Delegated, capture-phase, and wrapped: a visitor on their way to pay must
+   never be delayed or blocked by a counter. sendBeacon is fire-and-forget and
+   survives the navigation; if anything here throws, the link still works. */
+(function () {
+  document.addEventListener('click', function (e) {
+    try {
+      var a = e.target && e.target.closest && e.target.closest('a[href*="venmo.com"]');
+      if (!a) return;
+      var placement = a.closest('.bottom-nav') ? 'bottom-nav'
+                    : a.closest('header')      ? 'nav'
+                    : 'footer';
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/tip-click',
+          new Blob([JSON.stringify({ placement: placement })],
+                   { type: 'application/json' }));
+      }
+    } catch (_) { /* never interfere with the click */ }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
