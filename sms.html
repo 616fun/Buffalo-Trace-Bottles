@@ -1509,17 +1509,42 @@
     remember(); close();
   });
 
+  /* "No" used to swap the card for a message and stop there, with the scroll
+     lock and the Tab trap still on and a single link out. It read as a frozen
+     page. Say why, then take them back to the tracker on a timer they can see
+     — and release the locks first, so nothing is trapped while it counts. */
   document.getElementById('ageGateNo').addEventListener('click', function () {
+    document.removeEventListener('keydown', onKey, true);
+    document.body.style.overflow = '';
+
+    var SECONDS = 9;                       // long enough to read two sentences
     var card = document.getElementById('ageGateCard');
     card.innerHTML =
       '<div class="agegate-mark" aria-hidden="true">&#128220;</div>' +
       '<h2 id="ageGateTitle">The alerts are 21+</h2>' +
       '<p id="ageGateBody">Text alerts about alcohol availability are limited to people of ' +
-      'legal drinking age.</p>' +
+      'legal drinking age. We&rsquo;ll take you back to the tracker now.</p>' +
       '<div class="agegate-actions"><a class="agegate-yes" style="display:block;text-decoration:none" ' +
-      'href="/">Back to the tracker</a></div>';
+      'href="/">Back to the tracker</a></div>' +
+      '<p class="agegate-fine" id="ageGateCount" role="status" aria-live="polite">' +
+      'Returning in ' + SECONDS + ' seconds&hellip;</p>';
+
     var link = card.querySelector('a');
     if (link) link.focus();
+
+    /* location.replace, not assign: Back should not drop them onto the gate. */
+    var left = SECONDS;
+    var out  = document.getElementById('ageGateCount');
+    var tick = setInterval(function () {
+      left -= 1;
+      if (left <= 0) {
+        clearInterval(tick);
+        try { window.location.replace('/'); }
+        catch (e) { window.location.href = '/'; }
+        return;
+      }
+      if (out) out.textContent = 'Returning in ' + left + ' second' + (left === 1 ? '' : 's') + '\u2026';
+    }, 1000);
   });
 
   var yes = document.getElementById('ageGateYes');
