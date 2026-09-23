@@ -1,0 +1,7 @@
+# Compiled bytecode. These were committed by accident and carry whatever the
+# source carried — four of them held the personal report address long after
+# it mattered. Nothing reads them: the workflows run the .py files.
+__pycache__/
+*.pyc
+
+.DS_Store

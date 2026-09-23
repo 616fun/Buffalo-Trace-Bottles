@@ -16,7 +16,7 @@ Closure days follow Steps C1–C9 from CLAUDE.md (skip scrape, all bottles=0).
 Environment variables (GitHub Secrets):
   RESEND_API_KEY          — Resend API key
   REPORT_FROM_EMAIL       — Optional, default: "Buffalo Trace Daily <drops@buffalotracebottledrops.com>"
-  REPORT_TO_EMAIL         — Optional, default: "brianwulff@yahoo.com"
+  REPORT_TO_EMAIL         — Optional, default: "alerts@buffalotracebottledrops.com"
   TWILIO_ACCOUNT_SID      — Twilio Account SID
   TWILIO_AUTH_TOKEN       — Twilio Auth Token
   TWILIO_FROM_NUMBER      — From phone number (E.164 format)
@@ -82,6 +82,24 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
+# ── Contact masking for logs ────────────────────────────────────────────────
+# This repo is public, and on a public repo the Actions logs are public too.
+# The recipient numbers ARE stored as a secret (TWILIO_TO_NUMBERS), but GitHub
+# masks that secret as the single joined string it was given; splitting it and
+# logging one number at a time walks straight past the masker. Twenty runs
+# published both mobile numbers in clear before this was noticed. Mask at the
+# point of logging so the masker is never the only thing standing in the way.
+def mask_phone(v):
+    s = "".join(ch for ch in str(v) if ch.isdigit())
+    return f"...{s[-4:]}" if len(s) >= 4 else "..."
+
+def mask_email(v):
+    s = str(v)
+    if "@" not in s:
+        return "..."
+    name, _, domain = s.partition("@")
+    return f"{name[:1]}...@{domain}"
+
 # ---------------------------------------------------------------------------
 # Holiday detection (Butcher's algorithm + Thanksgiving)
 # ---------------------------------------------------------------------------
@@ -139,7 +157,9 @@ def get_resend_creds() -> dict:
         "api_key":    api_key,
         "from":       os.environ.get("REPORT_FROM_EMAIL",
                                      "Buffalo Trace Daily <drops@buffalotracebottledrops.com>"),
-        "to":         os.environ.get("REPORT_TO_EMAIL", "brianwulff@yahoo.com"),
+        # `or` not a dict default: an unset GitHub secret expands to "", which
+        # a default= would happily pass through as the To address.
+        "to":         os.environ.get("REPORT_TO_EMAIL") or "alerts@buffalotracebottledrops.com",
     }
 
 
@@ -229,7 +249,7 @@ def twilio_send_sms(body: str, creds: dict,
                 req.add_header("Content-Type", "application/x-www-form-urlencoded")
                 with urllib.request.urlopen(req, timeout=30) as resp:
                     resp.read()
-                log(f"[SMS] Sent to {to_number}: {body[:80]}")
+                log(f"[SMS] Sent to {mask_phone(to_number)}: {body[:80]}")
                 break  # success for this number; move to next recipient
             except urllib.error.HTTPError as e:
                 err_body = e.read().decode(errors="replace")
@@ -240,11 +260,11 @@ def twilio_send_sms(body: str, creds: dict,
                 last_exc = e
 
             if attempt < max_attempts:
-                log(f"[SMS] Attempt {attempt} to {to_number} failed: {last_exc}. "
+                log(f"[SMS] Attempt {attempt} to {mask_phone(to_number)} failed: {last_exc}. "
                     f"Waiting {wait_seconds // 60} min before retry...")
                 time.sleep(wait_seconds)
             else:
-                log(f"[SMS] All {max_attempts} attempts failed for {to_number}.")
+                log(f"[SMS] All {max_attempts} attempts failed for {mask_phone(to_number)}.")
                 raise last_exc
 
 
@@ -1310,7 +1330,7 @@ def main() -> None:
 
         if not dry_run:
             smtp_send_with_retry(msg, resend_creds["api_key"])
-            log(f"  Email sent to {resend_creds['to']}")
+            log(f"  Email sent to {mask_email(resend_creds['to'])}")
         else:
             log("  [DRY RUN] Email skipped")
     except Exception as exc:
