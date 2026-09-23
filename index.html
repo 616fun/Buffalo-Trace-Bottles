@@ -518,6 +518,14 @@
     @media(max-width:768px){
       .top-nav{display:none}
       .bottom-nav{display:block}
+      /* The bottom nav is position:fixed and 58px tall, so it sits outside the
+         document flow. <footer> only had 28px of bottom padding, leaving its
+         last line permanently clipped by 30px at the end of the page — you
+         could not scroll it clear. Reserve the nav height plus breathing room.
+         env() resolves to 0 without viewport-fit=cover on the viewport meta,
+         so the explicit 0px fallback keeps this honest today and correct if
+         cover is ever added. */
+      footer{padding-bottom:calc(28px + 58px + 16px + env(safe-area-inset-bottom, 0px))}
       main{padding:24px 16px 80px}
       .header-bar{padding:0 16px}
       .brand-text p{display:none}
