@@ -639,7 +639,9 @@
     .sms-cta-body{flex:1;min-width:0;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
     .sms-cta-title{font-family:var(--ui);font-size:.85rem;font-weight:650;color:var(--text);
       letter-spacing:-.01em}
-    .sms-cta-sub{font-size:.73rem;color:var(--muted)}
+    /* --muted read 4.24:1 against the strong end of the card's amber gradient.
+       The gradient is the real background here, not --bg. */
+    .sms-cta-sub{font-size:.73rem;color:var(--text2)}
     .sms-cta-badge{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
       color:var(--on-dark);background:var(--amber);padding:2px 7px;border-radius:20px;white-space:nowrap}
     .sms-cta-arrow{font-size:1rem;color:var(--amber-text);flex-shrink:0;font-weight:600}
