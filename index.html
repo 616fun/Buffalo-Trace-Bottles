@@ -10,7 +10,10 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
   <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#1A0F05"/>
+  <!-- Paired to the theme. One fixed value left the address bar showing the
+       light-mode header colour after the page itself had gone dark. -->
+  <meta name="theme-color" content="#1A0F05" media="(prefers-color-scheme: light)"/>
+  <meta name="theme-color" content="#0D0906" media="(prefers-color-scheme: dark)"/>
   <meta property="og:title" content="Buffalo Trace Bottle Drops — Gift Shop Availability Tracker"/>
   <meta property="og:description" content="What's on the shelf at the Buffalo Trace gift shop today — and what's predicted for tomorrow. Updated every morning."/>
   <meta property="og:type" content="website"/>
