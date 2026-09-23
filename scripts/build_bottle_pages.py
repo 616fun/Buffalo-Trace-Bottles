@@ -119,7 +119,7 @@ def build_page(slug, cfg, data):
             {"@type": "Question",
              "name": f"Is {cfg['h1']} available at the Buffalo Trace gift shop today?",
              "acceptedAnswer": {"@type": "Answer",
-                 "text": f"As of {updated}: {cfg['h1']} is {'available' if avail else 'not available'} at the Buffalo Trace Distillery gift shop ({streak_txt}). This page updates every morning after the 7am EST check."}},
+                 "text": f"As of {updated}: {cfg['h1']} is {'available' if avail else 'not available'} at the Buffalo Trace Distillery gift shop ({streak_txt}). This page updates each morning as soon as the gift shop list is posted, with checks starting at 7am EST."}},
             {"@type": "Question",
              "name": f"How often does {cfg['h1']} show up at the Buffalo Trace gift shop?",
              "acceptedAnswer": {"@type": "Answer",
@@ -181,7 +181,7 @@ footer a{{color:var(--text2)}}
     <p style="margin-top:10px;color:var(--text2)">As of this morning's check, {cfg['h1']} is
     <strong>{'available' if avail else 'not available'}</strong> at the Buffalo Trace Distillery
     gift shop in Frankfort, KY — {streak_txt}.</p>
-    <p class="upd">Updated {updated} · checked daily at 7am EST (8am Sun)</p>
+    <p class="upd">Updated {updated} · checked every morning from 7am EST (8am Sun)</p>
   </div>
 
   <div class="stats">
