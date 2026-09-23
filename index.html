@@ -2234,5 +2234,40 @@ fetch('./data.json?_='+Date.now())
   })
   .catch(()=>checkStale(appData, true));
 </script>
+<script>
+/* Tip-jar click counter — Stage 0 of review/TIP-JAR-PLAN.md.
+   We cannot tell "nobody clicks" from "people click and bail at Venmo", and
+   those call for opposite fixes. Cloudflare Web Analytics has no custom
+   events, so this posts a bare count to our own Worker.
+
+   Delegated, capture-phase, and wrapped: a visitor on their way to pay must
+   never be delayed or blocked by a counter. sendBeacon is fire-and-forget and
+   survives the navigation; if anything here throws, the link still works. */
+(function () {
+  document.addEventListener('click', function (e) {
+    try {
+      var a = e.target && e.target.closest && e.target.closest('a[href*="venmo.com"]');
+      if (!a) return;
+      var placement = a.closest('.bottom-nav') ? 'bottom-nav'
+                    : a.closest('header')      ? 'nav'
+                    : 'footer';
+      /* Coarse device hint. CF-Device-Type is an Enterprise header and is
+         absent on this plan, so the server had nothing to record. A pointer
+         and width test is one bit, needs no user-agent sniffing, and the
+         Worker whitelists it to exactly 'mobile' or 'desktop'. It matters
+         because stage 4 of the plan turns on how much of this is desktop,
+         where Venmo's web flow is poor. */
+      var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      var device = (coarse || window.innerWidth < 768) ? 'mobile' : 'desktop';
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/tip-click',
+          new Blob([JSON.stringify({ placement: placement, device: device })],
+                   { type: 'application/json' }));
+      }
+    } catch (_) { /* never interfere with the click */ }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
