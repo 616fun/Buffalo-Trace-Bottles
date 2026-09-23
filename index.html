@@ -2248,9 +2248,15 @@ fetch('./data.json?_='+Date.now())
     try {
       var a = e.target && e.target.closest && e.target.closest('a[href*="venmo.com"]');
       if (!a) return;
-      var placement = a.closest('.bottom-nav') ? 'bottom-nav'
-                    : a.closest('header')      ? 'nav'
-                    : 'footer';
+      /* Name the button by its own class, not by DOM ancestry. The top tip
+         button is in nav.top-nav rather than <header>, and the in-page one
+         sits inside <main>, not the footer - guessing by ancestor labelled
+         both of them 'footer'. Stage 3 of the plan is about WHERE to ask, so
+         these names have to mean what they say. */
+      var placement = a.classList.contains('bn-tip')     ? 'bottom-nav'
+                    : a.classList.contains('nav-venmo')  ? 'top-nav'
+                    : a.classList.contains('venmo-btn')  ? 'page-block'
+                    : 'unknown';
       /* Coarse device hint. CF-Device-Type is an Enterprise header and is
          absent on this plan, so the server had nothing to record. A pointer
          and width test is one bit, needs no user-agent sniffing, and the
