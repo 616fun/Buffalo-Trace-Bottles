@@ -375,6 +375,23 @@
     .cal-dow-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:6px}
     .cal-dow{text-align:center;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0}
     .cal-days-grid{display:flex;flex-direction:column;gap:5px}
+    /* Methodology block at the foot of Analytics. --text2 and --muted, not
+       --amber: amber as body text measures ~3.7 against these surfaces and this
+       is small print that has to be readable. */
+    .methodology{margin-top:34px;padding:22px 24px;background:var(--surface2);
+      border:1px solid var(--border-s);border-radius:var(--radius)}
+    .methodology-title{font-family:var(--display);font-size:1.05rem;font-weight:700;
+      color:var(--text);margin:0 0 14px}
+    .methodology-list{margin:0;display:grid;gap:12px}
+    .methodology-list dt{font-family:var(--ui);font-size:.8rem;font-weight:700;
+      color:var(--text);letter-spacing:.01em}
+    .methodology-list dd{margin:3px 0 0;font-size:.84rem;line-height:1.6;color:var(--text2)}
+    .methodology-caveat{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--border-s);
+      font-size:.84rem;line-height:1.6;color:var(--text2)}
+    @media(max-width:560px){
+      .methodology{padding:18px 16px;margin-top:26px}
+      .methodology-list dd,.methodology-caveat{font-size:.82rem}
+    }
     /* Each week is its own 7-column grid so it can carry role="row".
        minmax(0,1fr), not 1fr: a bare 1fr keeps an auto min-content floor, so
        columns would size per week and Monday would stop lining up with Monday.
@@ -756,6 +773,67 @@
         <span class="sec-sub">Auto-generated from tracked days</span>
       </div>
       <div class="insights-grid" id="insights-grid"></div>
+
+      <!-- Methodology. Always visible at the foot of Analytics rather than behind a
+           toggle: every number above is an estimate, and the standing rule on this
+           project is that inferred values are never presented as fact. Someone who
+           scrolls this far is deciding whether to drive to Frankfort. -->
+      <section class="methodology" aria-labelledby="methodologyTitle">
+        <h2 class="methodology-title" id="methodologyTitle">How these numbers are calculated</h2>
+
+        <dl class="methodology-list">
+          <dt>Where the data comes from</dt>
+          <dd>Buffalo Trace's own gift shop availability page, read once a day. There is no
+            feed and no inside line — if it is not posted publicly, it is not here.</dd>
+
+          <dt>Days tracked</dt>
+          <dd>Every day recorded since tracking began, including days the gift shop was
+            closed. Closure days are counted as tracked but excluded from availability
+            averages, so a holiday does not read as a bottle being unavailable.</dd>
+
+          <dt>Overall %</dt>
+          <dd>Days a bottle was on the shelf, divided by days tracked.</dd>
+
+          <dt>Last 10 / last 30 days</dt>
+          <dd>The same calculation over the most recent 10 or 30 logged days. These move
+            faster than the overall figure, which is the point of showing both.</dd>
+
+          <dt>Streak</dt>
+          <dd>Consecutive most recent days in the same state — on the shelf, or not.</dd>
+
+          <dt>Average gap</dt>
+          <dd>Mean number of calendar days from one sighting to the next. A gap near 1.0
+            means it has been there almost every day, not that it appears once a day.</dd>
+
+          <dt>Tomorrow's chance</dt>
+          <dd>Every day-to-day change is counted for each bottle — stayed on the shelf,
+            disappeared, came back, stayed gone — and combined with a starting assumption
+            worth about fifteen days of evidence, which fades as real days accumulate.
+            The percentage shown is conditioned on <strong>what is on the shelf
+            today</strong>, so it is not a long-run average: the same bottle shows a
+            different number depending on whether it is currently in stock.</dd>
+
+          <dt>Confidence</dt>
+          <dd>How much history the estimate rests on, <strong>not</strong> how likely it is
+            to be right. Under 15 observed day-to-day changes reads "Prior only", under 30
+            reads "Medium", and 30 or more reads "High". A high-confidence estimate can
+            still be wrong.</dd>
+
+          <dt>Prediction accuracy</dt>
+          <dd>Each day's prediction is written down <strong>before</strong> the next day's
+            shelf is known, then scored against what actually appeared. A bottle counts as
+            predicted when its chance was 50% or higher. The headline figure is every
+            individual bottle call across every scored day. Closure days are excluded.</dd>
+        </dl>
+
+        <p class="methodology-caveat">
+          <strong>What these numbers are not.</strong> They describe how often bottles have
+          shown up on days that were tracked. They are not a delivery schedule, and nothing
+          here knows what is on a truck. The distillery does not publish when it will put a
+          bottle out, so a high percentage means it has been there often lately — not that
+          it will be there when you arrive.
+        </p>
+      </section>
     </div>
 
     <!-- ═══ PAGE: CALENDAR ═══ -->
