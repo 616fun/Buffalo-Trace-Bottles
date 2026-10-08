@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-10-07",
+    "last_updated": "2026-10-08",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 209
+    "total_days_tracked": 210
   },
   "config": {
     "bayesian_priors": {
@@ -2540,6 +2540,18 @@
       "special_release": "Single Oak Rye Bourbon",
       "notes": "",
       "last_site_update": "7:05am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-10-08",
+      "day_of_week": "Thursday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon",
+      "notes": "",
+      "last_site_update": "7:14am EST",
       "is_closure": false
     }
   ],
@@ -7680,6 +7692,32 @@
         "eagle_rare": 19.3
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-10-09",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 87.1,
+      "per_bottle_pct": {
+        "blantons": 82.5,
+        "weller107": 82.8,
+        "ehtaylor_sb": 95.9,
+        "eagle_rare": 28.6
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -7807,7 +7845,7 @@
       "announcement": "Single Oak Rye Bourbon is available. $74.99, 375mL. *Limit one bottle per person, per day. While supplies last.",
       "price": 74.99,
       "notes": "Sighting days = dates the BT feed listed it (live obs Jul 10, Wayback Jul 17-19, live Jul 24). Days between are unobserved \u2014 availability may have been intermittent.",
-      "last_seen": "2026-10-07",
+      "last_seen": "2026-10-08",
       "seen_dates": [
         "2026-07-10",
         "2026-07-17",
@@ -7888,7 +7926,8 @@
         "2026-10-04",
         "2026-10-05",
         "2026-10-06",
-        "2026-10-07"
+        "2026-10-07",
+        "2026-10-08"
       ]
     },
     {
