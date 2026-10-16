@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-10-15",
+    "last_updated": "2026-10-16",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 217
+    "total_days_tracked": 218
   },
   "config": {
     "bayesian_priors": {
@@ -2636,6 +2636,18 @@
       "special_release": "Single Oak Rye Bourbon",
       "notes": "",
       "last_site_update": "7:07am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-10-16",
+      "day_of_week": "Friday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon",
+      "notes": "",
+      "last_site_update": "6:38am EST",
       "is_closure": false
     }
   ],
@@ -7984,6 +7996,32 @@
         "eagle_rare": 29.0
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-10-17",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 87.2,
+      "per_bottle_pct": {
+        "blantons": 82.6,
+        "weller107": 82.9,
+        "ehtaylor_sb": 96.1,
+        "eagle_rare": 28.8
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -8215,6 +8253,17 @@
       "name": "Weller C.Y.P.B.",
       "source": "brian_report",
       "notes": "Dropped alongside Single Oak on Jul 21, per Brian."
+    },
+    {
+      "date": "2026-10-19",
+      "name": "Single Oak Rye Bourbon",
+      "source": "bt_events_feed",
+      "announcement": "Single Oak Rye Bourbon is available. *Limit one bottle per person, per day. While supplies last.",
+      "seen_dates": [
+        "2026-10-16",
+        "2026-10-19"
+      ],
+      "last_seen": "2026-10-16"
     }
   ],
   "gift_shop_announcements_seen": [
@@ -8230,6 +8279,13 @@
       "time": "While Supplies Last",
       "day_date": "10/07/2026",
       "first_seen": "2026-07-24",
+      "flagged": true
+    },
+    {
+      "text": "Single Oak Rye Bourbon is available. *Limit one bottle per person, per day. While supplies last.",
+      "time": "While Supplies Last",
+      "day_date": "19/10/2026",
+      "first_seen": "2026-10-16",
       "flagged": true
     }
   ]
