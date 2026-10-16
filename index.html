@@ -770,7 +770,7 @@
     <button class="nav-link" data-page="bottles">Bottles</button>
     <button class="nav-link" data-page="guide">Plan Your Visit</button>
     <div class="nav-spacer"></div>
-    <button class="nav-venmo" id="share-btn" style="border:none;cursor:pointer;background:var(--surface2);color:var(--text2);box-shadow:none;margin-right:8px">↗ Share</button><a href="https://account.venmo.com/pay?recipients=Jun16fun&amp;amount=3&amp;note=Buffalo%20Trace%20Bottle%20Drops" target="_blank" rel="noopener" class="nav-venmo">💛 Tip the Tracker</a>
+    <button class="nav-venmo" id="share-btn" style="border:none;cursor:pointer;background:var(--surface2);color:var(--text2);box-shadow:none;margin-right:8px">↗ Share</button><a href="/tip/" class="nav-venmo">💛 Tip on Venmo</a>
   </div>
 </nav>
 
@@ -819,7 +819,7 @@
 
       <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
         <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
-        <a href="https://account.venmo.com/pay?recipients=Jun16fun&amp;amount=3&amp;note=Buffalo%20Trace%20Bottle%20Drops" target="_blank" rel="noopener" class="venmo-btn">💛 Tip on Venmo</a>
+        <a href="/tip/" class="venmo-btn">💛 Tip on Venmo</a>
       </div>
     </div>
 
@@ -1007,7 +1007,7 @@
     <button class="bn-item" data-page="calendar"><span class="bn-icon">📅</span><span class="bn-label">Calendar</span></button>
     <button class="bn-item" data-page="bottles"><span class="bn-icon">🛢️</span><span class="bn-label">Bottles</span></button>
     <button class="bn-item" data-page="guide"><span class="bn-icon">🗺</span><span class="bn-label">Guide</span></button>
-    <a href="https://account.venmo.com/pay?recipients=Jun16fun&amp;amount=3&amp;note=Buffalo%20Trace%20Bottle%20Drops" target="_blank" rel="noopener" class="bn-item bn-tip"><span class="bn-icon">💛</span><span class="bn-label">Tip</span></a>
+    <a href="/tip/" class="bn-item bn-tip"><span class="bn-icon">💛</span><span class="bn-label">Tip</span></a>
   </div>
 </nav>
 
@@ -2293,7 +2293,7 @@ fetch('./data.json?_='+Date.now())
 (function () {
   document.addEventListener('click', function (e) {
     try {
-      var a = e.target && e.target.closest && e.target.closest('a[href*="venmo.com"]');
+      var a = e.target && e.target.closest && e.target.closest('a[href="/tip/"]');
       if (!a) return;
       /* Name the button by its own class, not by DOM ancestry. The top tip
          button is in nav.top-nav rather than <header>, and the in-page one
@@ -2314,7 +2314,7 @@ fetch('./data.json?_='+Date.now())
       var device = (coarse || window.innerWidth < 768) ? 'mobile' : 'desktop';
       if (navigator.sendBeacon) {
         navigator.sendBeacon('/api/tip-click',
-          new Blob([JSON.stringify({ placement: placement, device: device })],
+          new Blob([JSON.stringify({ placement: placement, device: device, destination: 'tip-page' })],
                    { type: 'application/json' }));
       }
     } catch (_) { /* never interfere with the click */ }
