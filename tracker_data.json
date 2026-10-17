@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-10-16",
+    "last_updated": "2026-10-17",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 218
+    "total_days_tracked": 219
   },
   "config": {
     "bayesian_priors": {
@@ -2648,6 +2648,18 @@
       "special_release": "Single Oak Rye Bourbon",
       "notes": "",
       "last_site_update": "6:38am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-10-17",
+      "day_of_week": "Saturday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon",
+      "notes": "",
+      "last_site_update": "7:31am EST",
       "is_closure": false
     }
   ],
@@ -8022,6 +8034,32 @@
         "eagle_rare": 28.8
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "weller107",
+        "ehtaylor_sb"
+      ],
+      "correct": "Yes",
+      "result": "Correct",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-10-18",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "weller107",
+        "blantons"
+      ],
+      "overall_confidence_pct": 87.3,
+      "per_bottle_pct": {
+        "blantons": 82.7,
+        "weller107": 83.0,
+        "ehtaylor_sb": 96.1,
+        "eagle_rare": 28.6
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -8261,9 +8299,10 @@
       "announcement": "Single Oak Rye Bourbon is available. *Limit one bottle per person, per day. While supplies last.",
       "seen_dates": [
         "2026-10-16",
+        "2026-10-17",
         "2026-10-19"
       ],
-      "last_seen": "2026-10-16"
+      "last_seen": "2026-10-17"
     }
   ],
   "gift_shop_announcements_seen": [
