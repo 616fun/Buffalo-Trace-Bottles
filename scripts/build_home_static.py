@@ -112,8 +112,8 @@ def live_answer(data):
         t += f" Buffalo Trace's list was last updated {today['last_site_update']}."
     h += " " + SCHEDULE_SENTENCE
     t += " " + SCHEDULE_SENTENCE
-    h += ' <a href="#bottle-grid">See each bottle’s status, streak and odds below.</a>'
-    t += " See each bottle's status, streak and odds below."
+    h += ' <a href="#bottle-grid">See each bottle’s status, streak and odds above.</a>'
+    t += " See each bottle's status, streak and odds above."
     return h, t
 
 

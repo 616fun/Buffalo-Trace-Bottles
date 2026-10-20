@@ -57,7 +57,7 @@
           {
             "@type": "Question",
             "name": "What is Buffalo Trace selling today?",
-            "acceptedAnswer": {"@type": "Answer", "text": "On Tuesday, October 20, 2026, Buffalo Trace's product availability page lists Blanton's Single Barrel, Weller Antique 107 and E.H. Taylor Small Batch. Not listed: Eagle Rare 10-Year. Buffalo Trace's list was last updated 6:57am EST. We check every morning from 7am EST (8am on Sundays). See each bottle's status, streak and odds below."}
+            "acceptedAnswer": {"@type": "Answer", "text": "On Tuesday, October 20, 2026, Buffalo Trace's product availability page lists Blanton's Single Barrel, Weller Antique 107 and E.H. Taylor Small Batch. Not listed: Eagle Rare 10-Year. Buffalo Trace's list was last updated 6:57am EST. We check every morning from 7am EST (8am on Sundays). See each bottle's status, streak and odds above."}
           },
           {
             "@type": "Question",
@@ -250,14 +250,13 @@
     /* Today quick stats row */
     .quick-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
     /* Quick answers: static, crawlable answers under the hero (see build_home_static.py) */
-    .quick-answers{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:44px}
-    .qa-title{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:12px}
+    .quick-answers{border-top:1px solid var(--border);padding:28px 0 8px;margin-bottom:12px}
+    .qa-title{font-family:var(--display);font-size:.95rem;font-weight:700;color:var(--text2);margin-bottom:10px}
     .qa-item + .qa-item{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-    .qa-item h3{font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:4px}
-    .qa-item p{font-size:.84rem;line-height:1.65;color:var(--text2)}
-    .qa-item a{color:var(--amber-text);text-decoration:underline;text-underline-offset:2px}
+    .qa-item h3{font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:3px}
+    .qa-item p{font-size:.78rem;line-height:1.65;color:var(--muted)}
+    .qa-item a{color:var(--text2);text-decoration:underline;text-underline-offset:2px}
     #bottle-grid{scroll-margin-top:124px} /* clear the sticky header+nav for the #bottle-grid link */
-    @media(max-width:560px){.quick-answers{padding:16px}}
     .qs-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow);text-align:center}
     .qs-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
     .qs-value{font-size:1.45rem;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
@@ -815,25 +814,6 @@
       <div id="today-hero-wrap"></div>
       <div class="quick-stats" id="quick-stats"></div>
 
-      <!-- ═══ QUICK ANSWERS ═══
-           STATIC HTML on purpose. The live answer between the bt:live-answer
-           markers, the header date above, and the matching FAQPage JSON-LD
-           entry are rewritten every pipeline run by scripts/build_home_static.py
-           (called from build_data_json.py), so crawlers that never run JS still
-           see today's date and bottles. JS does not touch this block, which is
-           why it adds no layout shift. Keep the prediction answer here word for
-           word identical to its FAQPage entry in the JSON-LD above. -->
-      <section class="quick-answers" aria-labelledby="qa-title">
-        <h2 class="qa-title" id="qa-title">Quick answers</h2>
-        <div class="qa-item">
-          <h3>What is Buffalo Trace selling today?</h3>
-          <p><!--bt:live-answer-->On Tuesday, October 20, 2026, Buffalo Trace's product availability page lists <a href="/blantons/">Blanton's Single Barrel</a>, <a href="/weller-antique-107/">Weller Antique 107</a> and <a href="/eh-taylor-small-batch/">E.H. Taylor Small Batch</a>. Not listed: <a href="/eagle-rare/">Eagle Rare 10-Year</a>. Buffalo Trace's list was last updated 6:57am EST. We check every morning from 7am EST (8am on Sundays). <a href="#bottle-grid">See each bottle’s status, streak and odds below.</a><!--/bt:live-answer--></p>
-        </div>
-        <div class="qa-item">
-          <h3>How are tomorrow's predictions made?</h3>
-          <p>Each bottle's chance for tomorrow is a Bayesian estimate: it starts from a baseline worth about fifteen days of evidence and is updated with every day-to-day change recorded (stayed on the shelf, disappeared, came back, stayed gone), so the number depends on whether the bottle is in stock today. Every prediction is written down before the next day's shelf is known and scored afterward; the <a href="/#analytics">Analytics page</a> shows the accuracy record and the full method.</p>
-        </div>
-      </section>
 
 
       <div style="margin-bottom:52px">
@@ -855,6 +835,26 @@
       </div>
 
 
+
+      <!-- ═══ QUICK ANSWERS (bottom of Today, below the bottle cards) ═══
+           STATIC HTML on purpose. The live answer between the bt:live-answer
+           markers, the header date above, and the matching FAQPage JSON-LD
+           entry are rewritten every pipeline run by scripts/build_home_static.py
+           (called from build_data_json.py), so crawlers that never run JS still
+           see today's date and bottles. JS does not touch this block, which is
+           why it adds no layout shift. Keep the prediction answer here word for
+           word identical to its FAQPage entry in the JSON-LD above. -->
+      <section class="quick-answers" aria-labelledby="qa-title">
+        <h2 class="qa-title" id="qa-title">Quick answers</h2>
+        <div class="qa-item">
+          <h3>What is Buffalo Trace selling today?</h3>
+          <p><!--bt:live-answer-->On Tuesday, October 20, 2026, Buffalo Trace's product availability page lists <a href="/blantons/">Blanton's Single Barrel</a>, <a href="/weller-antique-107/">Weller Antique 107</a> and <a href="/eh-taylor-small-batch/">E.H. Taylor Small Batch</a>. Not listed: <a href="/eagle-rare/">Eagle Rare 10-Year</a>. Buffalo Trace's list was last updated 6:57am EST. We check every morning from 7am EST (8am on Sundays). <a href="#bottle-grid">See each bottle’s status, streak and odds above.</a><!--/bt:live-answer--></p>
+        </div>
+        <div class="qa-item">
+          <h3>How are tomorrow's predictions made?</h3>
+          <p>Each bottle's chance for tomorrow is a Bayesian estimate: it starts from a baseline worth about fifteen days of evidence and is updated with every day-to-day change recorded (stayed on the shelf, disappeared, came back, stayed gone), so the number depends on whether the bottle is in stock today. Every prediction is written down before the next day's shelf is known and scored afterward; the <a href="/#analytics">Analytics page</a> shows the accuracy record and the full method.</p>
+        </div>
+      </section>
 
       <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
         <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
