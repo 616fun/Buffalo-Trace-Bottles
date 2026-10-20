@@ -422,6 +422,12 @@ def main() -> None:
             refresh_inline_data(index_path, data)
         except Exception as exc:
             log(f"  [inline-data] Refresh failed (non-fatal): {exc}")
+        # --- Write today's date + bottle answer into the STATIC HTML + FAQPage JSON-LD ---
+        try:
+            from build_home_static import refresh_home_static
+            refresh_home_static(index_path, data)
+        except Exception as exc:
+            log(f"  [home-static] Refresh failed (non-fatal): {exc}")
 
     # --- Refresh sitemap <lastmod> so search engines see daily freshness ---
     sitemap_path = output_path.parent / "sitemap.xml"
