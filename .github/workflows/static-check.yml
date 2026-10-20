@@ -1,0 +1,43 @@
+name: Buffalo Trace Static HTML Watchdog
+
+# Runs after the daily pipeline should have finished (Mon-Sat polls up to 180 min
+# from 7am, Sunday up to 240 min from 8am -> noon ET; Indiana is EST/EDT-agnostic
+# here because we only need "well after"). 18:00 UTC = 1pm EDT / 2pm EST, every day.
+# It only ALERTS (Pushover, Brian's iPhone) when the live homepage's static HTML,
+# data.json or FAQPage JSON-LD disagree with each other. Read-only: it never
+# pushes, never touches the pipeline. See scripts/check_live_static.py.
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      force_alert:
+        description: 'Send a test Pushover alert regardless of result'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check live static HTML
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+          PUSHOVER_DEVICE: "BriansPhone"
+        run: |
+          if [ "${{ github.event.inputs.force_alert }}" = "true" ]; then
+            python scripts/check_live_static.py --force-alert
+          else
+            python scripts/check_live_static.py
+          fi
