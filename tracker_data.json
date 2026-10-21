@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-10-20",
+    "last_updated": "2026-10-21",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 222
+    "total_days_tracked": 223
   },
   "config": {
     "bayesian_priors": {
@@ -2696,6 +2696,18 @@
       "special_release": "Single Oak Rye Bourbon",
       "notes": "",
       "last_site_update": "6:57am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-10-21",
+      "day_of_week": "Wednesday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": "Single Oak Rye Bourbon",
+      "notes": "",
+      "last_site_update": "8:23am EST",
       "is_closure": false
     }
   ],
@@ -8174,6 +8186,32 @@
         "eagle_rare": 28.1
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-10-22",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 77.3,
+      "per_bottle_pct": {
+        "blantons": 83.1,
+        "weller107": 52.5,
+        "ehtaylor_sb": 96.1,
+        "eagle_rare": 18.5
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -8416,9 +8454,10 @@
         "2026-10-17",
         "2026-10-18",
         "2026-10-19",
-        "2026-10-20"
+        "2026-10-20",
+        "2026-10-21"
       ],
-      "last_seen": "2026-10-20"
+      "last_seen": "2026-10-21"
     }
   ],
   "gift_shop_announcements_seen": [
