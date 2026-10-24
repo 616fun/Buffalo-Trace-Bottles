@@ -1,31 +1,31 @@
 {
   "meta": {
-    "last_updated": "2026-10-23",
-    "days_tracked": 225,
+    "last_updated": "2026-10-24",
+    "days_tracked": 226,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 223,
-      "correct": 101,
+      "total_days": 224,
+      "correct": 102,
       "partial": 118,
       "incorrect": 2,
-      "binary_total": 884,
-      "binary_correct": 715,
-      "binary_accuracy_pct": 80.9,
+      "binary_total": 888,
+      "binary_correct": 719,
+      "binary_accuracy_pct": 81.0,
       "per_bottle": {
-        "blantons": 80.5,
-        "weller107": 72.9,
+        "blantons": 80.6,
+        "weller107": 73.0,
         "ehtaylor_sb": 96.4,
-        "eagle_rare": 73.8
+        "eagle_rare": 73.9
       }
     },
     "prices_as_of": "2026-03-18"
   },
   "today": {
-    "date": "2026-10-23",
-    "day_of_week": "Friday",
-    "last_site_update": "6:54am EST",
-    "special_release": "Single Oak Rye Bourbon",
+    "date": "2026-10-24",
+    "day_of_week": "Saturday",
+    "last_site_update": "7:24am EST",
+    "special_release": "Single Oak Rye Bourbon, Sazerac Rye Full Proof",
     "notes": "",
     "is_closure": false
   },
@@ -34,15 +34,15 @@
       "name": "Blanton's Single Barrel",
       "key": "blantons",
       "available_today": 1,
-      "streak": 10,
+      "streak": 11,
       "streak_direction": "available",
       "overall_pct": 80.0,
       "rolling_10d_pct": 100.0,
       "rolling_30d_pct": 90.0,
       "avg_days_between_releases": 1.25,
-      "prediction_tomorrow_pct": 83.2,
+      "prediction_tomorrow_pct": 83.3,
       "confidence": "High",
-      "last_seen": "2026-10-23",
+      "last_seen": "2026-10-24",
       "prior_frequency": 0.63,
       "gift_shop_price": 74.99
     },
@@ -50,15 +50,15 @@
       "name": "Weller Antique 107",
       "key": "weller107",
       "available_today": 1,
-      "streak": 2,
+      "streak": 3,
       "streak_direction": "available",
-      "overall_pct": 75.0,
+      "overall_pct": 76.0,
       "rolling_10d_pct": 90.0,
       "rolling_30d_pct": 93.0,
       "avg_days_between_releases": 1.33,
-      "prediction_tomorrow_pct": 82.9,
+      "prediction_tomorrow_pct": 83.0,
       "confidence": "High",
-      "last_seen": "2026-10-23",
+      "last_seen": "2026-10-24",
       "prior_frequency": 0.75,
       "gift_shop_price": 59.99
     },
@@ -66,7 +66,7 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 125,
+      "streak": 126,
       "streak_direction": "available",
       "overall_pct": 96.0,
       "rolling_10d_pct": 100.0,
@@ -74,7 +74,7 @@
       "avg_days_between_releases": 1.04,
       "prediction_tomorrow_pct": 96.2,
       "confidence": "High",
-      "last_seen": "2026-10-23",
+      "last_seen": "2026-10-24",
       "prior_frequency": 0.93,
       "gift_shop_price": 59.99
     },
@@ -82,13 +82,13 @@
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
       "available_today": 0,
-      "streak": 2,
+      "streak": 3,
       "streak_direction": "unavailable",
       "overall_pct": 26.0,
-      "rolling_10d_pct": 20.0,
+      "rolling_10d_pct": 10.0,
       "rolling_30d_pct": 23.0,
       "avg_days_between_releases": 3.83,
-      "prediction_tomorrow_pct": 28.4,
+      "prediction_tomorrow_pct": 28.2,
       "confidence": "High",
       "last_seen": "2026-10-21",
       "prior_frequency": 0.17,
@@ -2345,6 +2345,16 @@
       "special_release": "Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
+    },
+    {
+      "date": "2026-10-24",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon, Sazerac Rye Full Proof",
+      "is_closure": false,
+      "notes": null
     }
   ],
   "special_releases_log": [
@@ -2556,9 +2566,21 @@
         "2026-10-20",
         "2026-10-21",
         "2026-10-22",
-        "2026-10-23"
+        "2026-10-23",
+        "2026-10-24"
       ],
-      "last_seen": "2026-10-23"
+      "last_seen": "2026-10-24"
+    },
+    {
+      "date": "2026-10-23",
+      "name": "Sazerac Rye Full Proof",
+      "source": "bt_events_feed",
+      "announcement": "Single Oak Rye Bourbon is available. *Limit one bottle per person, per day. While supplies last. Sazerac Rye Full Proof is available. *Limit one bottle per person, per day. While supplies last.",
+      "seen_dates": [
+        "2026-10-23",
+        "2026-10-24"
+      ],
+      "last_seen": "2026-10-24"
     }
   ]
 }
