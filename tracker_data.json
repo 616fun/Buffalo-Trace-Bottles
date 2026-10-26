@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-10-25",
+    "last_updated": "2026-10-26",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 227
+    "total_days_tracked": 228
   },
   "config": {
     "bayesian_priors": {
@@ -2756,6 +2756,18 @@
       "special_release": "Single Oak Rye Bourbon, Sazerac Rye Full Proof",
       "notes": "",
       "last_site_update": "9:45am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-10-26",
+      "day_of_week": "Monday",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": "Single Oak Rye Bourbon, Sazerac Rye Full Proof",
+      "notes": "",
+      "last_site_update": "7:08am EST",
       "is_closure": false
     }
   ],
@@ -8365,6 +8377,33 @@
         "eagle_rare": 18.2
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "weller107",
+        "ehtaylor_sb",
+        "eagle_rare"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-10-27",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 87.6,
+      "per_bottle_pct": {
+        "blantons": 83.5,
+        "weller107": 83.2,
+        "ehtaylor_sb": 96.2,
+        "eagle_rare": 19.3
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -8612,9 +8651,10 @@
         "2026-10-22",
         "2026-10-23",
         "2026-10-24",
-        "2026-10-25"
+        "2026-10-25",
+        "2026-10-26"
       ],
-      "last_seen": "2026-10-25"
+      "last_seen": "2026-10-26"
     },
     {
       "date": "2026-10-23",
@@ -8624,9 +8664,10 @@
       "seen_dates": [
         "2026-10-23",
         "2026-10-24",
-        "2026-10-25"
+        "2026-10-25",
+        "2026-10-26"
       ],
-      "last_seen": "2026-10-25"
+      "last_seen": "2026-10-26"
     }
   ],
   "gift_shop_announcements_seen": [
