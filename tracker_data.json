@@ -1,9 +1,9 @@
 {
   "schema_version": "2.0",
   "meta": {
-    "last_updated": "2026-10-26",
+    "last_updated": "2026-10-27",
     "last_run_by": "update_tracker_data.py",
-    "total_days_tracked": 228
+    "total_days_tracked": 229
   },
   "config": {
     "bayesian_priors": {
@@ -2768,6 +2768,18 @@
       "special_release": "Single Oak Rye Bourbon, Sazerac Rye Full Proof",
       "notes": "",
       "last_site_update": "7:08am EST",
+      "is_closure": false
+    },
+    {
+      "date": "2026-10-27",
+      "day_of_week": "Tuesday",
+      "blantons": 1,
+      "weller107": 0,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon",
+      "notes": "",
+      "last_site_update": "7:40am EST",
       "is_closure": false
     }
   ],
@@ -8404,6 +8416,31 @@
         "eagle_rare": 19.3
       },
       "confidence": "High",
+      "actual_bottles": [
+        "blantons",
+        "ehtaylor_sb"
+      ],
+      "correct": "Partial",
+      "result": "Partial",
+      "model_used": "Bayesian Markov",
+      "notes": "",
+      "missing_prediction": false
+    },
+    {
+      "date": "2026-10-28",
+      "predicted_bottles": [
+        "ehtaylor_sb",
+        "blantons",
+        "weller107"
+      ],
+      "overall_confidence_pct": 77.7,
+      "per_bottle_pct": {
+        "blantons": 83.6,
+        "weller107": 53.2,
+        "ehtaylor_sb": 96.2,
+        "eagle_rare": 28.6
+      },
+      "confidence": "High",
       "actual_bottles": null,
       "correct": null,
       "result": null,
@@ -8652,9 +8689,10 @@
         "2026-10-23",
         "2026-10-24",
         "2026-10-25",
-        "2026-10-26"
+        "2026-10-26",
+        "2026-10-27"
       ],
-      "last_seen": "2026-10-26"
+      "last_seen": "2026-10-27"
     },
     {
       "date": "2026-10-23",
