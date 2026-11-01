@@ -1,30 +1,30 @@
 {
   "meta": {
-    "last_updated": "2026-10-31",
-    "days_tracked": 233,
+    "last_updated": "2026-11-01",
+    "days_tracked": 234,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 231,
+      "total_days": 232,
       "correct": 105,
-      "partial": 122,
+      "partial": 123,
       "incorrect": 2,
-      "binary_total": 916,
-      "binary_correct": 743,
+      "binary_total": 920,
+      "binary_correct": 746,
       "binary_accuracy_pct": 81.1,
       "per_bottle": {
-        "blantons": 81.2,
-        "weller107": 72.9,
+        "blantons": 81.3,
+        "weller107": 73.0,
         "ehtaylor_sb": 96.5,
-        "eagle_rare": 73.8
+        "eagle_rare": 73.5
       }
     },
     "prices_as_of": "2026-03-18"
   },
   "today": {
-    "date": "2026-10-31",
-    "day_of_week": "Saturday",
-    "last_site_update": "9:00am EST",
+    "date": "2026-11-01",
+    "day_of_week": "Sunday",
+    "last_site_update": "9:24am EST",
     "special_release": "Single Oak Rye Bourbon",
     "notes": "",
     "is_closure": false
@@ -34,15 +34,15 @@
       "name": "Blanton's Single Barrel",
       "key": "blantons",
       "available_today": 1,
-      "streak": 18,
+      "streak": 19,
       "streak_direction": "available",
       "overall_pct": 81.0,
       "rolling_10d_pct": 100.0,
-      "rolling_30d_pct": 90.0,
+      "rolling_30d_pct": 93.0,
       "avg_days_between_releases": 1.24,
-      "prediction_tomorrow_pct": 83.9,
+      "prediction_tomorrow_pct": 84.0,
       "confidence": "High",
-      "last_seen": "2026-10-31",
+      "last_seen": "2026-11-01",
       "prior_frequency": 0.63,
       "gift_shop_price": 74.99
     },
@@ -50,15 +50,15 @@
       "name": "Weller Antique 107",
       "key": "weller107",
       "available_today": 1,
-      "streak": 2,
+      "streak": 3,
       "streak_direction": "available",
-      "overall_pct": 75.0,
+      "overall_pct": 76.0,
       "rolling_10d_pct": 80.0,
       "rolling_30d_pct": 87.0,
       "avg_days_between_releases": 1.33,
-      "prediction_tomorrow_pct": 82.4,
+      "prediction_tomorrow_pct": 82.5,
       "confidence": "High",
-      "last_seen": "2026-10-31",
+      "last_seen": "2026-11-01",
       "prior_frequency": 0.75,
       "gift_shop_price": 59.99
     },
@@ -66,7 +66,7 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 133,
+      "streak": 134,
       "streak_direction": "available",
       "overall_pct": 96.0,
       "rolling_10d_pct": 100.0,
@@ -74,23 +74,23 @@
       "avg_days_between_releases": 1.04,
       "prediction_tomorrow_pct": 96.3,
       "confidence": "High",
-      "last_seen": "2026-10-31",
+      "last_seen": "2026-11-01",
       "prior_frequency": 0.93,
       "gift_shop_price": 59.99
     },
     {
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
-      "available_today": 0,
-      "streak": 5,
-      "streak_direction": "unavailable",
-      "overall_pct": 26.0,
-      "rolling_10d_pct": 20.0,
+      "available_today": 1,
+      "streak": 1,
+      "streak_direction": "available",
+      "overall_pct": 27.0,
+      "rolling_10d_pct": 30.0,
       "rolling_30d_pct": 27.0,
-      "avg_days_between_releases": 3.78,
-      "prediction_tomorrow_pct": 28.0,
+      "avg_days_between_releases": 3.82,
+      "prediction_tomorrow_pct": 19.1,
       "confidence": "High",
-      "last_seen": "2026-10-26",
+      "last_seen": "2026-11-01",
       "prior_frequency": 0.17,
       "gift_shop_price": 43
     }
@@ -2425,6 +2425,16 @@
       "special_release": "Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
+    },
+    {
+      "date": "2026-11-01",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 1,
+      "special_release": "Single Oak Rye Bourbon",
+      "is_closure": false,
+      "notes": null
     }
   ],
   "special_releases_log": [
@@ -2644,9 +2654,10 @@
         "2026-10-28",
         "2026-10-29",
         "2026-10-30",
-        "2026-10-31"
+        "2026-10-31",
+        "2026-11-01"
       ],
-      "last_seen": "2026-10-31"
+      "last_seen": "2026-11-01"
     },
     {
       "date": "2026-10-23",
