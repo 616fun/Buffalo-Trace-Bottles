@@ -63,9 +63,10 @@ def header_strings(data):
     """Exactly what renderToday() writes into #hdr-update / #hdr-days."""
     meta, today = data["meta"], data["today"]
     d = datetime.date.fromisoformat(meta["last_updated"])
-    upd = f"{d:%b} {d.day}"
-    if today.get("last_site_update"):
-        upd += " · " + today["last_site_update"]
+    # Time only since 2026-11-09: the date moved out of the header to make room
+    # for the Share label. MUST match the renderToday() repaint in index.html
+    # byte for byte, or the JS swap shifts the layout and CLS regresses.
+    upd = today.get("last_site_update") or f"{d:%b} {d.day}"
     n = meta["days_tracked"]
     days = f"{n} day{'' if n == 1 else 's'} tracked"
     return upd, days
