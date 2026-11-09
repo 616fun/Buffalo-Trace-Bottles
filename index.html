@@ -152,6 +152,22 @@
     .hdr-meta{text-align:right}
     .hdr-update{font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.6)}
     .hdr-days{font-size:0.65rem;color:rgba(255,255,255,0.62);margin-top:2px}
+    /* Share, mobile only. The labelled button in nav.top-nav does this job on
+       desktop, but the whole top nav is display:none under 768px — and
+       navigator.share is a MOBILE api, so from July to November the feature was
+       hidden on every device it actually works on.
+       The glyph is the standard share mark, not a bare arrow: an arrow reads as
+       "go", this reads as "send". */
+    .hdr-share{display:none;align-items:center;justify-content:center;gap:6px;
+      flex-shrink:0;height:40px;padding:0 11px;
+      border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.08);
+      color:var(--on-dark);border-radius:10px;cursor:pointer;
+      font-family:var(--ui);font-size:.76rem;font-weight:600;line-height:1;
+      transition:background .15s,border-color .15s}
+    .hdr-share svg{display:block}
+    .hdr-share:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.34)}
+    .hdr-share:active{transform:scale(.96)}
+    .hdr-share:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
     /* ── DESKTOP NAV ── */
     .top-nav{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);position:sticky;top:64px;z-index:199}
@@ -584,6 +600,13 @@
     }
     @media(max-width:768px){
       .top-nav{display:none}
+      /* Room for the share button. The stamp was wrapping to two lines for no
+         reason; nowrap plus the tighter gap buys the label its width without
+         shrinking the wordmark. */
+      .hdr-share{display:flex}
+      .header-bar{padding:0 14px}
+      .hdr-right{gap:10px}
+      .hdr-update{white-space:nowrap}
       .bottom-nav{display:block}
       /* The bottom nav is position:fixed and 58px tall, so it sits outside the
          document flow. <footer> only had 28px of bottom padding, leaving its
@@ -771,8 +794,9 @@
       </div>
     </a>
     <div class="hdr-right">
+      <button class="hdr-share" id="share-btn-hdr" type="button" aria-label="Share this page"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg><span>Share</span></button>
       <div class="hdr-meta">
-        <div class="hdr-update" id="hdr-update"><!--bt:hdr-update-->Nov 9 · 6:49am EST<!--/bt:hdr-update--></div>
+        <div class="hdr-update" id="hdr-update"><!--bt:hdr-update-->6:49am EST<!--/bt:hdr-update--></div>
         <div class="hdr-days" id="hdr-days"><!--bt:hdr-days-->242 days tracked<!--/bt:hdr-days--></div>
       </div>
     </div>
@@ -1259,9 +1283,16 @@ function renderToday(data) {
 
   // Header meta
   const d = new Date(meta.last_updated+'T00:00:00');
+  /* Time only. The date moved out to make room for the Share label; the Today
+     hero below still states the data's own date in full, which is where a stale
+     day actually shows, and the stale-data banner fires independently of both.
+     Falls back to the date when no capture time is recorded.
+     KEEP IN SYNC with header_strings() in scripts/build_home_static.py — the
+     static string and this repaint must match byte for byte or the swap shifts
+     the layout (CLS). */
   document.getElementById('hdr-update').textContent =
-    d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) +
-    (today.last_site_update ? ' · '+today.last_site_update : '');
+    today.last_site_update ||
+    d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   document.getElementById('hdr-days').textContent = meta.days_tracked+' day'+(meta.days_tracked!==1?'s':'')+' tracked';
 
   // Hero — normal vs. closure path
@@ -2287,9 +2318,27 @@ document.addEventListener('click', (e)=>{
   if(t) goToBottle(t.dataset.bottle);
 });
 
-// Share button — native share sheet on mobile, clipboard elsewhere
-document.getElementById('share-btn').addEventListener('click', async () => {
-  const btn = document.getElementById('share-btn');
+/* Share — native share sheet on mobile, clipboard elsewhere.
+ *
+ * Two buttons now: the labelled one in nav.top-nav (desktop) and the one in the
+ * header (mobile, where navigator.share actually exists). One handler.
+ *
+ * The tap is counted the way tip clicks are. navigator.share cannot say whether
+ * the share was completed — its promise resolves on cancel too — so this
+ * measures intent, not reach. That is still the number we lack: this button sat
+ * hidden on mobile for four months and nothing would have told us. */
+function shareBeacon(placement) {
+  try {
+    if (!navigator.sendBeacon) return;
+    const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const device = (coarse || window.innerWidth < 768) ? 'mobile' : 'desktop';
+    navigator.sendBeacon('/api/share-click',
+      new Blob([JSON.stringify({ placement, device })], { type: 'application/json' }));
+  } catch (e) { /* never let the counter break the share */ }
+}
+
+async function doShare(btn, placement) {
+  shareBeacon(placement);
   const payload = {
     title: 'Buffalo Trace Bottle Drops',
     text: "See what's on the shelf at the Buffalo Trace gift shop today:",
@@ -2302,6 +2351,11 @@ document.getElementById('share-btn').addEventListener('click', async () => {
     btn.textContent = '✓ Link copied';
     setTimeout(()=>{ btn.textContent = orig; }, 2000);
   } catch(e) { /* user cancelled share sheet — fine */ }
+}
+
+[['share-btn', 'top-nav'], ['share-btn-hdr', 'header-mobile']].forEach(([id, placement]) => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', () => doShare(el, placement));
 });
 
 // ── Boot: paint IMMEDIATELY from the embedded snapshot (INLINE_DATA is
