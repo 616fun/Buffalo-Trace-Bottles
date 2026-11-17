@@ -193,19 +193,20 @@
     .sr-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--border)}
     .sr-row:last-child{border-bottom:none}
     .sr-name{font-weight:600;font-size:.88rem;color:var(--text)}
-    .sr-date{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
+    .sr-date{font-size:.8125rem;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
     .sr-star{color:var(--sr-star);margin-right:8px}
-    .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+    .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:16px}
     .sp-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;border-top:3px solid var(--gold)}
     .sp-name{font-weight:700;font-size:.95rem;color:var(--text)}
-    .sp-series{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px}
-    .sp-tag{font-size:.76rem;font-style:italic;color:var(--text2);margin:4px 0 8px}
-    .sp-desc{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:10px}
-    .sp-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 5px}
-    .sp-note{display:inline-block;background:var(--surface2);border-radius:14px;padding:2px 10px;font-size:.75rem;color:var(--text2);margin:0 5px 5px 0}
-    .sp-fact{display:inline-block;background:var(--sp-fact-bg);border:1px solid var(--sp-fact-bd);border-radius:6px;padding:2px 10px;font-size:.7rem;color:var(--text2);margin:0 5px 5px 0}
+    .sp-series{font-size:.8125rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px}
+    .sp-tag{font-size:.8125rem;font-style:italic;color:var(--text2);margin:4px 0 8px}
+    .sp-desc{font-size:.8125rem;color:var(--text2);line-height:1.6;margin-bottom:10px}
+    .sp-label{font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 5px}
+    .sp-note{display:inline-block;background:var(--surface2);border-radius:14px;padding:2px 10px;font-size:.8125rem;color:var(--text2);margin:0 5px 5px 0}
+    .sp-fact{display:inline-block;background:var(--sp-fact-bg);border:1px solid var(--sp-fact-bd);border-radius:6px;padding:2px 10px;font-size:.8125rem;color:var(--text2);margin:0 5px 5px 0}
     .bp-card,.sp-card,#special-profiles{scroll-margin-top:124px} /* clear the sticky header+nav when cross-links scroll here */
     [data-bottle]{cursor:pointer}
+    [data-bottle]:focus-visible{outline:2px solid var(--amber-text);outline-offset:3px;border-radius:4px}
     [data-bottle]:hover{text-decoration:underline;text-decoration-color:var(--amber);text-underline-offset:3px}
     .flash-target{animation:flashTarget 1.8s ease-out}
     @keyframes flashTarget{0%,55%{box-shadow:0 0 0 3px var(--gold),var(--shadow)}100%{box-shadow:var(--shadow)}}
@@ -235,7 +236,7 @@
     .sec-head::after{content:'';flex:1;height:1px;background:var(--border);margin-left:16px}
     .sec-title{font-family:var(--display);font-size:1.25rem;font-weight:700;color:var(--text);letter-spacing:-.01em;white-space:nowrap}
     .sec-sub{font-size:.8125rem;color:var(--muted);font-style:italic;margin-left:10px;white-space:nowrap}
-    @media(max-width:420px){.sec-sub{white-space:normal;display:block;margin-left:0}}
+    @media(max-width:420px){.sec-sub{white-space:normal;min-width:0}.sec-head::after{display:none}.sec-head{justify-content:flex-start;flex-wrap:wrap;column-gap:10px}.sec-sub{margin-left:0}}
 
     /* ── TODAY PAGE ── */
     .today-hero{background:var(--panel);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-md);position:relative}
@@ -258,12 +259,12 @@
     .tap-eyebrow{font-size:.8125rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:14px}
     .tap-bottles{display:flex;flex-wrap:wrap;gap:0 24px}
     .tap-bottle-avail{min-height:44px;font-size:.95rem;font-weight:600;color:var(--green-on-dark);display:flex;align-items:center;gap:6px}
-    .tap-bottle-avail::before{content:'✓';font-size:.8rem;opacity:.8}
+    .tap-bottle-avail::before{content:'✓';font-size:.8125rem;opacity:.8}
     .tap-bottle-unavail{min-height:44px;font-size:.85rem;font-weight:500;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:6px}
-    .tap-bottle-unavail::before{content:'✗';font-size:.75rem}
-    .today-sr-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:var(--hl-bg);border-top:1px solid var(--hl-bd);font-size:.8rem;color:var(--text2)}
+    .tap-bottle-unavail::before{content:'✗';font-size:.8125rem}
+    .today-sr-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:var(--hl-bg);border-top:1px solid var(--hl-bd);font-size:.8125rem;color:var(--text2)}
     .today-sr-strip.show{display:flex}
-    .today-closure-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:var(--closure-bg);border-top:1px solid var(--closure-bd);font-size:.8rem;color:var(--closure-fg)}
+    .today-closure-strip{display:none;align-items:center;gap:10px;padding:13px 36px;background:var(--closure-bg);border-top:1px solid var(--closure-bd);font-size:.8125rem;color:var(--closure-fg)}
     .today-closure-strip.show{display:flex}
 
     /* Today quick stats row */
@@ -309,7 +310,7 @@
     .best-bets-grid{display:flex;flex-direction:column;gap:8px}
     .bet-row{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:box-shadow .2s}
     .bet-row:hover{box-shadow:var(--shadow-md)}
-    .bet-rank{font-size:.78rem;font-weight:700;color:var(--muted);width:22px;flex-shrink:0;text-align:center}
+    .bet-rank{font-size:.8125rem;font-weight:700;color:var(--muted);width:22px;flex-shrink:0;text-align:center}
     .bet-rank.r1{color:var(--amber-text)}
     .bet-name{font-size:.85rem;font-weight:600;color:var(--text);width:160px;flex-shrink:0;line-height:1.3}
     .bet-bar-wrap{flex:1}
@@ -321,7 +322,7 @@
     .fill-low{background:linear-gradient(90deg,var(--fill-low-a),var(--red-on-dark))}
     .bet-meta{display:flex;justify-content:space-between;align-items:center}
     .bet-pct{font-size:.95rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
-    .bet-verdict{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+    .bet-verdict{font-size:.8125rem;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
     .v-strong{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
     .v-good{background:var(--green-bg);color:var(--v-good-fg);border:1px solid var(--green-soft)}
     .v-flip{background:var(--hl-bg);color:var(--hl-fg);border:1px solid var(--hl-bd)}
@@ -358,36 +359,37 @@
     .freq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px}
     .freq-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:20px 22px;box-shadow:var(--shadow)}
     .freq-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
-    .freq-name{font-size:.78rem;font-weight:600;color:var(--text);line-height:1.35}
+    .freq-name{font-size:.8125rem;font-weight:600;color:var(--text);line-height:1.35}
     .freq-fraction{font-size:1.5rem;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
-    .freq-fraction-label{font-size:.7rem;color:var(--muted);margin-top:3px;margin-bottom:12px}
+    .freq-fraction-label{font-size:.8125rem;color:var(--muted);margin-top:3px;margin-bottom:12px}
     .freq-dots{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
     .freq-dot{width:14px;height:14px;border-radius:50%}
     .freq-dot.on{opacity:1}.freq-dot.off{opacity:.12}.freq-dot.is-closure{opacity:.35!important;filter:grayscale(1)}
-    .freq-meta{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);padding-top:10px;border-top:1px solid var(--border)}
+    .freq-meta{display:flex;justify-content:space-between;font-size:.8125rem;color:var(--muted);padding-top:10px;border-top:1px solid var(--border)}
     .freq-meta strong{color:var(--text2);font-weight:600}
 
     /* Pattern heatmap (replaces timeline chart) */
     .pattern-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow);margin-bottom:28px;overflow-x:auto}
     .pattern-card-title{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:4px}
-    .pattern-card-sub{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:18px}
+    .pattern-card-sub{font-size:.8125rem;color:var(--muted);font-style:italic;margin-bottom:18px}
     .pg-inner{min-width:320px}
     .pg-header-row{display:flex;align-items:center;margin-bottom:8px}
     .pg-spacer{width:118px;flex-shrink:0}
-    .pg-date{flex:1;text-align:center;font-size:.64rem;color:var(--muted);line-height:1.3}
+    .pg-date{flex:1;text-align:center;font-size:.75rem;color:var(--muted);line-height:1.3}
     .pg-row{display:flex;align-items:center;margin-bottom:10px}
-    .pg-label{width:118px;flex-shrink:0;font-size:.75rem;font-weight:600;color:var(--text2);padding-right:6px}
+    .pg-label{width:118px;flex-shrink:0;font-size:.8125rem;font-weight:600;color:var(--text2);padding-right:6px}
     .pg-cell{flex:1;display:flex;align-items:center;justify-content:center}
     .pg-dot{width:22px;height:22px;border-radius:50%;cursor:default;transition:transform .15s}
+    @media(max-width:400px){.pg-inner{min-width:0}.pg-label{width:76px}.pg-cell{min-width:0}.pg-dot{width:16px;height:16px}}
     .pg-dot:hover{transform:scale(1.2)}
     .pg-dot.on{opacity:1}.pg-dot.off{opacity:.11}.pg-dot.is-closure{opacity:.2!important;filter:grayscale(1)}
     .pg-legend{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
-    .pg-leg-item{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--text2)}
+    .pg-leg-item{display:flex;align-items:center;gap:6px;font-size:.8125rem;color:var(--text2)}
 
     /* Chart card (analytics happy medium) */
     .chart-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow);margin-bottom:24px}
     .chart-card-title{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:3px}
-    .chart-card-sub{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:16px}
+    .chart-card-sub{font-size:.8125rem;color:var(--muted);font-style:italic;margin-bottom:16px}
     .chart-wrap{position:relative;height:220px}
 
     /* Smart Insights */
@@ -396,7 +398,7 @@
     .insight-card.hl{background:linear-gradient(135deg,var(--hl-bg) 0%,var(--surface) 60%);border-color:var(--hl-bd)}
     .insight-icon{font-size:1.5rem;flex-shrink:0;line-height:1;margin-top:2px}
     .insight-head{font-size:.83rem;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.35}
-    .insight-body{font-size:.74rem;color:var(--text2);line-height:1.65}
+    .insight-body{font-size:.8125rem;color:var(--text2);line-height:1.65}
 
     /* ── CALENDAR PAGE ── */
     .cal-controls{display:flex;align-items:center;gap:12px;margin-bottom:12px}
@@ -404,11 +406,11 @@
     .cal-nav-btn:hover{background:var(--surface2)}
     .cal-month-label{font-family:var(--display);font-size:1.2rem;font-weight:700;color:var(--text);flex:1}
     .cal-month-summary{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:18px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border-s)}
-    .cal-sum-item{font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:5px}
+    .cal-sum-item{font-size:.8125rem;color:var(--text2);display:flex;align-items:center;gap:5px}
     .cal-sum-val{font-weight:700;color:var(--text)}
     .cal-grid-outer{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 18px;box-shadow:var(--shadow)}
     .cal-dow-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:6px}
-    .cal-dow{text-align:center;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0}
+    .cal-dow{text-align:center;font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 0}
     .cal-days-grid{display:flex;flex-direction:column;gap:5px}
     /* Methodology block at the foot of Analytics. --text2 and --muted, not
        --amber: amber as body text measures ~3.7 against these surfaces and this
@@ -418,7 +420,7 @@
     .methodology-title{font-family:var(--display);font-size:1.05rem;font-weight:700;
       color:var(--text);margin:0 0 14px}
     .methodology-list{margin:0;display:grid;gap:12px}
-    .methodology-list dt{font-family:var(--ui);font-size:.8rem;font-weight:700;
+    .methodology-list dt{font-family:var(--ui);font-size:.8125rem;font-weight:700;
       color:var(--text);letter-spacing:.01em}
     .methodology-list dd{margin:3px 0 0;font-size:.84rem;line-height:1.6;color:var(--text2)}
     .methodology-caveat{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--border-s);
@@ -452,26 +454,26 @@
     .cal-day.today-cell.has-data:not([class*="count-"]){background:var(--cal-today-bg)!important}
     .cal-day.empty{background:transparent;border:none}
     .cal-day-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
-    .cal-day-num{font-size:.72rem;font-weight:600;color:var(--muted);line-height:1}
+    .cal-day-num{font-size:.8125rem;font-weight:600;color:var(--muted);line-height:1}
     .cal-day.has-data .cal-day-num{color:var(--text2)}
     .cal-day.today-cell .cal-day-num{color:var(--amber-text);font-weight:800}
-    .cal-today-badge{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--amber);color:var(--on-dark);padding:1px 4px;border-radius:3px;line-height:1.4}
-    .cal-score{font-size:.66rem;font-weight:700;color:var(--muted);line-height:1}
+    .cal-today-badge{font-size:.6875rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--amber);color:var(--on-dark);padding:1px 4px;border-radius:3px;line-height:1.4}
+    .cal-score{font-size:.75rem;font-weight:700;color:var(--muted);line-height:1}
     .cal-score.s4{color:var(--cal-4-fg)}
     .cal-score.s3{color:var(--cal-3-fg)}
     .cal-score.s2{color:var(--cal-2-fg)}
     .cal-score.s1{color:var(--cal-1-fg)}
     .cal-score.s0{color:var(--cal-0-fg)}
     .cal-chips{display:flex;flex-wrap:wrap;gap:3px;flex:1;align-content:flex-start}
-    .cal-chip{font-size:.64rem;font-weight:800;padding:2px 5px;border-radius:4px;color:var(--on-dark);letter-spacing:.02em;line-height:1.45;white-space:nowrap}
+    .cal-chip{font-size:.75rem;font-weight:800;padding:2px 5px;border-radius:4px;color:var(--on-dark);letter-spacing:.02em;line-height:1.45;white-space:nowrap}
     .cal-chip.cc-blantons{background:var(--blantons)}
     .cal-chip.cc-weller107{background:var(--weller)}
     .cal-chip.cc-ehtaylor_sb{background:var(--ehtaylor)}
     .cal-chip.cc-eagle_rare{background:var(--eagle)}
     .cal-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;align-items:center}
-    .cal-leg-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text2)}
-    .cal-leg-chip{font-size:.64rem;font-weight:800;padding:2px 6px;border-radius:4px;color:var(--on-dark);line-height:1.45}
-    .cal-hd-badge{font-size:.68rem;margin-left:3px;cursor:help}
+    .cal-leg-item{display:flex;align-items:center;gap:5px;font-size:.8125rem;color:var(--text2)}
+    .cal-leg-chip{font-size:.75rem;font-weight:800;padding:2px 6px;border-radius:4px;color:var(--on-dark);line-height:1.45}
+    .cal-hd-badge{font-size:.8125rem;margin-left:3px;cursor:help}
     .cal-leg-divider{width:1px;height:14px;background:var(--border-s);margin:0 4px}
     .cal-leg-heat{display:flex;align-items:center;gap:4px}
     .cal-leg-sq{width:12px;height:12px;border-radius:3px;flex-shrink:0}
@@ -486,36 +488,36 @@
     .bp-header.weller::before{background:var(--weller)}
     .bp-header.ehtaylor::before{background:var(--ehtaylor)}
     .bp-header.eagle::before{background:var(--eagle)}
-    .bp-series{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;position:relative;z-index:1}
+    .bp-series{font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;position:relative;z-index:1}
     .bp-name{font-family:var(--display);font-size:1.4rem;font-weight:700;color:var(--text);line-height:1.15;position:relative;z-index:1}
-    .bp-tagline{font-size:.78rem;color:var(--text2);margin-top:6px;font-style:italic;position:relative;z-index:1}
+    .bp-tagline{font-size:.8125rem;color:var(--text2);margin-top:6px;font-style:italic;position:relative;z-index:1}
     .bp-availability-strip{display:flex;align-items:center;gap:8px;margin-top:14px;position:relative;z-index:1}
-    .bp-avail-badge{font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+    .bp-avail-badge{font-size:.8125rem;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
     .bp-avail-badge.in{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
     .bp-avail-badge.out{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
-    .bp-streak{font-size:.75rem;color:var(--muted)}
+    .bp-streak{font-size:.8125rem;color:var(--muted)}
     .bp-body{padding:20px 28px 24px}
     .bp-desc{font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:18px}
-    .bp-section-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+    .bp-section-label{font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
     .bp-notes{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
-    .bp-note{font-size:.78rem;color:var(--text2);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
-    .bp-note::before{content:'◆';font-size:.62rem;color:var(--amber-text);flex-shrink:0;margin-top:5px}
+    .bp-note{font-size:.8125rem;color:var(--text2);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+    .bp-note::before{content:'◆';font-size:.8125rem;color:var(--amber-text);flex-shrink:0;margin-top:5px}
     .bp-value-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
     .bp-val-cell{background:var(--surface2);border-radius:8px;padding:10px 12px;text-align:center}
     .bp-val-num{font-size:1.1rem;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
-    .bp-val-lbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:4px}
+    .bp-val-lbl{font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:4px}
     .bp-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--border);padding-top:16px}
     .bp-stat{text-align:center}
     .bp-stat-num{font-size:1rem;font-weight:700;color:var(--text2);font-variant-numeric:tabular-nums}
-    .bp-stat-lbl{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+    .bp-stat-lbl{font-size:.8125rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
     .bp-donut-wrap{position:relative;width:60px;height:60px;margin:0 auto 6px}
-    .bp-donut-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--text2)}
+    .bp-donut-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.8125rem;font-weight:700;color:var(--text2)}
 
     /* ── GUIDE PAGE ── */
     .guide-hero{background:var(--panel);border-radius:20px;padding:40px 44px;margin-bottom:32px;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
     .guide-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.35) 0%,transparent 60%);pointer-events:none}
     .guide-hero-inner{position:relative;z-index:1;max-width:600px}
-    .guide-hero-eyebrow{font-size:.70rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.62);margin-bottom:10px}
+    .guide-hero-eyebrow{font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.62);margin-bottom:10px}
     .guide-hero-title{font-family:var(--display);font-size:2.2rem;font-weight:700;color:var(--on-dark);line-height:1.15;margin-bottom:12px}
     .guide-hero-title span{color:var(--gold)}
     .guide-hero-body{font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.7}
@@ -529,7 +531,7 @@
     .guide-tips{display:flex;flex-direction:column;gap:8px;margin-top:14px}
     .guide-tip{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:var(--surface2);border-radius:8px}
     .guide-tip-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
-    .guide-tip-text{font-size:.8rem;color:var(--text2);line-height:1.55}
+    .guide-tip-text{font-size:.8125rem;color:var(--text2);line-height:1.55}
     .guide-tip-text strong{color:var(--text);font-weight:600}
     .guide-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
     .faq{display:flex;flex-direction:column;gap:1px}
@@ -537,7 +539,7 @@
     .faq-q{padding:14px 0;font-size:.84rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;user-select:none}
     .faq-q::after{content:'＋';font-size:1rem;color:var(--muted);flex-shrink:0;transition:transform .2s}
     .faq-item.open .faq-q::after{content:'－'}
-    .faq-a{display:none;font-size:.8rem;color:var(--text2);line-height:1.7;padding-bottom:14px}
+    .faq-a{display:none;font-size:.8125rem;color:var(--text2);line-height:1.7;padding-bottom:14px}
     .faq-item.open .faq-a{display:block}
 
     /* ── SPECIALS PAGE ── */
@@ -545,12 +547,12 @@
     .specials-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,115,40,.25) 0%,transparent 55%);pointer-events:none}
     .sh-icon{font-size:1.8rem;flex-shrink:0;position:relative;z-index:1}
     .sh-body{flex:1;position:relative;z-index:1}
-    .sh-eyebrow{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.62);margin-bottom:3px}
+    .sh-eyebrow{font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.62);margin-bottom:3px}
     .sh-name{font-family:var(--display);font-size:1.1rem;font-weight:700;color:var(--on-dark)}
-    .sh-meta{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:3px}
+    .sh-meta{font-size:.8125rem;color:rgba(255,255,255,.55);margin-top:3px}
     .sh-count{flex-shrink:0;text-align:right;position:relative;z-index:1}
     .sh-count-num{font-size:2.2rem;font-weight:700;color:var(--gold);line-height:1}
-    .sh-count-lbl{font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.62);margin-top:2px}
+    .sh-count-lbl{font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.62);margin-top:2px}
     .sr-cards{display:flex;flex-direction:column;gap:10px}
     .sr-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;display:flex;box-shadow:var(--shadow);transition:box-shadow .2s}
     .sr-card:hover{box-shadow:var(--shadow-md)}
@@ -561,15 +563,15 @@
     .sr-accent.vanwinkle{background:linear-gradient(180deg,var(--sr-vanwinkle-a),var(--sr-vanwinkle-b))}
     .sr-card-body{padding:16px 20px;flex:1}
     .sr-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
-    .sr-series{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--amber-text)}
+    .sr-series{font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--amber-text)}
     .sr-name-text{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text)}
     .sr-date-col{text-align:right;flex-shrink:0}
-    .sr-date{font-size:.73rem;font-weight:600;color:var(--text2)}
-    .sr-ago{font-size:.68rem;color:var(--muted);margin-top:2px}
+    .sr-date{font-size:.8125rem;font-weight:600;color:var(--text2)}
+    .sr-ago{font-size:.8125rem;color:var(--muted);margin-top:2px}
     .sr-empty{color:var(--muted);font-style:italic;background:var(--surface);border-radius:var(--radius);padding:40px 24px;text-align:center;border:1px dashed var(--border-s);font-size:.9rem}
 
     /* ── VENMO (footer only) ── */
-    .venmo-btn{display:inline-block;background:var(--amber);color:var(--on-dark);font-size:.78rem;font-weight:600;letter-spacing:.04em;padding:10px 20px;border-radius:8px;text-decoration:none;white-space:nowrap;box-shadow:0 2px 8px rgba(192,115,40,.4);transition:background .2s}
+    .venmo-btn{display:inline-block;background:var(--amber);color:var(--on-dark);font-size:.8125rem;font-weight:600;letter-spacing:.04em;padding:10px 20px;border-radius:8px;text-decoration:none;white-space:nowrap;box-shadow:0 2px 8px rgba(192,115,40,.4);transition:background .2s}
     .venmo-btn:hover{background:var(--amber2)}
 
     /* ── FOOTER ── */
@@ -577,7 +579,7 @@
        visible at ~655px, then init() shoves it off-screen (0.22-0.27 shift, seen in
        ~1 of 4 lab loads). Hidden until init() adds .ready; noscript restores it. */
     html:not(.ready) footer{visibility:hidden}
-    footer{background:var(--panel);color:rgba(255,255,255,.62);padding:28px;text-align:center;font-size:.75rem;line-height:1.9}
+    footer{background:var(--panel);color:rgba(255,255,255,.62);padding:28px;text-align:center;font-size:.8125rem;line-height:1.9}
     footer a{color:rgba(255,255,255,.82);text-decoration:none}
     footer a:hover{color:var(--gold)}
 
@@ -631,16 +633,16 @@
       .today-avail-panel{padding:16px 22px}
       .today-sr-strip{padding:12px 22px}
       .bottle-grid{grid-template-columns:1fr}
-      .bet-name{width:110px;font-size:.78rem}
+      .bet-name{width:110px;font-size:.8125rem}
       .bet-pct{font-size:.85rem}
       .guide-hero{padding:28px 22px}
       .guide-hero-title{font-size:1.6rem}
       .guide-section{padding:20px}
       .guide-two-col{grid-template-columns:1fr}
       .cal-day{min-height:58px;padding:5px 4px}
-      .cal-day-num{font-size:.68rem}
-      .cal-chip{font-size:.62rem;padding:1px 4px}
-      .cal-score{font-size:.64rem}
+      .cal-day-num{font-size:.75rem}
+      .cal-chip{font-size:.75rem;padding:1px 4px}
+      .cal-score{font-size:.75rem}
       .cal-today-badge{display:none}
       .analytics-kpis{grid-template-columns:repeat(3,1fr)}
       .freq-grid{grid-template-columns:1fr}
@@ -655,7 +657,7 @@
       .bottle-profiles{grid-template-columns:1fr}
       .bp-header{padding:18px 20px 16px}
       .bp-body{padding:16px 20px 20px}
-      .cal-dow{font-size:.64rem}
+      .cal-dow{font-size:.75rem}
       /* At 375px a column is ~37px, leaving a 26px content box. "23" plus
          "4/4" measures 31.7px, so they collided into "234/4". No amount of
          padding fixes that - clearing a real gap would need a card with ~2px
@@ -858,7 +860,7 @@
         </div>
         <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;padding-left:14px;border-left:2px solid var(--border-s);line-height:1.6">Ranked by predicted availability. Predictions improve as more days are tracked.</p>
         <div class="best-bets-grid" id="best-bets-list"></div>
-        <p style="font-size:.74rem;color:var(--muted);margin-top:14px;font-style:italic;padding-left:12px;border-left:2px solid var(--border-s);line-height:1.6">Early-data territory — model uses Bayesian priors from historical patterns. Confidence grows with each day tracked.</p>
+        <p style="font-size:.8125rem;color:var(--muted);margin-top:14px;font-style:italic;padding-left:12px;border-left:2px solid var(--border-s);line-height:1.6">Early-data territory — model uses Bayesian priors from historical patterns. Confidence grows with each day tracked.</p>
       </div>
 
 
@@ -884,7 +886,7 @@
       </section>
 
       <div style="text-align:center;padding:28px 0 8px;border-top:1px solid var(--border)">
-        <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
+        <div style="font-size:.8125rem;color:var(--muted);margin-bottom:12px">This tracker is free. If it helped you score a bottle, a tip is always appreciated.</div>
         <a href="/tip/" class="venmo-btn">💛 Tip on Venmo</a>
       </div>
     </div>
@@ -1022,14 +1024,14 @@
         <div class="cal-leg-item" data-bottle="bp-ehtaylor_sb"><span class="cal-leg-chip" style="background:var(--ehtaylor)">EH</span>E.H. Taylor</div>
         <div class="cal-leg-item" data-bottle="bp-eagle_rare"><span class="cal-leg-chip" style="background:var(--eagle)">ER</span>Eagle Rare</div>
         <div class="cal-leg-item"><span class="cal-leg-chip" style="background:var(--cal-closed-bg);color:var(--closure-fg);border:1px solid var(--cal-closed-bd)">🔒</span>Closed</div>
-        <div class="cal-leg-item"><span style="font-size:.8rem">🎯</span>Drop-watch day (bourbon holiday)</div>
+        <div class="cal-leg-item"><span style="font-size:.8125rem">🎯</span>Drop-watch day (bourbon holiday)</div>
         <div class="cal-leg-divider"></div>
         <div class="cal-leg-heat">
           <div class="cal-leg-sq" style="background:var(--cal-4-bg);border:1px solid var(--cal-4-bd)"></div>
           <div class="cal-leg-sq" style="background:var(--cal-2-bg);border:1px solid var(--cal-2-bd)"></div>
           <div class="cal-leg-sq" style="background:var(--cal-0-bg);border:1px solid var(--cal-0-bd)"></div>
         </div>
-        <span style="font-size:.72rem;color:var(--muted)">More → fewer bottles</span>
+        <span style="font-size:.8125rem;color:var(--muted)">More → fewer bottles</span>
       </div>
     </div>
 
@@ -1081,7 +1083,7 @@
   <p><a href="/sms.html">SMS Alerts</a> &nbsp;·&nbsp; <a href="/privacy/">Privacy</a> &nbsp;·&nbsp; <a href="/terms/">Terms</a> &nbsp;·&nbsp; Buffalo Trace Bottle Drops &nbsp;·&nbsp; Data sourced from <a href="https://www.buffalotracedistillery.com/visit-us/product-availability/" target="_blank" rel="noopener">buffalotracedistillery.com</a></p>
   <p>Updated as soon as the data is available — as early as 7am EST (8am Sun) &nbsp;·&nbsp; Not affiliated with Buffalo Trace Distillery &nbsp;·&nbsp; Informational only</p>
   <p style="margin-top:10px"><a href="/blantons/" style="color:inherit">Blanton's today</a> &nbsp;·&nbsp; <a href="/weller-antique-107/" style="color:inherit">Weller 107 today</a> &nbsp;·&nbsp; <a href="/eh-taylor-small-batch/" style="color:inherit">E.H. Taylor today</a> &nbsp;·&nbsp; <a href="/eagle-rare/" style="color:inherit">Eagle Rare today</a></p>
-  <p style="max-width:760px;margin:14px auto 0;font-size:.7rem;line-height:1.7;opacity:.75">Daily bottle availability tracker for the Buffalo Trace Distillery gift shop in Frankfort, Kentucky — see what's on the shelf today (Blanton's Single Barrel, Weller Antique 107, E.H. Taylor Small Batch, Eagle Rare 10-Year), get Bayesian predictions for tomorrow's drop, browse the availability calendar, and follow the special release log for bottles like Stagg, Weller 12 Year, Weller C.Y.P.B., and Single Oak Rye Bourbon.</p>
+  <p style="max-width:760px;margin:14px auto 0;font-size:.8125rem;line-height:1.7;opacity:.75">Daily bottle availability tracker for the Buffalo Trace Distillery gift shop in Frankfort, Kentucky — see what's on the shelf today (Blanton's Single Barrel, Weller Antique 107, E.H. Taylor Small Batch, Eagle Rare 10-Year), get Bayesian predictions for tomorrow's drop, browse the availability calendar, and follow the special release log for bottles like Stagg, Weller 12 Year, Weller C.Y.P.B., and Single Oak Rye Bourbon.</p>
 </footer>
 
 <script>
@@ -1982,7 +1984,7 @@ function renderBottles(data) {
     const priceHTML = (b.gift_shop_price!=null)
       ? `<div style="display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
            <span class="bp-stat-lbl" style="margin-top:0">Gift Shop Price</span>
-           <span style="font-weight:700;color:var(--text2)">$${b.gift_shop_price.toFixed(2)}${priceAsOf?` <span style="font-weight:400;font-size:.70rem;color:var(--muted)">as of ${priceAsOf}</span>`:''}</span>
+           <span style="font-weight:700;color:var(--text2)">$${b.gift_shop_price.toFixed(2)}${priceAsOf?` <span style="font-weight:400;font-size:.8125rem;color:var(--muted)">as of ${priceAsOf}</span>`:''}</span>
          </div>`
       : '';
     return `
@@ -2004,8 +2006,8 @@ function renderBottles(data) {
 
           <div class="bp-section-label">The Bottle</div>
           <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
-            <span style="background:var(--surface2);border:1px solid var(--border-s);border-radius:6px;padding:4px 10px;font-size:.75rem;font-weight:600;color:var(--text2)">${p.proof}</span>
-            <span style="background:var(--surface2);border:1px solid var(--border-s);border-radius:6px;padding:4px 10px;font-size:.75rem;font-weight:600;color:var(--text2)">Aged: ${p.aged}</span>
+            <span style="background:var(--surface2);border:1px solid var(--border-s);border-radius:6px;padding:4px 10px;font-size:.8125rem;font-weight:600;color:var(--text2)">${p.proof}</span>
+            <span style="background:var(--surface2);border:1px solid var(--border-s);border-radius:6px;padding:4px 10px;font-size:.8125rem;font-weight:600;color:var(--text2)">Aged: ${p.aged}</span>
           </div>
 
           <div class="bp-section-label">Our Tracked Stats</div>
@@ -2024,7 +2026,7 @@ function renderBottles(data) {
             </div>
           </div>
           ${priceHTML}
-          <div style="font-size:.70rem;color:var(--muted);text-align:center;margin-top:10px">${trackedDays} of ${openDays} open days available · ${b.confidence} confidence</div>
+          <div style="font-size:.8125rem;color:var(--muted);text-align:center;margin-top:10px">${trackedDays} of ${openDays} open days available · ${b.confidence} confidence</div>
         </div>
       </div>`;
   }).join('');
@@ -2320,6 +2322,26 @@ document.addEventListener('click', (e)=>{
   const t = e.target.closest('[data-bottle]');
   if(t) goToBottle(t.dataset.bottle);
 });
+document.addEventListener('keydown', (e)=>{
+  if(e.key!=='Enter' && e.key!==' ') return;
+  const t = e.target.closest && e.target.closest('[data-bottle]');
+  if(t && t===e.target){ e.preventDefault(); goToBottle(t.dataset.bottle); }
+});
+// The bottle names are rendered as divs/spans by the page's own templates, so
+// give each one link semantics and a tab stop as it appears (cards re-render
+// on every data refresh and tab change).
+(function(){
+  function mark(root){
+    (root.querySelectorAll ? root.querySelectorAll('[data-bottle]:not([tabindex])') : []).forEach(el=>{
+      el.setAttribute('role','link'); el.setAttribute('tabindex','0');
+    });
+  }
+  let queued=false;
+  const mo=new MutationObserver(()=>{ if(queued) return; queued=true;
+    requestAnimationFrame(()=>{ queued=false; mark(document); }); });
+  mo.observe(document.body,{childList:true,subtree:true});
+  mark(document);
+})();
 
 /* Share — native share sheet on mobile, clipboard elsewhere.
  *
