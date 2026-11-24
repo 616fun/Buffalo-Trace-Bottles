@@ -97,8 +97,8 @@
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg:#F7F3ED; --surface:#FFFFFF; --surface2:#F2EDE4;
@@ -1455,7 +1455,34 @@ function chartRgba(hex, a) {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 }
 
+/* Chart.js (~60KB) is only needed for this one Analytics chart, so it is
+   fetched the first time the chart is built instead of on every page load
+   (2026-11-24 — it was 89% unused on the Today view and competed with first
+   paint on mobile). The .chart-wrap box has a fixed 220px height, so the
+   chart arriving a moment later causes no layout shift. */
+const CHART_JS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+let chartJsPromise = null;
+function loadChartJs() {
+  if(window.Chart) return Promise.resolve();
+  if(!chartJsPromise){
+    chartJsPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = CHART_JS_SRC;
+      s.async = true;
+      s.onload = resolve;
+      s.onerror = () => { chartJsPromise = null; reject(new Error('Chart.js failed to load')); };
+      document.head.appendChild(s);
+    });
+  }
+  return chartJsPromise;
+}
+
 function buildDailyScoreChart(calendar) {
+  if(!window.Chart){
+    loadChartJs().then(() => buildDailyScoreChart(calendar))
+                 .catch(e => console.warn('[chart]', e.message));
+    return;
+  }
   if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
   const ctx = document.getElementById('chart-daily-score').getContext('2d');
   const labels = calendar.map(d=>{
@@ -2262,10 +2289,11 @@ function init(data) {
   // fetched data DIFFERS from INLINE_DATA, and the pipeline rewrites
   // INLINE_DATA every run, so it normally never fires. Relying on it left
   // every direct link to #calendar / #analytics permanently blank.
-  // Chart.js is loaded with `defer`, so it does NOT exist while this inline
-  // script is running. Re-asserting the view synchronously here threw
-  // "Chart is not defined" on every cold #analytics load. Deferred scripts
-  // finish before DOMContentLoaded, so wait for that.
+  // Waiting for DOMContentLoaded dates from when Chart.js was a `defer` script
+  // (re-asserting synchronously threw "Chart is not defined" on cold
+  // #analytics loads). Chart.js is now loaded on demand by
+  // buildDailyScoreChart(), so this wait is no longer required, but it is
+  // harmless and kept.
   const reassert = () => {
     const activeEl = document.querySelector('.page.active');
     const current = activeEl ? activeEl.id.replace('page-','') : 'today';
