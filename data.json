@@ -1,31 +1,31 @@
 {
   "meta": {
-    "last_updated": "2026-11-27",
-    "days_tracked": 260,
+    "last_updated": "2026-11-28",
+    "days_tracked": 261,
     "site_version": "1.0",
     "data_source": "https://www.buffalotracebottledrops.com",
     "prediction_accuracy": {
-      "total_days": 258,
-      "correct": 120,
+      "total_days": 259,
+      "correct": 121,
       "partial": 133,
       "incorrect": 2,
-      "binary_total": 1020,
-      "binary_correct": 830,
+      "binary_total": 1024,
+      "binary_correct": 834,
       "binary_accuracy_pct": 81.4,
       "per_bottle": {
-        "blantons": 82.7,
-        "weller107": 72.9,
+        "blantons": 82.8,
+        "weller107": 73.0,
         "ehtaylor_sb": 96.5,
-        "eagle_rare": 73.3
+        "eagle_rare": 73.4
       }
     },
     "prices_as_of": "2026-03-18"
   },
   "today": {
-    "date": "2026-11-27",
-    "day_of_week": "Friday",
-    "last_site_update": "6:20am EST",
-    "special_release": "Old Fashioned Mountain Corn, our new 10 Year Old Bottled in Bond Kentucky Straight Corn Whiskey will be available, Single Oak Rye Bourbon",
+    "date": "2026-11-28",
+    "day_of_week": "Saturday",
+    "last_site_update": "7:30am EST",
+    "special_release": "Single Oak Rye Bourbon",
     "notes": "",
     "is_closure": false
   },
@@ -34,15 +34,15 @@
       "name": "Blanton's Single Barrel",
       "key": "blantons",
       "available_today": 1,
-      "streak": 16,
+      "streak": 17,
       "streak_direction": "available",
       "overall_pct": 83.0,
       "rolling_10d_pct": 100.0,
       "rolling_30d_pct": 97.0,
       "avg_days_between_releases": 1.22,
-      "prediction_tomorrow_pct": 85.2,
+      "prediction_tomorrow_pct": 85.3,
       "confidence": "High",
-      "last_seen": "2026-11-27",
+      "last_seen": "2026-11-28",
       "prior_frequency": 0.63,
       "gift_shop_price": 74.99
     },
@@ -50,15 +50,15 @@
       "name": "Weller Antique 107",
       "key": "weller107",
       "available_today": 1,
-      "streak": 2,
+      "streak": 3,
       "streak_direction": "available",
       "overall_pct": 75.0,
-      "rolling_10d_pct": 80.0,
+      "rolling_10d_pct": 90.0,
       "rolling_30d_pct": 73.0,
       "avg_days_between_releases": 1.34,
-      "prediction_tomorrow_pct": 81.1,
+      "prediction_tomorrow_pct": 81.2,
       "confidence": "High",
-      "last_seen": "2026-11-27",
+      "last_seen": "2026-11-28",
       "prior_frequency": 0.75,
       "gift_shop_price": 59.99
     },
@@ -66,7 +66,7 @@
       "name": "E.H. Taylor Small Batch",
       "key": "ehtaylor_sb",
       "available_today": 1,
-      "streak": 15,
+      "streak": 16,
       "streak_direction": "available",
       "overall_pct": 96.0,
       "rolling_10d_pct": 100.0,
@@ -74,7 +74,7 @@
       "avg_days_between_releases": 1.04,
       "prediction_tomorrow_pct": 96.3,
       "confidence": "High",
-      "last_seen": "2026-11-27",
+      "last_seen": "2026-11-28",
       "prior_frequency": 0.93,
       "gift_shop_price": 59.99
     },
@@ -82,13 +82,13 @@
       "name": "Eagle Rare 10-Year",
       "key": "eagle_rare",
       "available_today": 0,
-      "streak": 2,
+      "streak": 3,
       "streak_direction": "unavailable",
       "overall_pct": 27.0,
-      "rolling_10d_pct": 40.0,
+      "rolling_10d_pct": 30.0,
       "rolling_30d_pct": 27.0,
       "avg_days_between_releases": 3.76,
-      "prediction_tomorrow_pct": 28.5,
+      "prediction_tomorrow_pct": 28.3,
       "confidence": "High",
       "last_seen": "2026-11-24",
       "prior_frequency": 0.17,
@@ -2695,6 +2695,16 @@
       "special_release": "Old Fashioned Mountain Corn, our new 10 Year Old Bottled in Bond Kentucky Straight Corn Whiskey will be available, Single Oak Rye Bourbon",
       "is_closure": false,
       "notes": null
+    },
+    {
+      "date": "2026-11-28",
+      "blantons": 1,
+      "weller107": 1,
+      "ehtaylor_sb": 1,
+      "eagle_rare": 0,
+      "special_release": "Single Oak Rye Bourbon",
+      "is_closure": false,
+      "notes": null
     }
   ],
   "special_releases_log": [
@@ -2962,9 +2972,10 @@
         "2026-11-23",
         "2026-11-24",
         "2026-11-25",
-        "2026-11-27"
+        "2026-11-27",
+        "2026-11-28"
       ],
-      "last_seen": "2026-11-27"
+      "last_seen": "2026-11-28"
     },
     {
       "date": "2026-11-27",
